@@ -4,7 +4,7 @@
 
 The original mockup is the data/information reference, not a layout to reproduce verbatim. Portfolios now has Household and Account views using all six original households and twelve accounts, with ownership types labelled rather than recast as individual people.
 
-The journey is overview → household/account → Allocation → Target plan → History. Allocation contains an actual-versus-approved-target distribution chart, expandable holdings, value gaps and exposure analysis. Target plan separates model assignment and adjustments from recorded holdings. Asset inclusion is managed in a supporting dialog; original examples include every asset.
+The journey is overview → household/account → Allocation → Target plan → History. The overview retains the original Aggregated drift label, threshold-relative bar and editable Threshold (pp) controls; blank thresholds inherit the firm default. Its row expansion is a concise explanation leading to detail. Allocation contains an actual-versus-approved-target distribution chart, expandable holdings, value gaps and exposure analysis. Target plan separates model assignment and adjustments from recorded holdings. Asset inclusion is managed in a supporting dialog; original examples include every asset.
 
 Models retains its dedicated scalable comparison page. Routine views use model names; revisions and historical bands remain in History. Drift-band editing is deferred to a possible Review rules feature. Overview attention indicators concern allocations/exposures; draft and model-update notices live inside portfolios.
 
