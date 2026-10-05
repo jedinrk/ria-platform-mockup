@@ -2,13 +2,13 @@
 const comparisonState = {
   selected: new Set(models.filter(m => latest(m)).slice(0, 3).map(m => m.id)),
   search: '', expanded: new Set(), lens: 'allocation', mode: 'look', active: false,
-  exposureData: null, loading: false, error: false,
+  exposureData: typeof originalData==='object'?originalData:null, loading: false, error: false,
 };
 const comparisonLenses = [['allocation','Asset allocation'],['sector','Sector'],['geography','Geography'],['marketCap','Market cap'],['themes','Themes'],['credit','Credit & duration'],['custom','Core / Satellite']];
 function modelSubnav(comparing) {
   return `<nav class="model-subnav" aria-label="Models views"><button data-compare-action="library" ${comparing?'':'aria-current="page"'}>Model library</button><button data-compare-action="compare" ${comparing?'aria-current="page"':''}>Model comparison</button></nav>`;
 }
-// Extend the existing library without changing the paused portfolio redesign.
+// Keep comparison separate from finding and editing a model.
 const renderModelLibrary = list;
 list = function() {
   comparisonState.active = false;

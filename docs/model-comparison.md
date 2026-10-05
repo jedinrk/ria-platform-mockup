@@ -1,6 +1,6 @@
 # Model comparison
 
-Models now has two sibling views: Model library and Model comparison. This change is based on the deployed mockup and does not include the paused broader restoration/redesign.
+Models has two sibling views: Model library and Model comparison. Comparison remains separate as the Portfolios workspace evolves; the former paused blanket restoration was not published.
 
 - Search all published models by name or intended use; select up to four. Library size is not restricted.
 - Initially select up to three published models. Model choices and expanded rows survive navigation during the current page session. Reloading returns to the initial choices.
@@ -11,6 +11,6 @@ Models now has two sibling views: Model library and Model comparison. This chang
 - Compare exposure dimensions separately. Themes overlap; credit/duration uses each model's debt allocation; unknown instruments remain Unclassified. No debt is “Not applicable”.
 - Wide tables scroll within their container on small screens; row labels remain visible.
 
-Source JSON is a focused subset of the original-data extraction, with provenance. It is not current or verified financial data. The original portfolio dataset and the broader paused UI changes are not deployed by this feature.
+The current workspace uses the shared `originalData` dataset loaded from `data/original-mockup.json`. The focused `data/model-exposures.json` subset remains a fallback for standalone comparison loading. Both contain the same original illustrative classifications, not current or verified financial data. See `portfolio-workspace.md` for the new portfolio journey.
 
 Run `node --test tests/comparison.test.cjs` for alignment, exposure and selection-limit checks. Browser verification covers search/selection, hierarchy expansion, mode switching, empty state, editor navigation and responsive layout.

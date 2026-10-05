@@ -1,34 +1,25 @@
-# Portfolio Console mockup
+# Portfolio Console roadmap
 
-## Current milestone
+## Delivered
 
-Models plus an individual-client dashboard, household member summaries and client-target approvals. Four illustrative clients belong to two households. Targets are individual; household totals aggregate member records. Joint ownership and shared household targets are not yet modelled.
+The original mockup is the data/information reference, not a layout to reproduce verbatim. Portfolios now has Household and Account views using all six original households and twelve accounts, with ownership types labelled rather than recast as individual people.
 
-Client targets store a copy of their selected published model, exact version, allocation adjustments, asset scope, approval reason, approver and timestamp. Editing a draft or publishing a model does not replace an approved client target. Blank adjustments inherit; zero is explicit. Parent and child adjustments must reconcile before approval.
+The journey is overview → household/account → Allocation → Target plan → History. Allocation contains an actual-versus-approved-target distribution chart, expandable holdings, value gaps and exposure analysis. Target plan separates model assignment and adjustments from recorded holdings. Asset inclusion is managed in a supporting dialog; original examples include every asset.
 
-Model data remains in `portfolio-model-design-v2`; client records use `portfolio-client-targets-v1`. Both stores are browser-local demonstration data. There is no backend, statement ingestion or authenticated approval. Existing model allocations, drafts and versions are retained. Model client counts now reflect the four navigable client examples instead of the previous placeholder assignments.
+Models retains its dedicated scalable comparison page. Routine views use model names; revisions and historical bands remain in History. Drift-band editing is deferred to a possible Review rules feature. Overview attention indicators concern allocations/exposures; draft and model-update notices live inside portfolios.
 
-The sample targets exclude homes and personal jewellery and include EPF for retirement planning. These are illustrative scope choices, not universal policy or investment recommendations. The two Moderate clients illustrate independent customisation. Sample asset valuations are dated 4 October 2026.
+All original source data is preserved in JSON, including defaults for pending workflows. Existing model storage and earlier client records remain preserved. This is a browser-local illustrative prototype.
 
-## Agreed next milestones
+## Next iterations
 
-1. Actual versus approved client target, with consistent scope, dates, data quality, allocation gaps and drift bands.
-2. Exposure views: sector, geography, market cap, themes and fund look-through. Use sourced exposure data; do not infer joint exposures by multiplying unrelated marginal percentages.
-3. Suggested buys/sells, individual and bulk review, liquidity constraints, residual cash, illustrative tax estimates, exemptions and loss harvesting.
-4. Cash inflows, withdrawals and staged investment planning.
+1. Review the revised Portfolios / Allocation journey and refine Target plan. Independent exposure-target overrides need an explicit policy; lens targets currently derive from approved allocation weights.
+2. Implement Planning scenarios: suggested buys/sells, liquidity constraints, individual/bulk review, cash funding and residuals. A gap is not itself a trade recommendation.
+3. Add illustrative tax estimates, exemptions and loss harvesting with transparent assumptions. Original placeholder rates must not be represented as current tax guidance.
+4. Add cash inflows/withdrawals, event history and lump-sum/staged investment planning. Scenarios must not mutate recorded holdings.
+5. Discuss Security master UI separately as requested. Original classification data is already retained.
 
-All of these capabilities remain in scope; this order is delivery sequencing. Security master UI will be discussed separately. Households remain part of the dashboard; household-level target approval is a separate product decision.
+Household targets aggregate account targets by value; there is no independent household target approval. Beneficial-owner mapping, verified source evidence, statement ingestion, production persistence and authenticated approvals remain outside this milestone.
 
-## Verification for this milestone
+## Verification and deployment
 
-- Open Individuals and Households; drill into a member's target.
-- Expand all allocations, edit targets and bands; invalid totals block approval.
-- Blank inherits a model value; zero is an explicit adjustment.
-- Reload to verify draft persistence and inspect the unchanged approved target.
-- Change scope; excluded assets require reasons. Scope totals update only in the draft until approval.
-- Require an approver and reason; preserve prior target and scope snapshots in history.
-- Publish a new model version; both clients retain their approved version and see an update notice.
-- Review model selection; cancelling retains the prior model and accepting changes only the draft, preserving matching client adjustments.
-- Verify narrow screens contain wide tables in scrollable containers.
-
-Deploy the repository root to GitHub Pages. `index.html` now loads `clients.js` and `clients.css`; publish all three together.
+Run `node --test tests/*.test.cjs` and real-browser checks for filters/sorting, navigation, hierarchy, lenses, scope isolation, draft reload, approval validation/history, publication isolation and Model comparison. Verify mobile containment and browser errors. Publish the complete root, then confirm GitHub Pages itself.
