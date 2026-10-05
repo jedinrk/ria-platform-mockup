@@ -25,4 +25,4 @@ Run `node --test tests/*.test.cjs`. Serve the root with a local HTTP server; the
 
 `bootstrap.js` loads data and scripts in order. Increment the release token in `bootstrap.js` and `index.html` when changing assets to prevent mixed cached releases. Data-load failure shows a retry screen without resetting saved work.
 
-See `ROADMAP.md` and `docs/portfolio-workspace.md` for design scope.
+See `ROADMAP.md` and `docs/portfolio-workspace.md` for the current design scope. The complete designer-facing specification and phased refinement plan is in `docs/ui-ux-refinement-plan.md`.
