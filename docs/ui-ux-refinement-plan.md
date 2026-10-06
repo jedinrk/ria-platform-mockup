@@ -1207,16 +1207,27 @@ Record every navigation, vocabulary or scope reversal here, with its reason, so 
 | 5 | 2026-10-07 | Global audit destination is named **Audit log** everywhere | mixed "History" / "Audit log" / "Audit trail" | One destination, one name |
 | 6 | 2026-10-07 | Review state reads **Within threshold**, never "Within defaults" | — | A portfolio with its own threshold override is not "within defaults" |
 
+### Closed since the last revision
+
+- §4.1 Model library: search, last-updated date and a top-level allocation preview.
+- §4.5 Profile comparison: dedicated page under Models, drafts excluded, unrecorded attributes shown as *Not supplied*.
+- §8.2 Advanced lens surface: the full bucket explorer opens by default on Exposure drift.
+- §9.3 Client context: assessed profile, approved revision, and a liquidity profile derived from the holdings, with goals and horizon marked *Not supplied* rather than inferred.
+- §9.4 Model update: three explicit choices — keep, review in context, start a revised draft.
+- §13.2 Audit log: one chronological feed filtered by portfolio/model, action, actor, status and date range, each entry opening to before/after values.
+- §14 Security master: nav item and placeholder naming the capability and the unresolved questions. The area itself is still not designed.
+- Traceability appendix: `docs/original-mockup-traceability.md`.
+
+Decision 7 (2026-10-08): the original's **Reset profile to default**, **Expand to breaches** and **editable risk profile in the portfolio header** are recorded as *Dropped*, with reasons, in the traceability appendix. Model-level lens target editing stays dropped until §21 Q6 is answered.
+
 ### Still outstanding against this plan
 
-- §4.1 Model library: last-updated date, top-level allocation preview, search.
-- §4.5 Profile comparison page (Phase 3).
-- §8.2 Advanced lens page as a first-class surface (Phase 3).
-- §9.3 Client context beyond risk profile: goals, horizon, liquidity needs, restrictions.
-- §9.4 Model-update review as three explicit choices.
-- §13.2 Global audit log filtering by date, actor, portfolio, model, action and status.
-- §14 Security master: no placeholder in the shell yet.
-- A traceability appendix mapping every original wireframe component to delivered / refined / deferred / dropped.
+- §10 Planning workspace, §11 tax, §12 cash events — placeholders only (Phases 4–6).
+- §10.5 bulk planning and the original's bulk rebalance review (Phase 7).
+- §14 Security master itself (Phase 8), after its own product discussion.
+- §16 statement ingestion and data-quality surfacing (Phase 9).
+- §9.3 goals and time horizon need a client record before they can be more than *Not supplied*.
+- Multi-user approval policy: whether a second reviewer or client acknowledgement is required (§9.8).
 
 ---
 

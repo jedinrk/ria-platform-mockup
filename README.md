@@ -5,9 +5,10 @@ Static, browser-local RIA workflow prototype. Entry point: `index.html`. Deploy 
 - **Portfolios:** searchable Household / Account overview, original AUM, threshold-relative Aggregated drift bars, editable portfolio thresholds, a stated review reason (asset class / exposure / both) and a concise row expansion showing drift by asset class, contributing accounts and the worst bucket per exposure lens.
 - **Allocation:** actual versus approved client target, distribution chart, holdings hierarchy with review state and liquidity/physical tags, value gaps and exposure lenses. Households get the same table against combined client targets.
 - **Client target limits:** model assignment, asset-class adjustments, per-bucket lens limits, included-assets dialog, draft saving and approval. An approved lens limit replaces the model-implied target and/or the default band and is what Exposure drift and the portfolio list compare against.
-- **Models:** focused editor and separate Model comparison. Revisions belong in History; stored drift bands are no longer edited in the main UI.
-- **Audit log:** model snapshots, portfolio approvals and retained earlier prototype records. Each account also has its own History tab.
-- **Planning:** explicitly labelled roadmap screen, not an implemented trade/tax/cash workflow. Security master design remains pending.
+- **Models:** searchable library with an allocation preview and last-updated date, a focused editor, Model comparison and Profile comparison. The model Sector view carries the original's equity concentration check against the firm cap. Revisions belong in the Audit log.
+- **Audit log:** one chronological feed of model publications and client target approvals, filtered by portfolio/model, action, actor, status and date range. Each entry opens to before/after values. Each account also has its own History tab.
+- **Planning:** tabs 2 and 3 are explicitly labelled roadmap screens, not implemented trade/tax/cash workflows.
+- **Security master:** nav item and placeholder naming the capability and the product questions it needs answered first. The classification data already drives every exposure view and is readable on any holding.
 
 ## Data and persistence
 
@@ -25,4 +26,4 @@ Run `node --test tests/*.test.cjs`. Serve the root with a local HTTP server; the
 
 `bootstrap.js` loads data and scripts in order. Increment the release token in `bootstrap.js` and `index.html` when changing assets to prevent mixed cached releases. Data-load failure shows a retry screen without resetting saved work.
 
-See `ROADMAP.md` and `docs/portfolio-workspace.md` for the current design scope. The complete designer-facing specification and phased refinement plan is in `docs/ui-ux-refinement-plan.md`.
+`docs/original-mockup-traceability.md` maps every component of the original wireframe to delivered / refined / deferred / dropped, with reasons. See `ROADMAP.md` and `docs/portfolio-workspace.md` for the current design scope. The complete designer-facing specification and phased refinement plan is in `docs/ui-ux-refinement-plan.md`.

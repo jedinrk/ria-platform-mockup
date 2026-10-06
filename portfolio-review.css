@@ -49,8 +49,8 @@
 dialog{scroll-padding-top:0}
 dialog h2:first-of-type{position:sticky;top:-28px;background:white;padding:6px 0 10px;margin-top:0;z-index:2}
 dialog .actions{position:sticky;bottom:-28px;background:white;padding:14px 0 4px;margin-top:18px;border-top:1px solid var(--line)}
-.target-limits-table{min-width:1010px}
-.target-limits-table th,.target-limits-table td{padding-left:11px;padding-right:11px}
+.target-limits-table{min-width:950px}
+.target-limits-table th,.target-limits-table td{padding-left:9px;padding-right:9px;font-size:13px}
 
 /* Mobile: turn the portfolio list into labelled key/value groups so drift,
    threshold and attention stay visible without sideways scrolling. */
@@ -69,3 +69,73 @@ dialog .actions{position:sticky;bottom:-28px;background:white;padding:14px 0 4px
  .review-panel-row>td{display:block;padding:0!important}
  .review-panel-row>td:before{display:none}
 }
+
+/* --- Model library, profile comparison, concentration --- */
+.model-search{margin:16px 0 4px}.model-search input{width:280px;max-width:100%}
+.list-count{font-size:12px;color:var(--mut);margin:0 0 6px}
+.model-library{min-width:880px}
+.model-preview{min-width:170px}
+.model-preview .allocation{height:10px}
+.model-preview small{display:block;margin-top:6px;font-size:11px;line-height:1.5}
+.profile-table th[scope=row]{color:var(--ink);font-size:13px;font-weight:600;vertical-align:top;width:230px}
+.profile-table th[scope=row] small{display:block;font-weight:400;margin-top:3px}
+.profile-table thead th{vertical-align:bottom}
+.profile-table thead button{display:block;margin-top:6px;padding:0;font-size:12px}
+.profile-table td{vertical-align:top;font-size:14px}
+.concentration{display:flex;align-items:center;gap:28px;flex-wrap:wrap;background:#f3f7f1;border:1px solid #dde6d9;border-radius:10px;padding:14px 18px;margin:0 0 18px}
+.concentration.is-breach{background:#fdf5e7;border-color:#e8d6ac}
+.concentration small,.concentration strong{display:block}
+.concentration strong{font-size:16px;margin-top:3px}
+.concentration .state-pill{margin-left:auto}
+@media(max-width:700px){.profile-table th[scope=row]{width:auto}.concentration{gap:14px}.concentration .state-pill{margin-left:0}}
+
+/* --- Audit log --- */
+.audit-filters{padding:18px 20px}
+.audit-filter-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px}
+.audit-filter-grid input,.audit-filter-grid select{width:100%}
+.audit-count{margin-top:14px;font-size:12px;color:var(--mut)}
+.audit-entry{padding:0;margin:10px 0}
+.audit-entry>summary{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:16px 20px;cursor:pointer}
+.audit-entry[open]>summary{border-bottom:1px solid var(--line)}
+.audit-entry>*:not(summary){padding-left:20px;padding-right:20px}
+.audit-when{font-variant-numeric:tabular-nums;color:var(--mut);font-size:12px;min-width:92px}
+.audit-action{font-size:11px;text-transform:uppercase;letter-spacing:.9px;font-weight:700;color:var(--green)}
+.audit-entry strong{font-size:15px}
+.audit-meta{font-size:12px;color:var(--mut)}
+.audit-entry>summary>.state-pill{margin-left:auto}
+.audit-reason{font-size:13px;margin:14px 0}
+.audit-facts{display:flex;gap:28px;flex-wrap:wrap;margin:0 0 14px}
+.audit-facts dt{font-size:11px;color:var(--mut)}
+.audit-facts dd{margin:3px 0 0;font-size:14px}
+.audit-open{padding-bottom:14px}
+@media(max-width:700px){.audit-entry>summary{gap:7px}.audit-when{min-width:0}.audit-entry>summary>.state-pill{margin-left:0}}
+
+/* --- Context, model update, liquidity --- */
+.context-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px;margin:0 0 22px}
+.context-grid dt{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--mut)}
+.context-grid dd{margin:5px 0 0;font-size:15px;font-weight:600}
+.context-grid dd.context-sub{font-size:11px;font-weight:400;color:var(--mut);margin-top:3px}
+.context-heading,.holding-heading{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin:20px 0 9px}
+.liquidity-bar{display:flex;height:16px;border-radius:7px;overflow:hidden;background:#eef1ec;gap:2px}
+.liquidity-bar span{display:block}
+.liq-liquid{background:#246c53}.liq-semiliquid{background:#c9a44c}.liq-locked{background:#b06a4a}.liq-unclassified{background:#9aa6a0}
+.liquidity-legend{display:flex;gap:20px;flex-wrap:wrap;margin-top:11px;font-size:12px}
+.liquidity-legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:6px}
+.context-restrictions{margin-top:14px;font-size:13px}
+.context-restrictions summary{color:var(--green);font-weight:600;cursor:pointer}
+.context-restrictions ul{margin:12px 0 0;padding-left:18px}
+.context-restrictions li{margin-bottom:11px}
+.model-update{border-left:5px solid var(--amber);background:#fffaf0}
+.model-update-choices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.model-update-choices button{text-align:left;padding:14px 16px;height:100%}
+.model-update-choices strong{display:block;font-size:14px}
+.model-update-choices small{display:block;margin-top:5px;line-height:1.5}
+.model-update-choices .primary small{color:#dbece2}
+.rules-toggle{display:block;margin:14px 0 0}
+.rules-note{font-size:12px;color:var(--mut);margin:6px 0 0}
+#modal .numeric{text-align:right;font-variant-numeric:tabular-nums}
+@media(max-width:800px){.context-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.model-update-choices{grid-template-columns:1fr}}
+@media(max-width:520px){.context-grid{grid-template-columns:1fr}}
+.all-exposures.is-primary{border-top:2px solid var(--line);margin-top:28px;padding-top:22px}
+.all-exposures.is-primary>summary{font-size:17px;font-weight:650;color:var(--ink);list-style:none;margin-bottom:4px}
+.all-exposures.is-primary>summary::-webkit-details-marker{display:none}

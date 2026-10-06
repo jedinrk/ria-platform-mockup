@@ -13,10 +13,10 @@ All original source data is preserved in JSON, including defaults for pending wo
 ## Next iterations
 
 1. Lens limits are now editable per portfolio and drive review flags once approved. Whether an exposure limit is an analytical reference or firm policy is still an open product question (plan §21 Q6); household views keep firm defaults. Model-level lens target overrides remain out of scope.
-2. Implement Planning scenarios: suggested buys/sells, liquidity constraints, individual/bulk review, cash funding and residuals. A gap is not itself a trade recommendation.
+2. Implement Planning scenarios: suggested buys/sells, liquidity constraints, individual/bulk review, cash funding and residuals. A gap is not itself a trade recommendation. Tabs 2 and 3 of a portfolio hold the labelled placeholders.
 3. Add illustrative tax estimates, exemptions and loss harvesting with transparent assumptions. Original placeholder rates must not be represented as current tax guidance.
 4. Add cash inflows/withdrawals, event history and lump-sum/staged investment planning. Scenarios must not mutate recorded holdings.
-5. Discuss Security master UI separately as requested. Original classification data is already retained.
+5. Discuss Security master UI separately as requested. The nav item and placeholder now name the capability and the questions that discussion must settle; the classification data is already retained and drives every exposure view.
 
 Household targets aggregate account targets by value; there is no independent household target approval. Beneficial-owner mapping, verified source evidence, statement ingestion, production persistence and authenticated approvals remain outside this milestone.
 
