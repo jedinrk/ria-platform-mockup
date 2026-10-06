@@ -12,7 +12,7 @@ All original source data is preserved in JSON, including defaults for pending wo
 
 ## Next iterations
 
-1. Review the revised Portfolios / Allocation journey and refine Target plan. Independent exposure-target overrides need an explicit policy; lens targets currently derive from approved allocation weights.
+1. Lens limits are now editable per portfolio and drive review flags once approved. Whether an exposure limit is an analytical reference or firm policy is still an open product question (plan §21 Q6); household views keep firm defaults. Model-level lens target overrides remain out of scope.
 2. Implement Planning scenarios: suggested buys/sells, liquidity constraints, individual/bulk review, cash funding and residuals. A gap is not itself a trade recommendation.
 3. Add illustrative tax estimates, exemptions and loss harvesting with transparent assumptions. Original placeholder rates must not be represented as current tax guidance.
 4. Add cash inflows/withdrawals, event history and lump-sum/staged investment planning. Scenarios must not mutate recorded holdings.

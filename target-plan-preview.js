@@ -25,14 +25,14 @@ const targetScopeChanges=(before,after)=>after.assets.filter(asset=>{
 const topLevelTargets=p=>effective(p).allocations.map(x=>({name:x.name,target:x.target}));
 
 portfolioTabs=function(){return `<nav class="portfolio-tabs portfolio-tabs-five" aria-label="Portfolio work areas">${[
-  ['allocation','1 Drill-down allocation'],['planning','2 Gap summary & trades'],['cash','3 Cash events'],['exposure','4 Exposure drift'],['target','5 Model limits']
+  ['allocation','1 Drill-down allocation'],['planning','2 Gap summary & trades'],['cash','3 Cash events'],['exposure','4 Exposure drift'],['target','5 Client target limits'],['history','History']
 ].map(([key,label])=>`<button data-portfolio-area="${key}" aria-current="${portfolioArea===key?'page':'false'}">${label}${key==='target'&&client().draft?' <span class="draft-dot" aria-label="Draft exists"></span>':''}</button>`).join('')}</nav>`};
 
 function targetPlanStatus(p){
   const a=targetPlanApproved(),draft=clientEditing;
   return `<section class="target-status ${draft?'is-draft':'is-approved'}">
     <div>
-      <span class="target-status-label">${draft?'Draft changes':'Approved limits'}</span>
+      <span class="target-status-label">${draft?'Draft changes':'Approved client target'}</span>
       <h2>${draft?'Review changes before they become the effective target':'The effective target currently used for portfolio review'}</h2>
       <p>${draft?'Current-versus-target continues to use the approved effective target until this draft is approved.':'Approved '+esc(a.effectiveDate)+' by '+esc(a.approver)+'. Current holdings remain separate.'}</p>
     </div>
@@ -76,7 +76,7 @@ function targetModelSection(p){
 function targetAllocationSection(p){
   const issues=targetIssues(p),overrideCount=targetOverrideCount(p);
   return `<section class="card target-allocation-card">
-    <div class="target-section-heading"><div><span class="section-step">Asset class limits</span><h2>Model limits and portfolio overrides</h2><p>${clientEditing?'Leave “This portfolio %” blank to follow the model. Entering 0% is an explicit zero.':'Model, portfolio override and effective values are shown separately.'}</p></div><div class="target-expand-actions"><button data-action="expand">Expand all</button><button data-action="collapse">Collapse all</button></div></div>
+    <div class="target-section-heading"><div><span class="section-step">Asset class limits</span><h2>Asset-class limits and portfolio overrides</h2><p>${clientEditing?'Leave “This portfolio %” blank to follow the model. Entering 0% is an explicit zero.':'Model, portfolio override and effective values are shown separately.'}</p></div><div class="target-expand-actions"><button data-action="expand">Expand all</button><button data-action="collapse">Collapse all</button></div></div>
     <div class="tablewrap"><table class="client-table target-plan-table"><thead><tr><th>Allocation</th>${clientEditing?'<th>Approved effective %</th>':''}<th>Model target %</th>${clientEditing?'<th>This portfolio %</th>':''}<th>${clientEditing?'Proposed effective %':'Effective %'}</th><th>Source</th></tr></thead><tbody>${targetRows(p)}</tbody></table></div>
     <div class="target-table-foot"><span>${overrideCount} portfolio ${overrideCount===1?'override':'overrides'}</span><span>All percentages are of the whole portfolio</span></div>
     ${clientEditing?`<div class="target-readiness ${issues.length?'has-issues':'is-ready'}"><div><strong>${issues.length?issues.length+' item'+(issues.length>1?'s':'')+' to resolve':'Ready for review'}</strong><span>${issues.length?'The draft is saved, but approval remains unavailable.':'Targets reconcile and the proposed scope is valid.'}</span></div>${issues.length?'<ul>'+issues.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'<span aria-hidden="true" class="ready-mark">✓</span>'}</div>`:''}
@@ -97,8 +97,8 @@ function targetLensLimits(p){
   return `<section class="card target-lens-card">
     <div class="target-section-heading"><div><span class="section-step">Lens limits</span><h2>${esc(lenses.find(x=>x[0]===selectedLens)?.[1]||'Exposure')} limits</h2><p>${clientEditing?'Leave portfolio fields blank to inherit the model. Entering 0 is an explicit override.':'Model, portfolio override and effective limits are shown separately.'}</p></div>${clientEditing&&overrideCount?'<button data-action="reset-lens">Reset this lens</button>':''}</div>
     <div class="analysis-toolbar"><label>Lens <select id="portfolioLens">${available.map(key=>`<option value="${key}" ${selectedLens===key?'selected':''}>${esc(lenses.find(x=>x[0]===key)[1])}</option>`).join('')}</select></label><span class="lens-override-count">${overrideCount} portfolio ${overrideCount===1?'override':'overrides'} in this lens</span></div>
-    <div class="tablewrap"><table class="target-limits-table"><thead><tr><th>Bucket</th><th>Model target %</th><th>This portfolio %</th><th>Model band ±</th><th>This portfolio band ±</th><th>Effective target %</th><th>Effective band ±</th><th>Source</th></tr></thead><tbody>${rows.map((row,index)=>`<tr class="${row.custom?'is-custom':''}"><td>${esc(row.name)}</td><td>${row.modelTarget===null?'Not defined':fmt(row.modelTarget)}</td><td>${clientEditing?`<div class="target-input-wrap"><input class="target" type="number" min="0" max="100" step="0.1" data-lens-target="${index}" aria-label="${esc(row.name)} portfolio target" placeholder="Inherit" value="${row.portfolioTarget??''}"><span>%</span></div>`:(row.portfolioTarget===undefined?'—':fmt(row.portfolioTarget))}</td><td>${fmt(row.modelBand)}</td><td>${clientEditing?`<div class="target-input-wrap"><input class="target" type="number" min="0" max="100" step="0.5" data-lens-band="${index}" aria-label="${esc(row.name)} portfolio band" placeholder="Inherit" value="${row.portfolioBand??''}"><span>pp</span></div>`:(row.portfolioBand===undefined?'—':fmt(row.portfolioBand))}</td><td><strong>${row.effectiveTarget===null?'Not defined':fmt(row.effectiveTarget)}</strong></td><td><strong>${fmt(row.effectiveBand)}</strong></td><td><span class="target-source ${row.custom?'custom':'inherited'}">${row.custom?'This portfolio':'Model'}</span></td></tr>`).join('')||'<tr><td colspan="8">No limits are available for this lens.</td></tr>'}</tbody></table></div>
-    <p class="chart-key">Portfolio overrides are saved only in the draft. They do not affect the approved target until review and approval.</p>
+    <div class="tablewrap"><table class="target-limits-table"><thead><tr><th>Bucket</th><th>Model target %</th><th>This portfolio %</th><th>Model band ±</th><th>This portfolio band ±</th><th>Effective target %</th><th>Effective band ±</th><th>Source</th></tr></thead><tbody>${rows.map((row,index)=>`<tr class="${row.custom?'is-custom':''}"><td>${esc(row.name)}</td><td>${row.modelTarget===null?'Not defined':fmt(row.modelTarget)}</td><td>${clientEditing?`<div class="target-input-wrap"><input class="target" type="number" min="0" max="100" step="0.1" data-lens-target="${index}" aria-label="${esc(row.name)} portfolio target" placeholder="Inherit" value="${row.portfolioTarget??''}"><span>%</span></div>`:(row.portfolioTarget===undefined?'—':fmt(row.portfolioTarget))}</td><td>${fmt(row.modelBand)}</td><td>${clientEditing?`<div class="target-input-wrap"><input class="target" type="number" min="0.5" max="100" step="0.5" data-lens-band="${index}" aria-label="${esc(row.name)} portfolio band" placeholder="Inherit" value="${row.portfolioBand??''}"><span>pp</span></div>`:(row.portfolioBand===undefined?'—':fmt(row.portfolioBand))}</td><td><strong>${row.effectiveTarget===null?'Not defined':fmt(row.effectiveTarget)}</strong></td><td><strong>${fmt(row.effectiveBand)}</strong></td><td><span class="target-source ${row.custom?'custom':'inherited'}">${row.custom?'This portfolio':'Model'}</span></td></tr>`).join('')||'<tr><td colspan="8">No limits are available for this lens.</td></tr>'}</tbody></table></div>
+    <p class="chart-key">A portfolio limit replaces the model-implied target and/or the default band for that bucket. Once approved it is what Exposure drift and the portfolio list compare against. Draft limits are not applied until review and approval. Household views use the firm defaults; limits apply to the account that approved them.</p>
   </section>`;
 }
 
@@ -107,7 +107,7 @@ targetIssues=function(plan){
   const issues=targetPlanBaseIssues(plan);
   for(const [lens,buckets] of Object.entries(plan.lensOverrides||{}))for(const [bucket,override] of Object.entries(buckets)){
     if(override.target!==undefined&&(!Number.isFinite(override.target)||override.target<0||override.target>100))issues.push(`${bucket} portfolio target in ${lenses.find(x=>x[0]===lens)?.[1]||lens} must be between 0 and 100.`);
-    if(override.band!==undefined&&(!Number.isFinite(override.band)||override.band<0||override.band>100))issues.push(`${bucket} portfolio band in ${lenses.find(x=>x[0]===lens)?.[1]||lens} must be between 0 and 100.`);
+    if(override.band!==undefined&&(!Number.isFinite(override.band)||override.band<0.5||override.band>100))issues.push(`${bucket} portfolio band in ${lenses.find(x=>x[0]===lens)?.[1]||lens} must be at least 0.5 pp.`);
   }
   return issues;
 };
@@ -157,16 +157,16 @@ reviewClient=function(){
   const p=planNow(),old=targetPlanApproved().plan,issues=targetIssues(p);
   if(issues.length)return;
   const oldTop=topLevelTargets(old),nextTop=topLevelTargets(p),changed=nextTop.filter((x,i)=>x.target!==oldTop[i]?.target),lensChanges=lensLimitChanges(old,p);
-  show(`<div class="target-review-dialog"><span class="section-step">Final review</span><h2>Approve revised model limits</h2><p class="muted">${esc(client().name)} · the effective target becomes the reference for future allocation reviews.</p>
-    <div class="review-impact-grid"><div><small>Model</small><strong>${esc(baseRef(old))} → ${esc(baseRef(p))}</strong></div><div><small>Included value</small><strong>${money(scopeValue(old))} → ${money(scopeValue(p))}</strong></div><div><small>Asset-class changes</small><strong>${changed.length}</strong></div><div><small>Lens-limit changes</small><strong>${lensChanges.length}</strong></div></div>
+  show(`<div class="target-review-dialog"><span class="section-step">Final review</span><h2>Approve revised client target</h2><p class="muted">${esc(client().name)} · the effective target becomes the reference for future allocation reviews.</p>
+    <div class="review-impact-grid"><div><small>Model</small><strong>${baseRef(old)===baseRef(p)?esc(baseRef(p))+' (unchanged)':esc(baseRef(old))+' → '+esc(baseRef(p))}</strong></div><div><small>Included value</small><strong>${money(scopeValue(old))} → ${money(scopeValue(p))}</strong></div><div><small>Asset-class changes</small><strong>${changed.length}</strong></div><div><small>Lens-limit changes</small><strong>${lensChanges.length}</strong></div></div>
     <section class="review-summary-section"><h3>Asset class limits · effective %</h3><div class="review-target-rows">${nextTop.map((x,i)=>{const before=oldTop[i]?.target??0;return `<div><span><i style="background:${palette[i]}"></i>${esc(x.name)}</span><span>${fmt(before)}%</span><span aria-hidden="true">→</span><strong>${fmt(x.target)}%</strong></div>`}).join('')}</div></section>
     <details class="review-detail"><summary>Detailed limit changes</summary><div class="tablewrap"><table><thead><tr><th>Allocation</th><th>Approved effective %</th><th>Proposed effective %</th></tr></thead><tbody>${changes(effective(old),effective(p))}</tbody></table></div></details>
     <details class="review-detail"><summary>Lens limit changes · ${lensChanges.length}</summary>${lensChanges.length?`<div class="tablewrap"><table><thead><tr><th>Lens / bucket</th><th>Effective target %</th><th>Effective band ±</th></tr></thead><tbody>${lensChanges.map(change=>`<tr><td>${esc(change.lens)} · ${esc(change.bucket)}</td><td>${change.oldTarget===null?'Not defined':fmt(change.oldTarget)} → ${change.newTarget===null?'Not defined':fmt(change.newTarget)}</td><td>${fmt(change.oldBand)} → ${fmt(change.newBand)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="muted">No lens limit changes in this draft.</p>'}</details>
     <details class="review-detail"><summary>Assets included in allocation</summary>${scopeChanges(old,p)}</details>
-    <label class="field">Reason for these limit changes<textarea id="targetReason" placeholder="Explain why these effective limits are appropriate for the portfolio"></textarea></label>
+    <label class="field">Reason for this client target change<textarea id="targetReason" placeholder="Explain why this client target is appropriate for the portfolio"></textarea></label>
     <label class="field">Approver<input id="targetApprover" value="${esc(originalData.audit.user)}"></label>
     <p class="note">Illustrative approval, effective today (${esc(today())}). Current holdings remain unchanged.</p><p id="targetError" class="errors"></p>
-    <div class="actions"><button onclick="closeModal()">Back to draft</button><button class="primary" data-action="approve">Approve model limits</button></div></div>`);
+    <div class="actions"><button onclick="closeModal()">Back to draft</button><button class="primary" data-action="approve">Approve client target</button></div></div>`);
 };
 
 document.addEventListener('change',event=>{
@@ -189,11 +189,20 @@ document.addEventListener('click',event=>{
   saveClients();renderClient();
 });
 
+// The inner Allocation / Exposure control and the numbered tabs address the same
+// content, so keep them in step instead of letting the tab silently win.
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b||!activeClient)return;
+  if(b.dataset.lens==='ac'&&portfolioArea==='exposure')portfolioArea='allocation';
+  if(b.dataset.workspace==='exposures'&&portfolioArea==='allocation')portfolioArea='exposure';
+},true);
+
 const targetPlanBaseRenderClient=renderClient;
 renderClient=function(){
   const requestedArea=portfolioArea;
   if(requestedArea==='cash')portfolioArea='planning';
-  if(requestedArea==='exposure'){portfolioArea='allocation';activeLens='sec'}
+  if(requestedArea==='exposure'){portfolioArea='allocation';if(activeLens==='ac')activeLens='sec'}
+  if(requestedArea==='allocation')activeLens='ac';
   targetPlanBaseRenderClient();
   portfolioArea=requestedArea;
   document.querySelectorAll('[data-portfolio-area]').forEach(button=>button.setAttribute('aria-current',button.dataset.portfolioArea===requestedArea?'page':'false'));

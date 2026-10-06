@@ -45,7 +45,27 @@ test('Listing expansion is a concise disclosure, not the detailed tabbed workspa
  assert.match(collapsed,/aria-expanded="false"/);assert.doesNotMatch(collapsed,/class="quick-review"/);
  const expanded=run('(dashboardExpanded.add("h1"),dashboardRow(dashboardRecords().find(r=>r.id==="h1")))');
  assert.match(expanded,/aria-expanded="true"/);assert.doesNotMatch(expanded,/expanded-label/);assert.match(expanded,/Collapse Mehta Family/);
- assert.match(expanded,/Review household/);assert.doesNotMatch(expanded,/role="tablist"/);assert.doesNotMatch(expanded,/review-allocation-grid/);
+ assert.match(expanded,/Open household/);assert.doesNotMatch(expanded,/role="tablist"/);assert.doesNotMatch(expanded,/review-allocation-grid/);
+ // Concise, but it must answer "why" in place: drift by class, accounts, exposure.
+ assert.match(expanded,/Drift by asset class/);assert.match(expanded,/<h4>Accounts<\/h4>/);assert.match(expanded,/Exposure buckets outside limits/);
+ assert.match(expanded,/Ritu Mehta/);assert.match(expanded,/Review threshold 5 pp/);
+});
+
+test('An approved portfolio lens limit replaces the default band in review flags',()=>{
+ const run=preview();
+ const before=run('(clientView="accounts",dashboardRecords().find(r=>r.id==="a1").exposureFlags.length)');
+ const after=run(`(()=>{const c=clientRecords.find(x=>x.id==="a1");const p=approved(c).plan;
+  p.lensOverrides={sec:Object.fromEntries(dashboardRecords().find(r=>r.id==="a1").exposureFlags.filter(f=>f.lens==="sec").map(f=>[f.name,{band:50}]))};
+  return dashboardRecords().find(r=>r.id==="a1").exposureFlags.length})()`);
+ assert.ok(before>after,'widening approved sector bands must clear those flags');
+ const sourced=run('dashboardRecords().find(r=>r.id==="a1").exposureFlags.every(f=>["portfolio","default"].includes(f.limitSource))');
+ assert.equal(sourced,true);
+});
+
+test('Review reason names the cause so a within-threshold bar can still say Needs review',()=>{
+ const run=preview();
+ assert.equal(run('reviewReason(dashboardRecords().find(r=>r.id==="h6"))'),'Exposure only');
+ assert.equal(run('reviewLabel(dashboardRecords().find(r=>r.id==="h2"))'),'Within threshold');
 });
 
 test('Detail lookup does not change the listing grouping or saved records',()=>{

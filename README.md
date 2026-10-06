@@ -2,11 +2,11 @@
 
 Static, browser-local RIA workflow prototype. Entry point: `index.html`. Deploy the complete repository root to GitHub Pages; no build step is needed.
 
-- **Portfolios:** searchable Household / Account overview, original AUM, concise expandable explanations, threshold-relative Aggregated drift bars and editable portfolio thresholds.
-- **Allocation:** actual versus approved client target, distribution chart, holdings hierarchy, value gaps and exposure lenses.
-- **Target plan:** model assignment, client adjustments, included-assets dialog, draft saving and approval.
+- **Portfolios:** searchable Household / Account overview, original AUM, threshold-relative Aggregated drift bars, editable portfolio thresholds, a stated review reason (asset class / exposure / both) and a concise row expansion showing drift by asset class, contributing accounts and the worst bucket per exposure lens.
+- **Allocation:** actual versus approved client target, distribution chart, holdings hierarchy with review state and liquidity/physical tags, value gaps and exposure lenses. Households get the same table against combined client targets.
+- **Client target limits:** model assignment, asset-class adjustments, per-bucket lens limits, included-assets dialog, draft saving and approval. An approved lens limit replaces the model-implied target and/or the default band and is what Exposure drift and the portfolio list compare against.
 - **Models:** focused editor and separate Model comparison. Revisions belong in History; stored drift bands are no longer edited in the main UI.
-- **History:** model snapshots, portfolio approvals and retained earlier prototype records.
+- **Audit log:** model snapshots, portfolio approvals and retained earlier prototype records. Each account also has its own History tab.
 - **Planning:** explicitly labelled roadmap screen, not an implemented trade/tax/cash workflow. Security master design remains pending.
 
 ## Data and persistence

@@ -10,3 +10,62 @@
 .review-parent-open>td{background:white;border-top:0}.review-parent-open>td:first-child,.quick-review-row>td{box-shadow:none}.quick-review-row>td{background:#f8faf7;border-bottom:1px solid var(--line)!important}.quick-review{padding:16px 24px 16px 48px;animation:none}.quick-review:before{display:none}.quick-review .eyebrow{display:none}.quick-review h3{font-size:14px;margin:0 0 4px;font-weight:600}.quick-review-actions button{padding:5px 0}.household-review-content>.distribution-card{border:0;padding:0;margin:0}.portfolio-name>.chev{flex-shrink:0}.quick-review-toggle,.expanded-label{display:none}
 @media(max-width:650px){.quick-review{padding:15px 18px;gap:8px}.review-parent-open>td:first-child,.quick-review-row>td{box-shadow:none}}
 .portfolio-list{min-width:1080px}.aggregated-drift{display:flex;align-items:center;gap:10px;min-width:155px}.aggregated-drift strong{font-size:13px;min-width:32px;font-variant-numeric:tabular-nums}.threshold-bar{position:relative;display:inline-block;width:110px;height:9px;background:#e8eee6;border-radius:3px;flex-shrink:0}.threshold-bar>span{display:block;height:100%;border-radius:3px;background:#2b765b}.threshold-bar.over>span{background:#a26d25}.threshold-bar>i{position:absolute;left:50%;top:-3px;height:15px;width:1px;background:#394f43}.drift-over{color:#91601f}.threshold-input{width:74px;border:1px solid #ccd8d0;border-radius:6px;padding:7px 8px;background:white;color:var(--ink);font:inherit}.threshold-input[aria-invalid=true]{border-color:#a6442a}.threshold-rules{padding:8px 22px 16px;font-size:13px}.threshold-rules summary{font-weight:500;color:var(--green)}.threshold-rules label{display:block;margin:14px 0 8px}.threshold-rules p{font-size:12px;color:var(--mut);margin:8px 0 0}.drift-explanation{padding:16px 22px 0;font-size:12px;color:var(--mut);margin:0}.rules-storage{padding:6px 22px 18px;margin:0;font-size:11px;color:var(--mut)}.portfolio-list td>.errors{max-width:170px;white-space:normal}
+
+/* --- Review refinements: alignment, state, concise row expansion --- */
+.allocation-review td.numeric,.allocation-review th.numeric-head,.target-plan-table td.numeric,.target-limits-table td.numeric{text-align:right;font-variant-numeric:tabular-nums}
+.portfolio-list td.numeric{text-align:right}
+.portfolio-list th:nth-child(3){text-align:right}
+.allocation-review th.numeric-head{text-align:right}
+.state-pill{display:inline-block;border-radius:20px;padding:3px 9px;font-size:11px;white-space:nowrap;background:#e8f2ec;color:#246442}
+.state-pill.over{background:#fbeedd;color:#8a5a18}
+.state-pill.under{background:#e6eef7;color:#2c5484}
+.state-pill.none{background:#eef1ee;color:var(--mut)}
+.holding-tag{display:inline-block;margin-left:7px;border-radius:5px;padding:1px 6px;font-size:10px;font-weight:650;letter-spacing:.2px;vertical-align:middle}
+.holding-tag.physical{background:#eceef3;color:#4a5570}
+.holding-tag.locked{background:#f7e3df;color:#8d3f2a}
+.holding-tag.semi{background:#f6eeda;color:#7d621f}
+.holding-tag.portfolio-limit{background:#fff0d2;color:#7d541a}
+.review-reason{display:block;margin-top:5px;color:var(--mut)}
+.review-number small{display:block;font-size:10px;color:var(--mut);margin-top:2px}
+.household-table-heading{font-size:14px;margin:0}
+
+.quick-review{display:block;padding:20px 28px 22px 31px}
+.quick-review-head{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:16px}
+.quick-review-head h3{font-size:16px;letter-spacing:-.2px;margin:4px 0}
+.quick-review-head p{font-size:12px;color:var(--mut);margin:0}
+.quick-review-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px}
+.quick-review-grid h4{font-size:11px;text-transform:uppercase;letter-spacing:1.1px;color:var(--mut);margin:0 0 8px}
+.quick-line{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:baseline;padding:6px 0;border-bottom:1px solid #e8ede7;font-size:13px}
+.quick-line:last-of-type{border-bottom:0}
+.quick-line>span:first-child small{display:block;font-size:10px;color:var(--mut)}
+.quick-figures{color:var(--mut);font-size:12px;text-align:right;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:150px}
+.quick-line strong{font-variant-numeric:tabular-nums;font-size:13px;white-space:nowrap}
+.quick-over{color:#8a5a18}.quick-under{color:#2c5484}.quick-ok{color:var(--green)}
+.quick-foot,.quick-empty{display:block;font-size:11px;color:var(--mut);margin-top:9px}
+.quick-link{padding:6px 0;font-size:12px;margin-top:6px}
+@media(max-width:900px){.quick-review-grid{grid-template-columns:1fr;gap:18px}.quick-review{padding:18px 16px}.quick-review-head{flex-direction:column;gap:10px}.quick-review-head button{width:100%}}
+
+/* Keep dialog titles and actions reachable on short viewports */
+dialog{scroll-padding-top:0}
+dialog h2:first-of-type{position:sticky;top:-28px;background:white;padding:6px 0 10px;margin-top:0;z-index:2}
+dialog .actions{position:sticky;bottom:-28px;background:white;padding:14px 0 4px;margin-top:18px;border-top:1px solid var(--line)}
+.target-limits-table{min-width:1010px}
+.target-limits-table th,.target-limits-table td{padding-left:11px;padding-right:11px}
+
+/* Mobile: turn the portfolio list into labelled key/value groups so drift,
+   threshold and attention stay visible without sideways scrolling. */
+@media(max-width:720px){
+ .portfolio-list{min-width:0}
+ .portfolio-list thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+ .portfolio-list tr{display:block}
+ .portfolio-list tbody>tr:not(.review-panel-row){border-bottom:1px solid var(--line);padding:4px 0 12px}
+ .portfolio-list td{display:grid;grid-template-columns:118px minmax(0,1fr);gap:12px;align-items:center;border:0;padding:7px 14px}
+ .portfolio-list td:before{content:attr(data-label);font-size:11px;color:var(--mut);font-weight:600}
+ .portfolio-list td:first-child{grid-template-columns:1fr;padding-top:12px}
+ .portfolio-list td:first-child:before{display:none}
+ .portfolio-list td.numeric{text-align:left}
+ .portfolio-list .aggregated-drift{min-width:0}
+ .portfolio-list .threshold-bar{width:88px}
+ .review-panel-row>td{display:block;padding:0!important}
+ .review-panel-row>td:before{display:none}
+}

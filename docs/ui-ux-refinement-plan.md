@@ -445,12 +445,18 @@ Do not show model revision numbers as routine identity. Revision references may 
 
 ### 6.2 Local navigation
 
-Use these sections:
+Account detail uses the original mockup's numbered workflow sequence, plus History:
 
-1. **Allocation**
-2. **Target plan**
-3. **Planning**
-4. **History**
+1. **Drill-down allocation**
+2. **Gap summary & trades** *(planned; labelled placeholder)*
+3. **Cash events** *(planned; labelled placeholder)*
+4. **Exposure drift**
+5. **Client target limits**
+6. **History**
+
+This supersedes the earlier four-section list (Allocation / Target plan / Planning / History). See *IA decisions changed since last revision*, decisions 1 and 2.
+
+Tabs 1 and 4 address the same underlying page through a different analysis view. The numbered tab and the inner Allocation / Exposure control must therefore stay in step: changing either one moves both.
 
 The selected section must remain obvious. Unsaved drafts need a visible warning before navigation discards changes.
 
@@ -1185,6 +1191,32 @@ Explain that browser-local saved work could not be read. Do not automatically ov
 - Multiuser approval policy.
 - Real pricing/classification sources.
 - Recommendation communication/execution/reconciliation, if desired.
+
+---
+
+## 19a. IA decisions changed since last revision
+
+Record every navigation, vocabulary or scope reversal here, with its reason, so the plan stays usable as the backlog.
+
+| # | Date | Decision | Supersedes | Reason |
+|---|---|---|---|---|
+| 1 | 2026-10-07 | Account detail uses the original mockup's five numbered tabs | §6.2's four-section list | Keeps the original workflow sequence an adviser already knows |
+| 2 | 2026-10-07 | History restored as a sixth, unnumbered account tab | — | §6.2 and §13.1 both require per-portfolio history; the five numbered tabs had dropped it |
+| 3 | 2026-10-07 | "Target plan" is presented as **Client target limits** | §9's "Target plan" title | The screen approves asset-class *and* lens limits. "Model limits" was rejected: §1.1 forbids blurring model with client target |
+| 4 | 2026-10-07 | Portfolio lens limits are editable and **drive review flags** | §21 Q6 remains open for *exposure targets as policy* | A limit that is approved but not applied makes the approval untruthful (§1.5). Household views keep firm defaults; limits apply to the account that approved them |
+| 5 | 2026-10-07 | Global audit destination is named **Audit log** everywhere | mixed "History" / "Audit log" / "Audit trail" | One destination, one name |
+| 6 | 2026-10-07 | Review state reads **Within threshold**, never "Within defaults" | — | A portfolio with its own threshold override is not "within defaults" |
+
+### Still outstanding against this plan
+
+- §4.1 Model library: last-updated date, top-level allocation preview, search.
+- §4.5 Profile comparison page (Phase 3).
+- §8.2 Advanced lens page as a first-class surface (Phase 3).
+- §9.3 Client context beyond risk profile: goals, horizon, liquidity needs, restrictions.
+- §9.4 Model-update review as three explicit choices.
+- §13.2 Global audit log filtering by date, actor, portfolio, model, action and status.
+- §14 Security master: no placeholder in the shell yet.
+- A traceability appendix mapping every original wireframe component to delivered / refined / deferred / dropped.
 
 ---
 

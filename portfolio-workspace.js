@@ -5,7 +5,9 @@ const sourceDate=()=>originalData.metadata.asOf;
 const recordedValue=p=>p.assets.reduce((sum,a)=>sum+a.value,0);
 const crore=value=>'₹'+(value/100).toFixed(2)+' Cr';
 const pp=value=>signed(value)+' pp';
-const reviewLabel=r=>r.drift===null?'Data incomplete':r.flagged?'Needs review':'Within defaults';
+const reviewLabel=r=>r.drift===null?'Data incomplete':r.flagged?'Needs review':'Within threshold';
+// Why a portfolio needs review: asset-class drift, exposure limits, or both.
+const reviewReason=r=>{if(r.drift===null)return 'Comparison unavailable';if(!r.flagged)return 'Asset class and exposures within limits';const cls=r.drift>r.threshold,exp=r.exposureFlags.length>0;return cls&&exp?'Asset class + exposure':cls?'Asset class only':'Exposure only'};
 const scrollWorkspace=()=>window.scrollTo(0,0);
 
 // Keep the familiar model editor focused; exposure controls appear only on demand.
@@ -37,7 +39,7 @@ dashboardRow=function(r){
 
 // Dashboard flags must not change because an adviser browsed a different lens mode.
 const metricCalculation=portfolioMetrics;
-portfolioMetrics=function(actual,target,threshold){const prior=fundMode;try{fundMode='look';return metricCalculation(actual,target,threshold)}finally{fundMode=prior}};
+portfolioMetrics=function(actual,target,threshold,lensLimits){const prior=fundMode;try{fundMode='look';return metricCalculation(actual,target,threshold,lensLimits)}finally{fundMode=prior}};
 
 distribution=function(actual,target,label='Client target'){
   const total=actual.reduce((sum,x)=>sum+x.value,0);
@@ -73,9 +75,28 @@ function alignedPortfolioRows(p){
   for(const c of tree){for(const group of c.children)values.set(JSON.stringify([c.name,group.name]),group.children.reduce((sum,n)=>sum+(values.get(JSON.stringify([c.name,group.name,n.name]))||0),0));values.set(JSON.stringify([c.name]),c.children.reduce((sum,n)=>sum+values.get(JSON.stringify([c.name,n.name])),0))}
   return ComparisonData.aligned([model,target,{allocations:tree}]).map(row=>({...row,actual:values.get(row.key)||0}));
 }
+// Drift bands by depth, from the original mockup: portfolio threshold, then sub-class, then holding.
+function portfolioThreshold(id){
+ if(typeof reviewRules==='undefined')return originalData.settings.firmThresholdPP;
+ return reviewRules.overrides[id]??reviewRules.firm;
+}
+function allocationBand(depth,id){return depth===0?portfolioThreshold(id):depth===1?3:2}
+function allocationState(drift,depth,id){
+ if(drift===null)return {label:'—',tone:'none'};
+ const band=allocationBand(depth,id);
+ if(Math.abs(drift)<=band)return {label:'Within '+fmt(band)+' pp',tone:'ok'};
+ return {label:(drift>0?'Above':'Below')+' by '+fmt(Math.abs(drift))+' pp',tone:drift>0?'over':'under'};
+}
+function holdingTags(asset){
+ if(!asset)return '';
+ const s=originalData.securities.find(x=>x.name===asset.name),tags=[];
+ if(s?.physical)tags.push(['physical','Physical']);
+ if(s?.liquidity&&s.liquidity!=='Liquid')tags.push([s.liquidity==='Locked'?'locked':'semi','Locked'===s.liquidity?'Locked':'Semi-liquid']);
+ return tags.map(([cls,label])=>`<span class="holding-tag ${cls}">${label}</span>`).join('');
+}
 function allocationTable(p){
   const total=scopeValue(p),rows=alignedPortfolioRows(p).filter(row=>row.names.slice(0,-1).every((_,i)=>clientExpanded.has(JSON.stringify(row.names.slice(0,i+1)))));
-  return `<div class="tablewrap"><table class="allocation-review"><caption class="sr-only">Actual holdings compared with approved client target</caption><thead><tr><th>Allocation / holding</th><th>Actual (₹ L)</th><th>Actual %</th><th>Client target %</th><th>Drift (pp)</th><th>Value gap (₹ L)</th></tr></thead><tbody>${rows.map(row=>{const percent=total?row.actual/total*100:null,target=row.values[1],asset=!row.children?p.assets.find(a=>a.name===row.names.at(-1)):null;return `<tr class="${row.names.length===1?'rowtop':''}"><th scope="row"><div class="allocation-name" style="padding-left:${(row.names.length-1)*15}px">${row.children?`<button class="chev" data-allocation-toggle="${esc(row.key)}" aria-label="${clientExpanded.has(row.key)?'Collapse':'Expand'} ${esc(row.names.join(' / '))}" aria-expanded="${clientExpanded.has(row.key)}">${clientExpanded.has(row.key)?'⌄':'›'}</button>`:''}<span>${asset?`<button class="link" data-holding="${esc(asset.id)}">${esc(row.names.at(-1))}</button>${!asset.included?'<small>Outside advice scope</small>':''}`:esc(row.names.at(-1))}</span></div></th><td>${fmt(row.actual)}</td><td>${percent===null?'—':fmt(percent)}</td><td>${target===null?'Not specified':fmt(target)}</td><td>${target===null||percent===null?'—':signed(percent-target)}</td><td>${target===null||percent===null?'—':signed(total*target/100-row.actual)}</td></tr>`}).join('')}</tbody></table></div><p class="chart-key">All percentages use the ${money(total)} under advice. Positive drift means above target. Positive value gap means below target in rupees—not a suggested buy. “Not specified” is different from an explicit 0% target.</p>`;
+  return `<div class="tablewrap"><table class="allocation-review"><caption class="sr-only">Actual holdings compared with approved client target</caption><thead><tr><th>Allocation / holding</th><th class="numeric-head">Actual (₹ L)</th><th class="numeric-head">Actual %</th><th class="numeric-head">Client target %</th><th class="numeric-head">Drift (pp)</th><th class="numeric-head">Value gap (₹ L)</th><th>Review state</th></tr></thead><tbody>${rows.map(row=>{const percent=total?row.actual/total*100:null,target=row.values[1],asset=!row.children?p.assets.find(a=>a.name===row.names.at(-1)):null,depth=row.names.length-1;const drift=target===null||percent===null?null:percent-target,state=allocationState(drift,depth,activeClient);return `<tr class="${row.names.length===1?'rowtop':''}"><th scope="row"><div class="allocation-name" style="padding-left:${depth*15}px">${row.children?`<button class="chev" data-allocation-toggle="${esc(row.key)}" aria-label="${clientExpanded.has(row.key)?'Collapse':'Expand'} ${esc(row.names.join(' / '))}" aria-expanded="${clientExpanded.has(row.key)}">${clientExpanded.has(row.key)?'⌄':'›'}</button>`:''}<span>${asset?`<button class="link" data-holding="${esc(asset.id)}">${esc(row.names.at(-1))}</button>${holdingTags(asset)}${!asset.included?'<small>Outside advice scope</small>':''}`:esc(row.names.at(-1))}</span></div></th><td class="numeric">${fmt(row.actual)}</td><td class="numeric">${percent===null?'—':fmt(percent)}</td><td class="numeric">${target===null?'Not specified':fmt(target)}</td><td class="numeric">${drift===null?'—':signed(drift)}</td><td class="numeric">${target===null||percent===null?'—':signed(total*target/100-row.actual)}</td><td><span class="state-pill ${state.tone}">${state.label}</span></td></tr>`}).join('')}</tbody></table></div><p class="chart-key">All percentages use the ${money(total)} under advice. Positive drift means above target. Positive value gap means below target in rupees—not a suggested buy. “Not specified” is different from an explicit 0% target. Review state uses the portfolio threshold for asset classes, then ±3 pp for sub-classes and ±2 pp for holdings, as in the original mockup. <strong>Locked</strong> and <strong>Semi-liquid</strong> assets cannot be traded freely, whatever their drift.</p>`;
 }
 function targetPlanContent(p){
   const issues=targetIssues(p);
