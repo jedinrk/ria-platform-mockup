@@ -27,7 +27,7 @@ States: **Delivered** · **Refined** (present, deliberately reshaped) ·
 | Search portfolio | Delivered | Search portfolios |
 | Filter by risk profile | Delivered | Risk profile filter |
 | Flagged only | Refined | "Needs review only" |
-| Select flagged · bulk selection · Review rebalance | Deferred | Planning placeholder, tab 2 |
+| Select flagged · bulk selection · Review rebalance | Deferred | Single-portfolio planning is delivered on tab 2; bulk selection remains |
 | Rebalance rules: firm default threshold | Delivered | Review rules |
 | Rebalance rules: exposure breaches also trigger | Delivered | "Exposure flags also require review" |
 | Sortable name / AUM / aggregated drift | Delivered | Sortable columns |
@@ -37,7 +37,7 @@ States: **Delivered** · **Refined** (present, deliberately reshaped) ·
 | Column: Threshold (pp), editable | Delivered | Editable, inherits firm default when blank |
 | Column: Exposure breaches | Refined | "N exposure flags" in Attention, linking to the flag list |
 | Column: Rebalance + reason | Refined | "Needs review" / "Within threshold" + reason (asset class / exposure / both) |
-| Pending cash-event tag | Deferred | Planning placeholder, tab 3 |
+| Pending cash-event tag | Deferred | Cash events are delivered on tab 3; the overview tag is not back yet |
 | Row expansion: drift by class, accounts, buckets by lens, Open details | Delivered | Three-column quick review |
 | Empty state | Delivered | Empty state with recovery |
 
@@ -54,15 +54,15 @@ States: **Delivered** · **Refined** (present, deliberately reshaped) ·
 | "Physical" tag | Delivered | Inline tag |
 | Liquidity tags (Liquid / Semi-liquid / Locked) | Delivered | Inline tags |
 | Holding drawer: position vs model | Delivered | "Position vs client target" |
-| Holding drawer: cost basis, gain, rate, est. tax | Refined | Cost and tax shown; per-trade tax estimate deferred with Planning |
+| Holding drawer: cost basis, gain, rate, est. tax | Delivered | Cost and tax on the holding; per-trade estimates in Planning |
 | Holding drawer: liquidity and constraints | Delivered | In the dialog and in Account context |
-| Tab 2 Gap summary & trades | Deferred | Placeholder naming suggested buys/sells, locked assets and residual cash |
-| Tab 3 Cash events | Deferred | Placeholder naming raise/invest, tax options and event history |
+| Tab 2 Gap summary & trades | Delivered | Gap summary, then a rebalance scenario with suggested trades, constraints and projected impact |
+| Tab 3 Cash events | Delivered | Raise or invest, gross versus net, staged deployment, tax options and an event history |
 | Tab 4 Exposure drift | Delivered | Tab 4, with the full bucket explorer opened by default |
 | Lens summary cards with worst bucket | Delivered | In the overview row expansion and the flag list |
 | Expand to breaches | Dropped | The flag list is already sorted by severity and capped at four, which serves the same need without a third expand control |
 | Status and Target source columns | Refined | Per-flag band plus a "Portfolio limit" badge when an approved limit applies |
-| "Review rebalance for this portfolio" | Deferred | Planning placeholder |
+| "Review rebalance for this portfolio" | Delivered | Tab 2 generates the scenario |
 | Tab 5 Model limits: asset-class limits | Delivered | Tab 5 Client target limits |
 | Tab 5: lens limits with bands and source | Delivered | Editable, and they drive review once approved |
 | Tab 5: reset all overrides | Refined | Per-lens reset |
@@ -77,7 +77,7 @@ States: **Delivered** · **Refined** (present, deliberately reshaped) ·
 | Reset profile to default | Dropped | Publishing is versioned and reversible through History; a silent reset to seed values would destroy an approved lineage |
 | Lens segmented control | Delivered | View selector on model detail |
 | Funds and ETFs: look-through / single tag | Delivered | On model detail and exposure views |
-| Profile comparison card | Delivered | Dedicated Profile comparison page |
+| Profile comparison card | Delivered | Intended profile view inside Model comparison |
 | Editable asset / model target table | Delivered | With a proportional redistribution preview |
 | Lens target and band editing on the model | Dropped for now | Portfolio-level limits are delivered; firm-level lens policy needs the Review rules decision first (plan §21 Q6) |
 | "Implied by holdings %" column | Refined | Model target % on the portfolio limits table |
@@ -99,10 +99,10 @@ All classification data is preserved and already drives every exposure view.
 
 | Original | State | Where it is now |
 |---|---|---|
-| Bulk rebalance options, KPIs, per-portfolio table, approval | Deferred | Planning placeholder, tab 2 |
+| Bulk rebalance options, KPIs, per-portfolio table, approval | Deferred | The single-portfolio engine is delivered on tab 2; multi-portfolio selection and roll-up remain |
 | Audit entry: action, timestamp, user | Delivered | Audit log |
 | Audit entry: per-portfolio before/after table | Refined | Before/after allocation table per entry |
-| Audit entry: options summary and comment | Refined | Reason per entry; trade options return with Planning |
+| Audit entry: options summary and comment | Delivered | Reason per entry; scenario options are recorded on the scenario |
 | Audit empty state | Delivered | Empty state with filter recovery |
 
 ## Not in the original, added since

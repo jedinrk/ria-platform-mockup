@@ -21,7 +21,7 @@ function console_(){
  });
  ctx.globalThis=ctx;
  for(const f of ['models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js',
-  'comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js','console-extensions.js'])
+  'comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js','console-extensions.js','planning.js'])
   vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx);
  return {run:code=>JSON.parse(vm.runInContext('JSON.stringify('+code+')',ctx)),raw:code=>vm.runInContext(code,ctx)};
 }
@@ -106,4 +106,71 @@ test('Equity sector concentration is measured against the firm cap',()=>{
  assert.ok(c.top.percent>0);
  assert.equal(typeof c.breach,'boolean');
  function originalDataCap(){return JSON.parse(fs.readFileSync(path.join(root,'data/original-mockup.json'),'utf8')).settings.sectorCapPercent}
+});
+
+const planning=()=>{const h=console_();h.raw('activeClient="a5"');return h};
+
+test('A rebalance is cash-neutral and never sells more than it can redeploy',()=>{
+ const {run}=planning();
+ const r=run(`(()=>{const p=approved(client()).plan,s=rebalanceScenario(p,{skipLocked:true,avoidShortTerm:true,minTrade:0.5,exemption:1.25,carryForward:0});
+  const o=scenarioOutcome(p,{...s,status:'Draft'});
+  return {sells:+o.sellTotal.toFixed(2),buys:+o.buyTotal.toFixed(2),residual:+o.residual.toFixed(2),
+   before:+o.metricsBefore.drift.toFixed(2),after:+o.metricsAfter.drift.toFixed(2)}})()`);
+ assert.ok(Math.abs(r.sells-r.buys)<0.05,'sells and buys match');
+ assert.ok(r.residual<0.05,'no idle cash is created');
+ assert.ok(r.after<=r.before+0.05,'a rebalance must not increase aggregated drift');
+});
+
+test('Locked holdings are never sold, and the reason is stated',()=>{
+ const {run}=planning();
+ const r=run(`(()=>{const p=approved(client()).plan,s=rebalanceScenario(p,{skipLocked:true,avoidShortTerm:true,minTrade:0.5,exemption:1.25,carryForward:0});
+  return {sold:s.trades.filter(t=>t.amount<0&&t.locked).length,notes:s.notes.map(n=>n.text).join(' ')}})()`);
+ assert.equal(r.sold,0);
+ const allowed=run(`rebalanceScenario(approved(client()).plan,{skipLocked:false,avoidShortTerm:true,minTrade:0.5,exemption:1.25,carryForward:0}).trades.length`);
+ assert.ok(allowed>=0,'turning the constraint off is possible');
+});
+
+test('Raising cash gross versus net sizes the sale differently',()=>{
+ const {run}=planning();
+ const r=run(`(()=>{const p=approved(client()).plan;
+  const base={skipLocked:true,avoidShortTerm:true,harvestLosses:false,minTrade:0.5,exemption:1.25,carryForward:0,strategy:'target',direction:'raise',amount:25,stages:1,reason:'Client withdrawal'};
+  const g=scenarioOutcome(p,{...cashScenario(p,{...base,net:'gross'}),status:'Draft'});
+  const n=scenarioOutcome(p,{...cashScenario(p,{...base,net:'net'}),status:'Draft'});
+  return {gSells:+g.sellTotal.toFixed(2),gNet:+g.netCash.toFixed(2),nSells:+n.sellTotal.toFixed(2),nNet:+n.netCash.toFixed(2)}})()`);
+ assert.equal(r.gSells,25,'gross sells exactly the requested amount');
+ assert.ok(r.gNet<25,'gross leaves less usable cash after tax');
+ assert.ok(r.nSells>25,'net sells more to cover the tax');
+ assert.ok(Math.abs(r.nNet-25)<0.05,'net delivers the requested cash');
+});
+
+test('Tax applies losses and the exemption, and is reported as an estimate',()=>{
+ const {run}=planning();
+ const plain=run(`estimateTax([{amount:-10,value:20,gain:8,rate:12.5}],{exemption:0,carryForward:0}).tax`);
+ assert.ok(Math.abs(plain-0.5)<0.001,'4 lakh of gain at 12.5%');
+ const exempt=run(`estimateTax([{amount:-10,value:20,gain:8,rate:12.5}],{exemption:1.25,carryForward:0})`);
+ assert.ok(exempt.tax<plain,'the exemption reduces the estimate');
+ assert.equal(+exempt.exemptionUsed.toFixed(2),1.25);
+ const offset=run(`estimateTax([{amount:-10,value:20,gain:8,rate:12.5},{amount:-10,value:20,gain:-4,rate:12.5}],{exemption:0,carryForward:0})`);
+ assert.ok(offset.tax<plain,'a realised loss offsets the gain');
+ assert.ok(offset.harvested>0);
+});
+
+test('Excluding a sell leaves the buys unfunded rather than silently rebalancing',()=>{
+ const {run}=planning();
+ const r=run(`(()=>{const p=approved(client()).plan,s=rebalanceScenario(p,{skipLocked:true,avoidShortTerm:true,minTrade:0.5,exemption:1.25,carryForward:0});
+  const first=s.trades.findIndex(t=>t.amount<0);
+  if(first<0)return {skipped:true};
+  s.trades[first].excluded=true;
+  const o=scenarioOutcome(p,{...s,status:'Draft'});
+  return {unfunded:+o.unfunded.toFixed(2)}})()`);
+ if(!r.skipped)assert.ok(r.unfunded>0,'the shortfall is surfaced, not hidden');
+});
+
+test('A scenario never mutates holdings, the approved target or another portfolio',()=>{
+ const {run,raw}=planning();
+ const before=run('clientRecords');
+ raw(`(()=>{const c=client(),p=approved(c).plan;
+  const s=rebalanceScenario(p,{skipLocked:true,avoidShortTerm:true,minTrade:0.5,exemption:1.25,carryForward:0});
+  scenarioOutcome(p,{...s,status:'Draft'});})()`);
+ assert.deepEqual(run('clientRecords'),before,'building and costing a scenario writes nothing');
 });

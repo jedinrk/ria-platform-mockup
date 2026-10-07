@@ -1220,10 +1220,19 @@ Record every navigation, vocabulary or scope reversal here, with its reason, so 
 
 Decision 7 (2026-10-08): the original's **Reset profile to default**, **Expand to breaches** and **editable risk profile in the portfolio header** are recorded as *Dropped*, with reasons, in the traceability appendix. Model-level lens target editing stays dropped until §21 Q6 is answered.
 
+Decision 8 (2026-10-08): **Profile comparison is a view inside Model comparison, not a second page.** This reverses §4.5. As built, its per-asset-class rows simply repeated the Asset allocation view against the same models in the same columns, so the page was half duplicate. The attributes that are genuinely distinct — intended use, portfolios using the model, their assessed labels, and the *Not supplied* rows — now appear as an **Intended profile** view alongside the exposure lenses. §4.5's requirement of enough room and no repetition inside the library still holds; a second page was not the only way to meet it.
+
+Decision 9 (2026-10-08): **Planning, tax and cash events are implemented** (§§10–12), on tabs 2 and 3. Two rules were added that the original mockup did not have, because testing showed it produced advice an adviser would reject:
+
+- A rebalance only sells from asset classes at or above target and only buys into classes below target. Leaf-level logic alone made aggregated drift *worse* on the first portfolio tested, because it bought more gold while Real assets sat 13 pp over on a locked flat.
+- A rebalance is sized to whichever side is smaller, so it is cash-neutral. Unconstrained, it sold ₹17.3 lakh to redeploy ₹0.7 lakh, booking tax to create idle cash.
+
+Raising cash defaults to *Keep closest to client target* rather than the original's *Lowest estimated tax*, which drove drift from 7.9 to 17.2 pp on a ₹25 lakh withdrawal. Both strategies remain available.
+
 ### Still outstanding against this plan
 
-- §10 Planning workspace, §11 tax, §12 cash events — placeholders only (Phases 4–6).
-- §10.5 bulk planning and the original's bulk rebalance review (Phase 7).
+- §10.5 bulk planning and the original's bulk rebalance review (Phase 7). The scenario engine is shared-ready; only the multi-portfolio selection and roll-up are missing.
+- §10.6 recommendation states beyond approval: communicated, accepted, executed, reconciled. The build deliberately stops at approval and says so.
 - §14 Security master itself (Phase 8), after its own product discussion.
 - §16 statement ingestion and data-quality surfacing (Phase 9).
 - §9.3 goals and time horizon need a client record before they can be more than *Not supplied*.

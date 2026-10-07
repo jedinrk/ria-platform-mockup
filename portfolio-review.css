@@ -71,12 +71,25 @@ dialog .actions{position:sticky;bottom:-28px;background:white;padding:14px 0 4px
 }
 
 /* --- Model library, profile comparison, concentration --- */
-.model-search{margin:16px 0 4px}.model-search input{width:280px;max-width:100%}
-.list-count{font-size:12px;color:var(--mut);margin:0 0 6px}
-.model-library{min-width:880px}
-.model-preview{min-width:170px}
+.library-toolbar{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin:14px 0 10px}
+.model-search input{width:280px;max-width:100%}
+.list-count{font-size:12px;color:var(--mut);margin:0 0 9px}
+.model-library{min-width:820px;table-layout:fixed}
+.model-library th,.model-library td{vertical-align:middle}
+.model-library .model-identity{width:34%}
+.model-library .model-identity .link{display:block;font-size:15px;line-height:1.35}
+.model-library .model-identity small{display:block;margin-top:4px;line-height:1.5}
+.model-library .col-count{width:84px}
+.model-library .col-state{width:128px}
+.model-library .col-date{width:112px}
+.model-library .col-action{width:108px;text-align:right}
+.model-library .col-action button,.model-library .badge{white-space:nowrap}
+.model-library thead th{white-space:nowrap}
+.model-preview{min-width:150px}
 .model-preview .allocation{height:10px}
-.model-preview small{display:block;margin-top:6px;font-size:11px;line-height:1.5}
+.model-preview small{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px 12px;margin-top:7px;font-size:11px;line-height:1.5}
+.model-preview small span{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.model-preview small i{width:8px;height:8px;border-radius:2px;flex-shrink:0}
 .profile-table th[scope=row]{color:var(--ink);font-size:13px;font-weight:600;vertical-align:top;width:230px}
 .profile-table th[scope=row] small{display:block;font-weight:400;margin-top:3px}
 .profile-table thead th{vertical-align:bottom}
@@ -139,3 +152,39 @@ dialog .actions{position:sticky;bottom:-28px;background:white;padding:14px 0 4px
 .all-exposures.is-primary{border-top:2px solid var(--line);margin-top:28px;padding-top:22px}
 .all-exposures.is-primary>summary{font-size:17px;font-weight:650;color:var(--ink);list-style:none;margin-bottom:4px}
 .all-exposures.is-primary>summary::-webkit-details-marker{display:none}
+
+/* --- Planning, tax and cash events --- */
+.option-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px;margin:4px 0 10px}
+.option-grid .field{margin:0}
+.trade-table{min-width:900px}
+.trade-table .col-include{width:68px;text-align:center}
+.trade-table td{vertical-align:middle}
+.trade-table tr.is-excluded{opacity:.45}
+.trade-table tr.is-excluded .trade-why{text-decoration:line-through}
+.trade-table .target{width:84px}
+.trade-why{font-size:13px;max-width:280px}
+.trade-why small{display:block;margin-top:5px;line-height:1.5}
+.trade-flags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.holding-tag.warn-tag{background:#f7e3df;color:#8d3f2a}
+.holding-tag.ok-tag{background:#e3f0e6;color:#246442}
+.impact-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin:0 0 20px}
+.impact-kpis>div{background:#f4f7f3;border-radius:9px;padding:13px 15px}
+.impact-kpis small,.impact-kpis strong,.impact-kpis span{display:block}
+.impact-kpis strong{font-size:18px;margin:4px 0 2px}
+.impact-kpis span{font-size:11px;color:var(--mut);line-height:1.45}
+.impact-table{min-width:620px}
+.scenario-notes{margin:0;padding-left:20px;font-size:13px}
+.scenario-notes li{margin:9px 0}
+.scenario-notes li.warn{color:#7d541a}
+.event-list{display:grid;gap:10px}
+.event{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:white}
+.event>summary{display:flex;align-items:center;gap:12px;flex-wrap:wrap;cursor:pointer}
+.event-meta{font-size:12px;color:var(--mut)}
+@media(max-width:700px){.impact-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.trade-why{max-width:none}}
+.trade-table thead th{white-space:nowrap}
+.trade-table .empty-state strong{display:block;margin-bottom:6px}
+.trade-table .empty-state p{margin:0;font-size:13px}
+.scenario-infeasible{margin:10px 0 0;font-size:13px;font-weight:600;color:#8b5a16}
+.impact-kpis>div.is-better{background:#edf6ef;box-shadow:inset 3px 0 #2b765b}
+.impact-kpis>div.is-worse{background:#fdf3e4;box-shadow:inset 3px 0 #b07d27}
+.impact-kpis>div.is-worse span{color:#8b5a16}
