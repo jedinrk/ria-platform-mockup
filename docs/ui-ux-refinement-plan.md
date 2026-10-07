@@ -1207,16 +1207,36 @@ Record every navigation, vocabulary or scope reversal here, with its reason, so 
 | 5 | 2026-10-07 | Global audit destination is named **Audit log** everywhere | mixed "History" / "Audit log" / "Audit trail" | One destination, one name |
 | 6 | 2026-10-07 | Review state reads **Within threshold**, never "Within defaults" | — | A portfolio with its own threshold override is not "within defaults" |
 
+### Closed since the last revision
+
+- §4.1 Model library: search, last-updated date and a top-level allocation preview.
+- §4.5 Profile comparison: dedicated page under Models, drafts excluded, unrecorded attributes shown as *Not supplied*.
+- §8.2 Advanced lens surface: the full bucket explorer opens by default on Exposure drift.
+- §9.3 Client context: assessed profile, approved revision, and a liquidity profile derived from the holdings, with goals and horizon marked *Not supplied* rather than inferred.
+- §9.4 Model update: three explicit choices — keep, review in context, start a revised draft.
+- §13.2 Audit log: one chronological feed filtered by portfolio/model, action, actor, status and date range, each entry opening to before/after values.
+- §14 Security master: nav item and placeholder naming the capability and the unresolved questions. The area itself is still not designed.
+- Traceability appendix: `docs/original-mockup-traceability.md`.
+
+Decision 7 (2026-10-08): the original's **Reset profile to default**, **Expand to breaches** and **editable risk profile in the portfolio header** are recorded as *Dropped*, with reasons, in the traceability appendix. Model-level lens target editing stays dropped until §21 Q6 is answered.
+
+Decision 8 (2026-10-08): **Profile comparison is a view inside Model comparison, not a second page.** This reverses §4.5. As built, its per-asset-class rows simply repeated the Asset allocation view against the same models in the same columns, so the page was half duplicate. The attributes that are genuinely distinct — intended use, portfolios using the model, their assessed labels, and the *Not supplied* rows — now appear as an **Intended profile** view alongside the exposure lenses. §4.5's requirement of enough room and no repetition inside the library still holds; a second page was not the only way to meet it.
+
+Decision 9 (2026-10-08): **Planning, tax and cash events are implemented** (§§10–12), on tabs 2 and 3. Two rules were added that the original mockup did not have, because testing showed it produced advice an adviser would reject:
+
+- A rebalance only sells from asset classes at or above target and only buys into classes below target. Leaf-level logic alone made aggregated drift *worse* on the first portfolio tested, because it bought more gold while Real assets sat 13 pp over on a locked flat.
+- A rebalance is sized to whichever side is smaller, so it is cash-neutral. Unconstrained, it sold ₹17.3 lakh to redeploy ₹0.7 lakh, booking tax to create idle cash.
+
+Raising cash defaults to *Keep closest to client target* rather than the original's *Lowest estimated tax*, which drove drift from 7.9 to 17.2 pp on a ₹25 lakh withdrawal. Both strategies remain available.
+
 ### Still outstanding against this plan
 
-- §4.1 Model library: last-updated date, top-level allocation preview, search.
-- §4.5 Profile comparison page (Phase 3).
-- §8.2 Advanced lens page as a first-class surface (Phase 3).
-- §9.3 Client context beyond risk profile: goals, horizon, liquidity needs, restrictions.
-- §9.4 Model-update review as three explicit choices.
-- §13.2 Global audit log filtering by date, actor, portfolio, model, action and status.
-- §14 Security master: no placeholder in the shell yet.
-- A traceability appendix mapping every original wireframe component to delivered / refined / deferred / dropped.
+- §10.5 bulk planning and the original's bulk rebalance review (Phase 7). The scenario engine is shared-ready; only the multi-portfolio selection and roll-up are missing.
+- §10.6 recommendation states beyond approval: communicated, accepted, executed, reconciled. The build deliberately stops at approval and says so.
+- §14 Security master itself (Phase 8), after its own product discussion.
+- §16 statement ingestion and data-quality surfacing (Phase 9).
+- §9.3 goals and time horizon need a client record before they can be more than *Not supplied*.
+- Multi-user approval policy: whether a second reviewer or client acknowledgement is required (§9.8).
 
 ---
 

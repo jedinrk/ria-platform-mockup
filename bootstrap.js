@@ -2,11 +2,11 @@
 var originalData;
 (async function boot(){
   try {
-    const release='20261007-review-fixes-1';
+    const release='20261008-planning-1';
     const response = await fetch('data/original-mockup.json?v='+release);
     if (!response.ok) throw new Error('Original data could not load');
     originalData = await response.json();
-    for (const path of ['models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js','comparison.js','portfolio-review.js','target-plan-preview.js']) {
+    for (const path of ['models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js','comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js','console-extensions.js','planning.js']) {
       await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=path+'?v='+release;script.onload=resolve;script.onerror=reject;document.body.append(script)});
     }
     syncClients(); clientNav();
