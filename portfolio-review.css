@@ -188,3 +188,37 @@ dialog .actions{position:sticky;bottom:-28px;background:white;padding:14px 0 4px
 .impact-kpis>div.is-better{background:#edf6ef;box-shadow:inset 3px 0 #2b765b}
 .impact-kpis>div.is-worse{background:#fdf3e4;box-shadow:inset 3px 0 #b07d27}
 .impact-kpis>div.is-worse span{color:#8b5a16}
+
+/* --- Security master configuration grid --- */
+.config-grid{min-width:1120px}
+.config-grid td.config-fixed{white-space:nowrap}
+.config-absent{color:#9aa6a0}
+.config-grid td.config-fixed small{display:block;font-size:11px;color:#9aa6a0}
+.config-grid th[scope=row]{color:var(--ink);font-size:14px;font-weight:600;width:196px;vertical-align:middle}
+.config-grid th[scope=row] small{display:block;font-weight:400;margin-top:3px;line-height:1.4;font-size:11px}
+.config-grid th[scope=row] small.config-held{color:#8d998f}
+.config-grid th,.config-grid td{padding-left:9px;padding-right:9px}
+.config-grid tbody th,.config-grid tbody td{padding-top:11px;padding-bottom:11px}
+.config-grid thead th{white-space:nowrap;background:#f8faf7}
+.config-grid thead th.col-editable{background:#eef5f0;color:var(--green)}
+.config-grid td{vertical-align:middle}
+.config-grid td.config-fixed{color:var(--mut);font-size:13px;background:#fbfcfa}
+.config-grid tr.is-unclassified th[scope=row]{box-shadow:inset 3px 0 #b07d27}
+.config-na{color:#aab4ae}
+.config-select{width:100%;min-width:142px;padding:7px 8px;border:1px solid #ccd8d0;border-radius:7px;background:white;color:var(--ink);font:inherit}
+.config-select:disabled{background:#f4f6f3;color:var(--mut)}
+.config-select.is-changed{border-color:#b07d27;background:#fffaf0;font-weight:600}
+.config-legend{display:flex;gap:22px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--mut)}
+.config-key{display:flex;align-items:center;gap:7px}
+.config-key b{font-size:10px;text-transform:uppercase;letter-spacing:.7px;border-radius:4px;padding:2px 6px;font-weight:700}
+.config-key b.is-fixed{background:#eef1ec;color:#5f6d66}
+.config-key b.is-editable{background:#e3efe7;color:#246442}
+.config-key b.is-absent{background:transparent;color:#9aa6a0;font-size:13px;padding:0 2px}
+.config-count{margin-left:auto}
+.config-add .search-field input{width:320px;max-width:100%}
+.config-suggestions{list-style:none;margin:14px 0 0;padding:0;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.config-suggestions li{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid #eef1ec;font-size:14px}
+.config-suggestions li:last-child{border-bottom:0}
+.config-suggestions small{color:var(--mut);font-size:12px}
+.config-suggestions .state-pill{margin-left:auto}
+@media(max-width:700px){.config-grid th[scope=row]{width:auto}.config-legend{gap:12px}}

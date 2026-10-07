@@ -21,7 +21,7 @@ function console_(){
  });
  ctx.globalThis=ctx;
  for(const f of ['models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js',
-  'comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js','console-extensions.js','planning.js'])
+  'comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js','console-extensions.js','planning.js','security-master.js'])
   vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx);
  return {run:code=>JSON.parse(vm.runInContext('JSON.stringify('+code+')',ctx)),raw:code=>vm.runInContext(code,ctx)};
 }
@@ -173,4 +173,51 @@ test('A scenario never mutates holdings, the approved target or another portfoli
   const s=rebalanceScenario(p,{skipLocked:true,avoidShortTerm:true,minTrade:0.5,exemption:1.25,carryForward:0});
   scenarioOutcome(p,{...s,status:'Draft'});})()`);
  assert.deepEqual(run('clientRecords'),before,'building and costing a scenario writes nothing');
+});
+
+test('Security master separates source-fixed fields from the firm classification',()=>{
+ const {run}=console_();
+ // The sheet marks Asset class, Sector and Sub-sector as the only editable fields.
+ assert.equal(run('ASSET_CLASSES.length'),4);
+ assert.ok(run('SECTORS.length')>5);
+ assert.equal(run('instrumentType(originalData.securities.find(s=>s.subcategory==="Direct stocks"))'),'Equity share');
+ assert.equal(run('instrumentType(originalData.securities.find(s=>s.subcategory==="Real estate"))'),'Property');
+ const grid=run('securityGrid()');
+ for(const header of ['Name','ISIN','Symbol','Crisil rating','Current price','Asset type','Asset class','Sector','Sub-sector'])
+  assert.ok(grid.includes(header),'missing column: '+header);
+ assert.ok(grid.includes('config-fixed'),'source fields are marked read-only');
+ assert.ok(grid.includes('data-field="assetClass"')&&grid.includes('data-field="sector"')&&grid.includes('data-field="subsector"'));
+ assert.ok(!grid.includes('data-field="symbol"'),'a fixed field is never editable');
+});
+
+test('A staged classification change is not applied until it is reviewed',()=>{
+ const {run,raw}=console_();
+ const before=run('originalData.securities.find(s=>s.id==="security-4").tags.sector');
+ raw('securityPending={"security-4":{sector:"Information Technology"}}');
+ assert.equal(run('originalData.securities.find(s=>s.id==="security-4").tags.sector'),before,'staging alone changes nothing');
+ assert.equal(run('pendingCount()'),1);
+ assert.equal(run('effectiveField(originalData.securities.find(s=>s.id==="security-4"),"sector")'),'Information Technology','the grid shows the staged value');
+ raw('securityEdits["security-4"]={sector:"Information Technology"};applySecurityEdits()');
+ assert.equal(run('originalData.securities.find(s=>s.id==="security-4").tags.sector'),'Information Technology','applying writes it through');
+});
+
+test('Applied classification feeds the exposure views and asset class gates the credit lens',()=>{
+ const {run,raw}=console_();
+ raw('clientView="accounts"');
+ const before=run('(()=>{const r=dashboardRecords().find(x=>x.id==="a1");return exposureRows(r.actual,r.target,"sec").filter(x=>x.name.startsWith("Financials / Private banks")).map(x=>+x.actual.toFixed(2))})()');
+ raw('securityEdits["security-4"]={sector:"Information Technology",subsector:"IT services"};applySecurityEdits()');
+ const after=run('(()=>{const r=dashboardRecords().find(x=>x.id==="a1");return exposureRows(r.actual,r.target,"sec").filter(x=>x.name.startsWith("Financials / Private banks")).map(x=>+x.actual.toFixed(2))})()');
+ assert.ok(after[0]<before[0],'reclassifying moves the exposure');
+ // Asset class drives isDebt, which gates the credit and duration lens.
+ raw('securityEdits["security-1"]={assetClass:"Debt"};applySecurityEdits()');
+ assert.equal(run('originalData.securities.find(s=>s.id==="security-1").tags.isDebt'),true);
+ raw('securityEdits["security-1"]={assetClass:"Equity"};applySecurityEdits()');
+ assert.equal(run('originalData.securities.find(s=>s.id==="security-1").tags.isDebt'),false);
+});
+
+test('Changing a sector clears a sub-sector that does not belong to it',()=>{
+ const {run}=console_();
+ const within=run('[...(subsectorsBySector().get("Energy")||[])]');
+ assert.ok(!within.includes('Private banks'),'Private banks is not an Energy sub-sector');
+ assert.ok(run('allSubsectors().length')>5);
 });

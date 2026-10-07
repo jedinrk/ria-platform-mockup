@@ -131,7 +131,7 @@ function securityMasterPage(){
  const nav=document.querySelector('header nav');
  if(!nav||$('navSecurity'))return;
  nav.insertAdjacentHTML('beforeend',' <button id="navSecurity">Security master</button>');
- $('navSecurity').addEventListener('click',securityMasterPage);
+ $('navSecurity').addEventListener('click',()=>securityMasterPage());
 })();
 for(const [name,fn] of [['clientNav',clientNav],['modelNav',modelNav],['auditPage',auditPage]]){
  const base=fn;

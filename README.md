@@ -10,7 +10,7 @@ Static, browser-local RIA workflow prototype. Entry point: `index.html`. Deploy 
 - **Planning (tab 2):** gap summary, then a rebalance scenario with suggested trades, liquidity and short-term-gain constraints, an estimated tax figure after loss offsets and the long-term exemption, and a projected before/after allocation. A rebalance is cash-neutral and never sells from a class that is already below target. Approval records a decision; it does not place a trade.
 - **Cash events (tab 3):** raise or invest, gross proceeds versus net cash after estimated tax, lump-sum or staged deployment, selection strategy, loss harvesting, and a per-portfolio event history. Scenarios never change recorded holdings or the approved target.
 - **Bulk planning** remains out of scope: the engine is single-portfolio for now.
-- **Security master:** nav item and placeholder naming the capability and the product questions it needs answered first. The classification data already drives every exposure view and is readable on any holding.
+- **Security master:** firm-wide instrument configuration, built to the `RIA-AssetConfig-Type1` sheet. One row per instrument; identity, rating, price and asset type arrive fixed from the source, while asset class, sector and sub-sector are the firm's editable classification. Edits are staged and applied after a review stating the value and portfolio count affected. Sector and sub-sector feed every exposure view; asset class also gates the credit and duration lens. Reclassifying changes analysis going forward and does not restate an approved snapshot.
 
 ## Data and persistence
 

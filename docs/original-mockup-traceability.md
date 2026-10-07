@@ -85,15 +85,17 @@ States: **Delivered** · **Refined** (present, deliberately reshaped) ·
 
 ## Security master
 
-| Original | State |
-|---|---|
-| Grouped instrument list by lens, with firm-wide value and share | Deferred |
-| Search, unclassified-only filter, custom lens rename | Deferred |
-| Edit panel for sector, sub-sector, market cap, geography, themes, credit, duration, custom | Deferred |
-| Read-only fund look-through | Delivered (visible on each holding) |
-| "Edits apply to every portfolio straight away" | Deferred |
+Built from the `RIA-AssetConfig-Type1` sheet supplied on 2026-10-08.
 
-All classification data is preserved and already drives every exposure view.
+| Original | State | Where it is now |
+|---|---|---|
+| Grouped instrument list by lens, with firm-wide value and share | Refined | One configuration grid per the RIA-AssetConfig-Type1 sheet, with firm-wide value and portfolio count on each row |
+| Search, unclassified-only filter, custom lens rename | Delivered in part | Search and needs-classification filter plus an asset-class filter; the custom lens name is shown, not yet renameable |
+| Edit panel for sector, sub-sector, market cap, geography, themes, credit, duration, custom | Delivered in part | Asset class, sector and sub-sector are editable, matching the sheet. Market cap, geography, themes and custom are not on the sheet and stay read-only for now |
+| Read-only fund look-through | Delivered | Flagged on the row and visible on each holding |
+| "Edits apply to every portfolio straight away" | Refined | Edits are staged, then applied after a review that states the value and portfolio count affected |
+
+All classification data is preserved and drives every exposure view.
 
 ## Bulk rebalance and audit
 
