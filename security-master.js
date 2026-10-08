@@ -22,7 +22,8 @@ const subsectorsFor=(assetClass,superSector,sector)=>distinct(TAXONOMY.filter(t=
 
 let securityEdits={};
 try{securityEdits=JSON.parse(localStorage.getItem(SECURITY_KEY)||'{}')}catch{securityEdits={}}
-let securityPending={},securityFilters={search:'',assetClass:'',unclassifiedOnly:false},securityAddOpen=false;
+let securityPending={},securityFilters={search:'',assetClass:'',instrumentType:'',unclassifiedOnly:false},securityAddOpen=false;
+let securityExpanded=new Set();
 const CLASSIFICATION_FIELDS=['assetClass','superSector','sector','subsector'];
 
 // Saved classification is applied to the in-memory records at load, so every
@@ -40,6 +41,75 @@ function applySecurityEdits(){
 }
 applySecurityEdits();
 
+// ---- Instrument attributes -------------------------------------------------
+// Attributes sit outside the sheet's nine columns, so they are shown read-only
+// and labelled by who can actually supply them. Three tiers, because three
+// different parties own this data:
+//
+//   source  a market or provider feed states it; we receive it
+//   firm    no feed supplies it, and one value is shared by every client who
+//           holds the instrument, so the firm maintains it
+//   client  the fact belongs to one client's holding, not to a shared
+//           instrument: this deposit's rate, this investor's commitment
+//
+// Nothing here is editable yet. The client tier in particular must not get a
+// firm-wide edit box, because editing it would change a value for every client
+// at once. Where those assets should live is an open question, below.
+const FEED_TYPES=new Set(['Direct equity','Mutual fund','ETF','Government bond','Corporate bond','REIT / InvIT','Debt fund']);
+const CLIENT_ATTRIBUTES={
+ 'Fixed deposit':['rate','mat'],
+ 'Retirement account':[],
+ 'AIF':['com','vin'],
+ 'Digital asset':['cust'],
+ 'Collectible':['it','vd','vm'],
+ 'Real estate':['pt','loc','ry','val'],
+};
+const TIER_LABEL={source:'From the instrument source',firm:'Firm-maintained · no feed supplies this',client:'Client-specific · belongs to the holding, not the instrument'};
+const TIER_SHORT={source:'Source',firm:'Firm',client:'Client'};
+function attributeTier(s,key){
+ if(FEED_TYPES.has(instrumentType(s)))return 'source';
+ if((CLIENT_ATTRIBUTES[instrumentType(s)]||[]).includes(key))return 'client';
+ // A physical holding's purity is a property of the client's own bars, not of a
+ // scheme every client can buy.
+ if(key==='pur'&&s.physical)return 'client';
+ return 'firm';
+}
+const attributeSchema=s=>(originalData.settings.instrumentTypes||[]).find(t=>t.name===instrumentType(s))?.attributes||[];
+function attributeFields(s){
+ return attributeSchema(s).map(field=>({...field,value:s.attributes?.[field.key],tier:attributeTier(s,field.key)}))
+  .filter(f=>f.value!==undefined&&f.value!=='');
+}
+function formatAttribute(field){
+ if(field.kind!=='number')return esc(field.value);
+ const unit=field.unit||'';
+ if(!unit)return esc(field.value);
+ // A currency unit reads as a prefix, a scale as a suffix: ₹8 L, not 8 ₹ L.
+ if(unit.startsWith('\u20b9')){
+  const scale=unit.slice(1).trim();
+  return '\u20b9'+esc(field.value)+(scale?' '+esc(scale):'');
+ }
+ return esc(field.value)+(unit.length<=2?esc(unit):' '+esc(unit));
+}
+// A valuation nobody has refreshed is the quiet risk on an illiquid asset, so a
+// date-valued attribute says how old it is rather than only what it says.
+const MONTHS=['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'];
+function monthsSince(value){
+ const match=/^([A-Za-z]{3})[a-z]*\s+(\d{4})$/.exec(String(value).trim());
+ if(!match)return null;
+ const month=MONTHS.indexOf(match[1].toLowerCase());
+ if(month<0)return null;
+ const asOf=new Date(originalData.metadata.asOf);
+ return (asOf.getFullYear()-Number(match[2]))*12+(asOf.getMonth()-month);
+}
+const VALUATION_KEYS=new Set(['vd','val']);
+function attributeAge(field){
+ if(!VALUATION_KEYS.has(field.key))return '';
+ const age=monthsSince(field.value);
+ if(age===null||age<0)return '';
+ const text=age===0?'this month':age===1?'1 month ago':age+' months ago';
+ return `<span class="attr-age ${age>12?'is-stale':''}">valued ${text}</span>`;
+}
+
 const securityValue=id=>clientRecords.reduce((sum,c)=>sum+approved(c).plan.assets
  .filter(a=>a.securityId===id&&a.included).reduce((s,a)=>s+a.value,0),0);
 const securityPortfolios=id=>clientRecords.filter(c=>approved(c).plan.assets.some(a=>a.securityId===id&&a.included)).length;
@@ -51,6 +121,7 @@ function securityRows(){
  const q=securityFilters.search.toLowerCase();
  return originalData.securities.filter(s=>{
   if(securityFilters.assetClass&&effectiveField(s,'assetClass')!==securityFilters.assetClass)return false;
+  if(securityFilters.instrumentType&&instrumentType(s)!==securityFilters.instrumentType)return false;
   if(securityFilters.unclassifiedOnly&&!isUnclassified(s))return false;
   if(!q)return true;
   return (s.name+' '+(s.symbol||'')+' '+(s.superSector||'')+' '+(s.tags.sector||'')+' '+(s.tags.subsector||'')+' '+instrumentType(s)).toLowerCase().includes(q);
@@ -81,14 +152,39 @@ function subsectorSelect(s){
  return levelSelect(s,'subsector','Sub-sector',subsectorsFor(effectiveField(s,'assetClass'),effectiveField(s,'superSector'),sector),sector?'':'Choose a sector first');
 }
 
+// Attributes for one instrument, grouped by who owns them so the grid teaches
+// the distinction rather than flattening it.
+function attributePanel(s,columns){
+ const fields=attributeFields(s);
+ const groups=['source','firm','client'].map(tier=>[tier,fields.filter(f=>f.tier===tier)]).filter(([,list])=>list.length);
+ const type=instrumentType(s);
+ return `<tr class="config-detail"><td colspan="${columns}"><div class="attr-panel">
+  <div class="attr-head"><strong>${esc(type)} attributes</strong><small>Defined by the instrument type, outside the configuration sheet. Read-only in this prototype.</small></div>
+  ${groups.length?groups.map(([tier,list])=>`<div class="attr-group attr-${tier}">
+   <div class="attr-group-head"><span class="attr-tier attr-tier-${tier}">${TIER_SHORT[tier]}</span><small>${esc(TIER_LABEL[tier])}</small></div>
+   <dl class="attr-list">${list.map(f=>`<div><dt>${esc(f.label)}</dt><dd>${formatAttribute(f)}${attributeAge(f)}</dd></div>`).join('')}</dl>
+  </div>`).join(''):'<p class="muted">No attributes are recorded for this instrument.</p>'}
+  ${s.lookThrough?`<details class="attr-lookthrough"><summary>Underlying exposure · looked through</summary>${['sector','marketCap','geography'].map(dimension=>`<div class="attr-lt"><strong>${dimension==='marketCap'?'Market cap':dimension[0].toUpperCase()+dimension.slice(1)}</strong>${s.lookThrough[dimension].map(x=>`<span>${esc(x.bucket)} ${fmt(x.weight*100)}%</span>`).join('')}</div>`).join('')}<p class="note">Illustrative fund composition. Who owns and refreshes look-through data is an open question.</p></details>`:''}
+  <p class="note attr-note">${esc(s.originalNote||'')}</p>
+ </div></td></tr>`;
+}
+
 function securityGrid(){
  const rows=securityRows();
  if(!rows.length)return `<div class="card empty-state"><strong>No instrument matches these filters</strong><p>Clear the search or the filters to see all ${originalData.securities.length}.</p><button data-security-action="clear">Clear filters</button></div>`;
- return `<div class="card tablewrap" style="padding:0"><table class="config-grid"><caption class="sr-only">Firm-wide instrument classification</caption>
+ // Comparing attributes only means anything within one instrument type, so the
+ // type's own columns appear once the list is narrowed to it.
+ const typeColumns=securityFilters.instrumentType
+  ?((originalData.settings.instrumentTypes||[]).find(t=>t.name===securityFilters.instrumentType)?.attributes||[])
+  :[];
+ const showAssetType=!securityFilters.instrumentType;
+ const columnCount=(showAssetType?10:9)+typeColumns.length;
+ return `<div class="card tablewrap" style="padding:0"><table class="config-grid${typeColumns.length?' has-attributes':''}"><caption class="sr-only">Firm-wide instrument classification</caption>
  <thead><tr>
   <th scope="col">Name</th><th scope="col">ISIN</th><th scope="col">Symbol</th>
-  <th scope="col">Crisil rating</th><th scope="col">Current price</th><th scope="col">Asset type</th>
+  <th scope="col">Crisil rating</th><th scope="col">Current price</th>${showAssetType?'<th scope="col">Asset type</th>':''}
   <th scope="col" class="col-editable">Asset class</th><th scope="col" class="col-editable">Super sector</th><th scope="col" class="col-editable">Sector</th><th scope="col" class="col-editable">Sub-sector</th>
+  ${typeColumns.map(a=>`<th scope="col" class="col-attribute">${esc(a.label)}${a.unit?`<small>${esc(a.unit)}</small>`:''}</th>`).join('')}
  </tr></thead><tbody>${rows.map(s=>{
   // A rating the source never supplies is different from one that cannot apply:
   // the instrument type decides which of the two this is.
@@ -98,13 +194,15 @@ function securityGrid(){
   const value=securityValue(s.id),count=securityPortfolios(s.id);
   const held=count?`${money(value)} · ${count} ${count===1?'portfolio':'portfolios'}`:'<span class="config-absent" title="In the master, not held by any sample portfolio">Not held</span>';
   return `<tr class="${isUnclassified(s)?'is-unclassified':''}">
-   <th scope="row"><strong>${esc(s.name)}</strong><small>${esc(instrumentType(s))}${s.lookThrough?' · looked through':''}</small><small class="config-held">${held}</small></th>
+   <th scope="row"><button class="attr-toggle" data-security-attributes="${esc(s.id)}" aria-expanded="${securityExpanded.has(s.id)}" aria-label="${securityExpanded.has(s.id)?'Hide':'Show'} ${esc(s.name)} attributes"><span aria-hidden="true">${securityExpanded.has(s.id)?'⌄':'›'}</span></button><strong>${esc(s.name)}</strong><small>${esc(instrumentType(s))}${s.lookThrough?' · looked through':''}</small><small class="config-held">${held}</small></th>
    <td class="config-fixed">${notSupplied}</td>
    <td class="config-fixed">${s.symbol?esc(s.symbol):notSupplied}</td>
    <td class="config-fixed">${rating}</td>
    <td class="config-fixed">${notSupplied}</td>
-   <td class="config-fixed">${esc(instrumentType(s))}</td>
-   <td>${classSelect(s)}</td><td>${superSectorSelect(s)}</td><td>${sectorSelect(s)}</td><td>${subsectorSelect(s)}</td></tr>`;
+   ${showAssetType?`<td class="config-fixed">${esc(instrumentType(s))}</td>`:''}
+   <td>${classSelect(s)}</td><td>${superSectorSelect(s)}</td><td>${sectorSelect(s)}</td><td>${subsectorSelect(s)}</td>
+   ${typeColumns.map(a=>{const value=s.attributes?.[a.key];return `<td class="config-fixed col-attribute">${value===undefined||value===''?notSupplied:formatAttribute({...a,value})}</td>`}).join('')}</tr>`+
+   (securityExpanded.has(s.id)?attributePanel(s,columnCount):'');
  }).join('')}</tbody></table></div>`;
 }
 
@@ -138,20 +236,28 @@ securityMasterPage=function(){
  <section class="card overview-card"><div class="overview-controls">
   <label class="search-field">Search instruments<input id="securitySearch" type="search" placeholder="Name, symbol, type or sector" value="${esc(securityFilters.search)}"></label>
   <label class="search-field">Asset class<select id="securityClassFilter"><option value="">All asset classes</option>${ASSET_CLASSES.map(c=>`<option ${securityFilters.assetClass===c?'selected':''}>${esc(c)}</option>`).join('')}</select></label>
+  <label class="search-field">Instrument type<select id="securityTypeFilter"><option value="">All instrument types</option>${[...new Set(originalData.securities.map(instrumentType))].sort().map(t=>`<option ${securityFilters.instrumentType===t?'selected':''}>${esc(t)}</option>`).join('')}</select></label>
   <label class="check-filter"><input id="securityUnclassified" type="checkbox" ${securityFilters.unclassifiedOnly?'checked':''}> Needs classification only</label>
  </div>
- <p class="list-caption config-legend"><span class="config-key"><b class="is-fixed">Fixed</b> from the instrument source</span><span class="config-key"><b class="is-editable">Editable</b> your classification</span><span class="config-key"><b class="is-absent">—</b> not supplied by the sample</span><span class="config-count">Showing ${securityRows().length} of ${total}</span></p>
+ <p class="list-caption config-legend"><span class="config-key"><b class="is-fixed">Fixed</b> from the instrument source</span><span class="config-key"><b class="is-editable">Editable</b> your classification</span><span class="config-key"><b class="is-absent">—</b> not supplied by the sample</span><span class="config-key"><b class="is-attr">›</b> open a row for its type's attributes</span><span class="config-count">Showing ${securityRows().length} of ${total}</span></p>
  </section>
  ${securityAddPanel()}
  ${securityGrid()}
  <p class="note">Super sector, sector and sub-sector feed every exposure view immediately once applied. Asset class also decides whether an instrument is measured by the credit and duration view. Recorded holdings keep the asset class they were recorded under: reclassifying an instrument changes analysis from now on, it does not restate an approved snapshot.</p>
  <details class="card"><summary>What a production security master still needs decided</summary>
-  <ul><li>shared instruments versus client-specific assets, such as a named flat or one EPF account;</li>
+  <p class="note" style="margin-top:0">The sheet defines the grid, not these. Each needs a product or adviser decision before this page can be built for real.</p>
+  <h3 class="config-open-heading">Questions for an adviser</h3>
+  <ul><li>when an adviser records a fixed deposit's rate and maturity, do they expect to type it here or on the client's holding?</li>
+  <li>how often are illiquid assets genuinely re-valued — a flat, jewellery, art — and after how long should this page call a valuation stale?</li>
+  <li>an investor's AIF commitment and vintage differ per client while the scheme's category and lock-in do not. Is that split right, and where should each live?</li>
+  <li>which instrument attributes does an adviser actually read before advising, and which are reference clutter?</li></ul>
+  <h3 class="config-open-heading">Questions for the firm</h3>
+  <ul><li>shared instruments versus client-specific assets: a named flat, one EPF account and a specific deposit are each owned by one client, yet sit in a firm-wide master;</li>
+  <li>who maintains the attributes no feed supplies — AIF lock-in, PMS fees, deposit penalties — and from which document;</li>
   <li>canonical instrument identity and aliases, and which of ISIN, symbol or name is authoritative;</li>
-  <li>investment vehicle versus economic exposure, and who owns a fund's look-through data;</li>
+  <li>who owns and refreshes a fund's look-through data, and how stale it may be before exposure analysis stops relying on it;</li>
   <li>who approves a classification, and from what effective date;</li>
-  <li>whether a change ever restates history rather than only applying forward.</li></ul>
-  <p class="note">The sheet defines the grid, not these. They stay open.</p></details>`;
+  <li>whether a change ever restates history rather than only applying forward.</li></ul></details>`;
  $('footer').innerHTML=pending?`<div class="footer"><div><strong>${pending} staged ${pending===1?'change':'changes'}</strong><small>Nothing is applied until you review it</small></div><div class="flex"><button data-security-action="discard">Discard</button><button class="primary" data-security-action="review">Review & apply →</button></div></div>`:'';
  scrollWorkspace();
 };
@@ -179,9 +285,17 @@ function securityReview(){
 }
 
 document.addEventListener('click',e=>{
+ const toggle=e.target.closest('button[data-security-attributes]');
+ if(toggle){
+  const id=toggle.dataset.securityAttributes;
+  securityExpanded.has(id)?securityExpanded.delete(id):securityExpanded.add(id);
+  securityMasterPage();
+  document.querySelector(`[data-security-attributes="${id}"]`)?.focus();
+  return;
+ }
  const b=e.target.closest('button[data-security-action]');if(!b)return;
  const action=b.dataset.securityAction;
- if(action==='clear'){securityFilters={search:'',assetClass:'',unclassifiedOnly:false};securityMasterPage();return}
+ if(action==='clear'){securityFilters={search:'',assetClass:'',instrumentType:'',unclassifiedOnly:false};securityMasterPage();return}
  if(action==='add'){securityAddOpen=true;securityMasterPage();$('securityAdd')?.focus();return}
  if(action==='add-close'){securityAddOpen=false;securityFilters.addSearch='';securityMasterPage();return}
  if(action==='discard'){securityPending={};securityMasterPage();notify('Staged changes discarded. Nothing was applied.');return}
@@ -198,6 +312,7 @@ document.addEventListener('click',e=>{
 document.addEventListener('change',e=>{
  const t=e.target;
  if(t.id==='securityClassFilter'){securityFilters.assetClass=t.value;securityMasterPage();return}
+ if(t.id==='securityTypeFilter'){securityFilters.instrumentType=t.value;securityMasterPage();return}
  if(t.id==='securityUnclassified'){securityFilters.unclassifiedOnly=t.checked;securityMasterPage();return}
  const id=t.dataset.security,field=t.dataset.field;
  if(!id||!field)return;
