@@ -1,5 +1,5 @@
 'use strict';
-const $=id=>document.getElementById(id),copy=x=>JSON.parse(JSON.stringify(x)),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=x=>Number(x).toFixed(1).replace(/\.0$/,''),KEY='portfolio-model-design-v2';
+const $=id=>document.getElementById(id),copy=x=>JSON.parse(JSON.stringify(x)),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=x=>Number(x).toFixed(1).replace(/\.0$/,''),KEY='portfolio-model-design-v3';
 const colours=['#246c53','#87a796','#d3b574','#8a97b4','#aa8674'];
 const CATALOG=originalData.assetHierarchy;
 const MODEL_TARGETS=originalData.modelTargets;
@@ -9,7 +9,7 @@ function seed(){return [['Conservative','Capital preservation with limited growt
 const SEEDED_MODEL_NAMES=new Set(['Conservative','Moderate','Aggressive']);
 const modelName=m=>m.versions?.at(-1)?.data?.name||m.draft?.name||'';
 function removeSeedDuplicates(items){return items.filter(m=>!(m.earlierPrototype&&SEEDED_MODEL_NAMES.has(modelName(m))))}
-let models;try{models=JSON.parse(localStorage.getItem(KEY));if(!models){const previous=JSON.parse(localStorage.getItem('portfolio-model-design-v1')||'[]');models=seed().concat(previous.map(m=>({...m,earlierPrototype:true})));}const cleaned=removeSeedDuplicates(models);if(cleaned.length!==models.length){models=cleaned;}localStorage.setItem(KEY,JSON.stringify(models));$('storage').textContent='Saved in this browser'}catch{models=seed();$('storage').textContent='Session only: browser storage unavailable'}
+let models;try{models=JSON.parse(localStorage.getItem(KEY));if(!models){const previous=JSON.parse(localStorage.getItem('portfolio-model-design-v2')||localStorage.getItem('portfolio-model-design-v1')||'[]');models=seed().concat(previous.map(m=>({...m,earlierPrototype:true})));}const cleaned=removeSeedDuplicates(models);if(cleaned.length!==models.length){models=cleaned;}localStorage.setItem(KEY,JSON.stringify(models));$('storage').textContent='Saved in this browser'}catch{models=seed();$('storage').textContent='Session only: browser storage unavailable'}
 let selected=null,editing=false,expanded=new Set(),dirty=false,toastTimer;
 let list,render,rows,changes,review,clients;
 const current=()=>models.find(m=>m.id===selected),latest=m=>m.versions.at(-1),data=()=>editing?current().draft:latest(current()).data;

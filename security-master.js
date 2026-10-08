@@ -1,33 +1,29 @@
 'use strict';
 // Security master, built to the RIA-AssetConfig-Type1 sheet: one row per
 // instrument, identity and market data arriving fixed from the source, and
-// only Asset class / Sector / Sub-sector as the firm's decision.
+// Asset class / Super sector / Sector / Sub-sector as the firm's decision.
 // Classification is firm-wide, so edits are staged and applied deliberately.
 
-const SECURITY_KEY='portfolio-security-master-v1';
+const SECURITY_KEY='portfolio-security-master-v2';
 const ASSET_CLASSES=originalData.assetHierarchy.map(c=>c.n);
-const SECTORS=originalData.settings.classificationOrder.sec;
-// AssetType is <<Fixed>> on the sheet: the instrument's form, not a choice.
-const INSTRUMENT_TYPES={'Mutual funds':'Mutual fund','Direct stocks':'Equity share','ETFs':'ETF',
- 'Bonds':'Bond','Fixed deposits':'Fixed deposit','EPF / PPF':'Retirement account','AIF':'AIF unit',
- 'REIT / InvIT':'REIT / InvIT unit','Gold':'Gold','Real estate':'Property'};
-const instrumentType=s=>INSTRUMENT_TYPES[s.subcategory]||s.subcategory;
+// AssetType is <<Fixed>> on the sheet: the instrument's form, not a choice, and
+// the master now states it rather than inferring it from a grouping name.
+const instrumentType=s=>s.assetType||s.subcategory;
 const notSupplied='<span class="config-absent" title="Not supplied by the sample data" aria-label="Not supplied">—</span>';
 
-const subsectorsBySector=()=>{
- const map=new Map();
- for(const s of originalData.securities){
-  if(!s.tags.sector)continue;
-  if(!map.has(s.tags.sector))map.set(s.tags.sector,new Set());
-  if(s.tags.subsector)map.get(s.tags.sector).add(s.tags.subsector);
- }
- return map;
-};
-const allSubsectors=()=>[...new Set(originalData.securities.map(s=>s.tags.subsector).filter(Boolean))].sort();
+// The classification levels nest, so each dropdown offers only what belongs
+// under the level above it. The declared taxonomy is the source, which lets a
+// level offer a branch the sample does not yet hold.
+const TAXONOMY=originalData.settings.taxonomy||[];
+const distinct=values=>[...new Set(values.filter(Boolean))];
+const superSectorsFor=assetClass=>distinct(TAXONOMY.filter(t=>t.assetClass===assetClass).map(t=>t.superSector));
+const sectorsFor=(assetClass,superSector)=>distinct(TAXONOMY.filter(t=>t.assetClass===assetClass&&(!superSector||t.superSector===superSector)).map(t=>t.sector));
+const subsectorsFor=(assetClass,superSector,sector)=>distinct(TAXONOMY.filter(t=>t.assetClass===assetClass&&(!superSector||t.superSector===superSector)&&(!sector||t.sector===sector)).map(t=>t.subSector));
 
 let securityEdits={};
 try{securityEdits=JSON.parse(localStorage.getItem(SECURITY_KEY)||'{}')}catch{securityEdits={}}
 let securityPending={},securityFilters={search:'',assetClass:'',unclassifiedOnly:false},securityAddOpen=false;
+const CLASSIFICATION_FIELDS=['assetClass','superSector','sector','subsector'];
 
 // Saved classification is applied to the in-memory records at load, so every
 // exposure view reads it without a second source of truth.
@@ -35,10 +31,11 @@ function applySecurityEdits(){
  for(const s of originalData.securities){
   const e=securityEdits[s.id];if(!e)continue;
   if(e.assetClass)s.assetClass=e.assetClass;
+  if(e.superSector!==undefined)s.superSector=e.superSector;
   if(e.sector!==undefined)s.tags.sector=e.sector;
   if(e.subsector!==undefined)s.tags.subsector=e.subsector;
-  // The credit and duration lens is gated on isDebt, so asset class drives it.
-  s.tags.isDebt=s.assetClass==='Debt';
+  // The credit and duration view is gated on isDebt, so asset class drives it.
+  s.tags.isDebt=s.assetClass==='Fixed income';
  }
 }
 applySecurityEdits();
@@ -46,8 +43,8 @@ applySecurityEdits();
 const securityValue=id=>clientRecords.reduce((sum,c)=>sum+approved(c).plan.assets
  .filter(a=>a.securityId===id&&a.included).reduce((s,a)=>s+a.value,0),0);
 const securityPortfolios=id=>clientRecords.filter(c=>approved(c).plan.assets.some(a=>a.securityId===id&&a.included)).length;
-const effectiveField=(s,field)=>securityPending[s.id]?.[field]??(field==='assetClass'?s.assetClass:s.tags[field]);
-const isUnclassified=s=>!effectiveField(s,'sector')||!effectiveField(s,'subsector')||!effectiveField(s,'assetClass');
+const effectiveField=(s,field)=>securityPending[s.id]?.[field]??(field==='assetClass'?s.assetClass:field==='superSector'?s.superSector:s.tags[field]);
+const isUnclassified=s=>CLASSIFICATION_FIELDS.some(field=>!effectiveField(s,field));
 const pendingCount=()=>Object.values(securityPending).reduce((n,e)=>n+Object.keys(e).length,0);
 
 function securityRows(){
@@ -56,32 +53,32 @@ function securityRows(){
   if(securityFilters.assetClass&&effectiveField(s,'assetClass')!==securityFilters.assetClass)return false;
   if(securityFilters.unclassifiedOnly&&!isUnclassified(s))return false;
   if(!q)return true;
-  return (s.name+' '+(s.tags.sector||'')+' '+(s.tags.subsector||'')+' '+instrumentType(s)).toLowerCase().includes(q);
+  return (s.name+' '+(s.symbol||'')+' '+(s.superSector||'')+' '+(s.tags.sector||'')+' '+(s.tags.subsector||'')+' '+instrumentType(s)).toLowerCase().includes(q);
  });
 }
 
-function classSelect(s){
- const value=effectiveField(s,'assetClass'),changed=securityPending[s.id]?.assetClass!==undefined;
- return `<select class="config-select ${changed?'is-changed':''}" data-security="${esc(s.id)}" data-field="assetClass" aria-label="Asset class for ${esc(s.name)}">
-  ${ASSET_CLASSES.map(c=>`<option ${c===value?'selected':''}>${esc(c)}</option>`).join('')}</select>`;
-}
-function sectorSelect(s){
- const value=effectiveField(s,'sector'),changed=securityPending[s.id]?.sector!==undefined;
- const known=new Set(SECTORS);
- return `<select class="config-select ${changed?'is-changed':''}" data-security="${esc(s.id)}" data-field="sector" aria-label="Sector for ${esc(s.name)}">
-  <option value="" ${value?'':'selected'}>Not classified</option>
-  ${SECTORS.map(c=>`<option ${c===value?'selected':''}>${esc(c)}</option>`).join('')}
+// One builder for all four levels: each offers what the level above allows, and
+// keeps an out-of-taxonomy value selectable so a staged edit is never silently
+// dropped.
+function levelSelect(s,field,label,options,disabledWhen){
+ const value=effectiveField(s,field)||'';
+ const changed=securityPending[s.id]?.[field]!==undefined;
+ const known=new Set(options);
+ const required=field==='assetClass';
+ return `<select class="config-select ${changed?'is-changed':''}" data-security="${esc(s.id)}" data-field="${field}" aria-label="${esc(label)} for ${esc(s.name)}" ${disabledWhen?'disabled':''}>
+  ${required?'':`<option value="" ${value?'':'selected'}>${disabledWhen?esc(disabledWhen):'Not classified'}</option>`}
+  ${options.map(c=>`<option ${c===value?'selected':''}>${esc(c)}</option>`).join('')}
   ${value&&!known.has(value)?`<option selected>${esc(value)}</option>`:''}</select>`;
 }
+const classSelect=s=>levelSelect(s,'assetClass','Asset class',ASSET_CLASSES);
+const superSectorSelect=s=>levelSelect(s,'superSector','Super sector',superSectorsFor(effectiveField(s,'assetClass')));
+function sectorSelect(s){
+ const superSector=effectiveField(s,'superSector');
+ return levelSelect(s,'sector','Sector',sectorsFor(effectiveField(s,'assetClass'),superSector),superSector?'':'Choose a super sector first');
+}
 function subsectorSelect(s){
- const sector=effectiveField(s,'sector'),value=effectiveField(s,'subsector');
- const changed=securityPending[s.id]?.subsector!==undefined;
- const within=[...(subsectorsBySector().get(sector)||[])].sort();
- const others=allSubsectors().filter(x=>!within.includes(x));
- return `<select class="config-select ${changed?'is-changed':''}" data-security="${esc(s.id)}" data-field="subsector" aria-label="Sub-sector for ${esc(s.name)}" ${sector?'':'disabled'}>
-  <option value="" ${value?'':'selected'}>${sector?'Not classified':'Choose a sector first'}</option>
-  ${within.length?`<optgroup label="Used in ${esc(sector)}">${within.map(x=>`<option ${x===value?'selected':''}>${esc(x)}</option>`).join('')}</optgroup>`:''}
-  ${others.length?`<optgroup label="Other sub-sectors">${others.map(x=>`<option ${x===value?'selected':''}>${esc(x)}</option>`).join('')}</optgroup>`:''}</select>`;
+ const sector=effectiveField(s,'sector');
+ return levelSelect(s,'subsector','Sub-sector',subsectorsFor(effectiveField(s,'assetClass'),effectiveField(s,'superSector'),sector),sector?'':'Choose a sector first');
 }
 
 function securityGrid(){
@@ -91,20 +88,23 @@ function securityGrid(){
  <thead><tr>
   <th scope="col">Name</th><th scope="col">ISIN</th><th scope="col">Symbol</th>
   <th scope="col">Crisil rating</th><th scope="col">Current price</th><th scope="col">Asset type</th>
-  <th scope="col" class="col-editable">Asset class</th><th scope="col" class="col-editable">Sector</th><th scope="col" class="col-editable">Sub-sector</th>
+  <th scope="col" class="col-editable">Asset class</th><th scope="col" class="col-editable">Super sector</th><th scope="col" class="col-editable">Sector</th><th scope="col" class="col-editable">Sub-sector</th>
  </tr></thead><tbody>${rows.map(s=>{
-  const rating=s.tags.creditQuality?`${esc(s.tags.creditQuality)}<small>${esc(s.tags.duration||'')}</small>`
-   :effectiveField(s,'assetClass')==='Debt'?'<span class="config-absent" title="Debt instrument with no rating recorded">Not rated</span>'
+  // A rating the source never supplies is different from one that cannot apply:
+  // the instrument type decides which of the two this is.
+  const rating=s.crisilRating?`${esc(s.crisilRating)}<small>${esc(s.tags.duration||'')}</small>`
+   :s.ratingApplies?'<span class="config-absent" title="This instrument type carries a rating, but none is recorded in the sample">Not rated</span>'
    :'<span class="config-na" title="A credit rating does not apply to this instrument type">n/a</span>';
   const value=securityValue(s.id),count=securityPortfolios(s.id);
+  const held=count?`${money(value)} · ${count} ${count===1?'portfolio':'portfolios'}`:'<span class="config-absent" title="In the master, not held by any sample portfolio">Not held</span>';
   return `<tr class="${isUnclassified(s)?'is-unclassified':''}">
-   <th scope="row"><strong>${esc(s.name)}</strong><small>${esc(instrumentType(s))}${s.lookThrough?' · looked through':''}</small><small class="config-held">${money(value)} · ${count} ${count===1?'portfolio':'portfolios'}</small></th>
+   <th scope="row"><strong>${esc(s.name)}</strong><small>${esc(instrumentType(s))}${s.lookThrough?' · looked through':''}</small><small class="config-held">${held}</small></th>
    <td class="config-fixed">${notSupplied}</td>
-   <td class="config-fixed">${notSupplied}</td>
+   <td class="config-fixed">${s.symbol?esc(s.symbol):notSupplied}</td>
    <td class="config-fixed">${rating}</td>
    <td class="config-fixed">${notSupplied}</td>
    <td class="config-fixed">${esc(instrumentType(s))}</td>
-   <td>${classSelect(s)}</td><td>${sectorSelect(s)}</td><td>${subsectorSelect(s)}</td></tr>`;
+   <td>${classSelect(s)}</td><td>${superSectorSelect(s)}</td><td>${sectorSelect(s)}</td><td>${subsectorSelect(s)}</td></tr>`;
  }).join('')}</tbody></table></div>`;
 }
 
@@ -128,15 +128,15 @@ securityMasterPage=function(){
  const total=originalData.securities.length,unclassified=originalData.securities.filter(isUnclassified).length;
  const pending=pendingCount();
  $('app').innerHTML=`<div class="eyebrow">Firm-wide configuration</div><h1>Security master</h1>
- <p class="muted">Classify each instrument once. Every model and portfolio reads its exposure from here.</p>
+ <p class="muted">Classify each instrument once. Every model and portfolio reads its exposure from here. The four classification levels nest: each offers only what belongs under the level above it.</p>
  <div class="portfolio-metrics">
   <div class="card"><small>Instruments</small><strong>${total}</strong><small>in the firm master</small></div>
-  <div class="card"><small>Need classification</small><strong class="${unclassified?'drift-over':''}">${unclassified}</strong><small>missing an asset class, sector or sub-sector</small></div>
+  <div class="card"><small>Need classification</small><strong class="${unclassified?'drift-over':''}">${unclassified}</strong><small>missing a level of the classification</small></div>
   <div class="card"><small>Staged changes</small><strong>${pending}</strong><small>not applied yet</small></div>
-  <div class="card"><small>Custom lens</small><strong>${esc(originalData.settings.customLensName)}</strong><small>set on each instrument</small></div>
+  <div class="card"><small>Instrument types</small><strong>${new Set(originalData.securities.map(instrumentType)).size}</strong><small>each sets its own attributes</small></div>
  </div>
  <section class="card overview-card"><div class="overview-controls">
-  <label class="search-field">Search instruments<input id="securitySearch" type="search" placeholder="Name, type or sector" value="${esc(securityFilters.search)}"></label>
+  <label class="search-field">Search instruments<input id="securitySearch" type="search" placeholder="Name, symbol, type or sector" value="${esc(securityFilters.search)}"></label>
   <label class="search-field">Asset class<select id="securityClassFilter"><option value="">All asset classes</option>${ASSET_CLASSES.map(c=>`<option ${securityFilters.assetClass===c?'selected':''}>${esc(c)}</option>`).join('')}</select></label>
   <label class="check-filter"><input id="securityUnclassified" type="checkbox" ${securityFilters.unclassifiedOnly?'checked':''}> Needs classification only</label>
  </div>
@@ -144,7 +144,7 @@ securityMasterPage=function(){
  </section>
  ${securityAddPanel()}
  ${securityGrid()}
- <p class="note">Sector and sub-sector feed every exposure view immediately once applied. Asset class also decides whether an instrument is measured by the credit and duration lens. Recorded holdings keep the asset class they were recorded under: reclassifying an instrument changes analysis from now on, it does not restate an approved snapshot.</p>
+ <p class="note">Super sector, sector and sub-sector feed every exposure view immediately once applied. Asset class also decides whether an instrument is measured by the credit and duration view. Recorded holdings keep the asset class they were recorded under: reclassifying an instrument changes analysis from now on, it does not restate an approved snapshot.</p>
  <details class="card"><summary>What a production security master still needs decided</summary>
   <ul><li>shared instruments versus client-specific assets, such as a named flat or one EPF account;</li>
   <li>canonical instrument identity and aliases, and which of ISIN, symbol or name is authoritative;</li>
@@ -160,21 +160,21 @@ function securityReview(){
  const entries=Object.entries(securityPending).flatMap(([id,fields])=>{
   const s=originalData.securities.find(x=>x.id===id);
   return Object.entries(fields).map(([field,value])=>({s,field,
-   from:field==='assetClass'?s.assetClass:s.tags[field],to:value}));
+   from:field==='assetClass'?s.assetClass:field==='superSector'?s.superSector:s.tags[field],to:value}));
  });
  const touched=[...new Set(entries.map(e=>e.s.id))];
  const value=touched.reduce((sum,id)=>sum+securityValue(id),0);
  const portfolios=new Set();
  for(const id of touched)for(const c of clientRecords)
   if(approved(c).plan.assets.some(a=>a.securityId===id&&a.included))portfolios.add(c.id);
- const label={assetClass:'Asset class',sector:'Sector',subsector:'Sub-sector'};
+ const label={assetClass:'Asset class',superSector:'Super sector',sector:'Sector',subsector:'Sub-sector'};
  show(`<div class="target-review-dialog"><span class="section-step">Firm-wide change</span><h2>Apply ${entries.length} classification ${entries.length===1?'change':'changes'}</h2>
  <p class="muted">This is not a portfolio edit. It changes how every model and portfolio measures these instruments.</p>
  <div class="review-impact-grid"><div><small>Instruments</small><strong>${touched.length}</strong></div><div><small>Value affected</small><strong>${money(value)}</strong></div><div><small>Portfolios affected</small><strong>${portfolios.size}</strong></div><div><small>Fields changed</small><strong>${entries.length}</strong></div></div>
  <div class="tablewrap"><table><thead><tr><th>Instrument</th><th>Field</th><th>From</th><th>To</th></tr></thead><tbody>
  ${entries.map(e=>`<tr><td>${esc(e.s.name)}</td><td>${esc(label[e.field])}</td><td>${e.from?esc(e.from):'<span class="compare-missing">Not classified</span>'}</td><td><strong>${e.to?esc(e.to):'<span class="compare-missing">Not classified</span>'}</strong></td></tr>`).join('')}
  </tbody></table></div>
- <p class="note">Sector and sub-sector changes take effect in every exposure view as soon as they are applied. An asset-class change also moves the instrument in or out of the credit and duration lens. Approved client targets, recorded holdings and historic snapshots are untouched.</p>
+ <p class="note">Super sector, sector and sub-sector changes take effect in every exposure view as soon as they are applied. An asset-class change also moves the instrument in or out of the credit and duration view. Approved client targets, recorded holdings and historic snapshots are untouched.</p>
  <div class="actions"><button onclick="closeModal()">Back to the grid</button><button class="primary" data-security-action="apply">Apply firm-wide</button></div></div>`);
 }
 
@@ -202,15 +202,19 @@ document.addEventListener('change',e=>{
  const id=t.dataset.security,field=t.dataset.field;
  if(!id||!field)return;
  const s=originalData.securities.find(x=>x.id===id);
- const current=field==='assetClass'?s.assetClass:s.tags[field];
+ const recorded=field==='assetClass'?s.assetClass:field==='superSector'?s.superSector:s.tags[field];
  securityPending[id]=securityPending[id]||{};
- if((t.value||'')===(current||''))delete securityPending[id][field];
+ if((t.value||'')===(recorded||''))delete securityPending[id][field];
  else securityPending[id][field]=t.value;
- // Changing the sector invalidates a sub-sector that does not belong to it.
- if(field==='sector'){
-  const within=subsectorsBySector().get(t.value)||new Set();
-  const sub=effectiveField(s,'subsector');
-  if(sub&&!within.has(sub)){securityPending[id].subsector='';}
+ // The levels nest, so choosing one clears any level below it that no longer
+ // belongs underneath. Clearing to '' is a staged value, not an absent one.
+ const below={assetClass:['superSector','sector','subsector'],superSector:['sector','subsector'],sector:['subsector']}[field]||[];
+ for(const lower of below){
+  const allowed=new Set(lower==='superSector'?superSectorsFor(effectiveField(s,'assetClass'))
+   :lower==='sector'?sectorsFor(effectiveField(s,'assetClass'),effectiveField(s,'superSector'))
+   :subsectorsFor(effectiveField(s,'assetClass'),effectiveField(s,'superSector'),effectiveField(s,'sector')));
+  const value=effectiveField(s,lower);
+  if(value&&!allowed.has(value))securityPending[id][lower]='';
  }
  if(!Object.keys(securityPending[id]).length)delete securityPending[id];
  securityMasterPage();

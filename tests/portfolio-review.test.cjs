@@ -10,7 +10,7 @@ function preview(){
 }
 test('Review summary explains the largest gap and preserves neutral/exposure-only states',()=>{
  const run=preview();
- assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h1")).title'),/Real assets.*10.1 pp above/);
+ assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h1")).title'),/Real assets.*7.6 pp above/);
  assert.equal(run('reviewSummary(dashboardRecords().find(r=>r.id==="h4")).tone'),'clear');
  assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h2")).title'),/within/);
  assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h3")).title'),/exposure/);
@@ -18,10 +18,10 @@ test('Review summary explains the largest gap and preserves neutral/exposure-onl
 test('Exposure preview shows four flags first and all flags remain accessible',()=>{
  const run=preview();
  const limited=run('reviewExposures(dashboardRecords().find(r=>r.id==="h1"))');
- assert.match(limited,/Showing 4 of 9 flags/);assert.match(limited,/Show all 9 flags/);
+ assert.match(limited,/Showing 4 of 8 flags/);assert.match(limited,/Show all 8 flags/);
  assert.equal((limited.match(/class="review-bucket"/g)||[]).length,4);
  const full=run('(rowReviewShowAll.add("h1"),reviewExposures(dashboardRecords().find(r=>r.id==="h1")))');
- assert.equal((full.match(/class="review-bucket"/g)||[]).length,9);
+ assert.equal((full.match(/class="review-bucket"/g)||[]).length,8);
 });
 test('Household accounts and individual account context use different layouts',()=>{
  const run=preview();

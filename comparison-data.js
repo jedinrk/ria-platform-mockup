@@ -21,13 +21,18 @@ const ComparisonData = (() => {
     let total = 0;
     for (const row of flatten(model.allocations).filter(row => !(row.node.children || []).length)) {
       const security = securities.find(s => s.name === row.node.name);
-      if (dimension === 'credit' && !(security?.tags.isDebt || (!security && row.names[0] === 'Debt'))) continue;
+      if (dimension === 'credit' && !(security?.tags.isDebt || (!security && row.names[0] === 'Fixed income'))) continue;
       const weight = row.node.target;
       total += weight;
       let shares;
       if (!security) shares = [['Unclassified', 1]];
-      else if (dimension === 'sector') shares = mode === 'look' && security.lookThrough ? security.lookThrough.sector.map(x => [x.sector + ' / ' + x.subsector, x.weight]) : [[security.tags.sector + ' / ' + security.tags.subsector, 1]];
-      else if (dimension === 'geography' || dimension === 'marketCap') shares = mode === 'look' && security.lookThrough ? security.lookThrough[dimension].map(x => [x.bucket, x.weight]) : [[security.tags[dimension] || 'Unclassified', 1]];
+      else if (dimension === 'sector') shares = mode === 'look' && security.lookThrough ? security.lookThrough.sector.map(x => [x.bucket, x.weight]) : [[security.tags.sector || 'Unclassified', 1]];
+      else if (dimension === 'geography' || dimension === 'marketCap') {
+        // Single tag counts a fund in one bucket; its own tag if it has one,
+        // otherwise its largest underlying bucket.
+        const dominant = security.lookThrough?.[dimension]?.reduce((best, x) => x.weight > best.weight ? x : best)?.bucket;
+        shares = mode === 'look' && security.lookThrough ? security.lookThrough[dimension].map(x => [x.bucket, x.weight]) : [[security.tags[dimension] || dominant || 'Unclassified', 1]];
+      }
       else if (dimension === 'themes') shares = (security.tags.themes.length ? security.tags.themes : ['Unclassified']).map(name => [name, 1]);
       else if (dimension === 'credit') shares = [[(security.tags.creditQuality || 'Unclassified') + ' / ' + (security.tags.duration || 'Unclassified'), 1]];
       else shares = [[security.tags.custom || 'Unclassified', 1]];

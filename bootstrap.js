@@ -2,7 +2,7 @@
 var originalData;
 (async function boot(){
   try {
-    const release='20261008-security-master-1';
+    const release='20261009-security-master-v3-data';
     const response = await fetch('data/original-mockup.json?v='+release);
     if (!response.ok) throw new Error('Original data could not load');
     originalData = await response.json();
