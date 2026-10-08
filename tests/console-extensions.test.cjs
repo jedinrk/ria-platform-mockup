@@ -177,47 +177,72 @@ test('A scenario never mutates holdings, the approved target or another portfoli
 
 test('Security master separates source-fixed fields from the firm classification',()=>{
  const {run}=console_();
- // The sheet marks Asset class, Sector and Sub-sector as the only editable fields.
+ // The sheet marks Asset class, Super sector, Sector and Sub-sector editable;
+ // everything else arrives fixed from the instrument source.
  assert.equal(run('ASSET_CLASSES.length'),4);
- assert.ok(run('SECTORS.length')>5);
- assert.equal(run('instrumentType(originalData.securities.find(s=>s.subcategory==="Direct stocks"))'),'Equity share');
- assert.equal(run('instrumentType(originalData.securities.find(s=>s.subcategory==="Real estate"))'),'Property');
+ assert.equal(run('CLASSIFICATION_FIELDS.length'),4);
+ // AssetType is stated by the master, not inferred from a grouping name.
+ assert.equal(run('instrumentType(originalData.securities.find(s=>s.name==="HDFC Bank"))'),'Direct equity');
+ assert.equal(run('instrumentType(originalData.securities.find(s=>s.name==="GOI 7.18% 2033"))'),'Government bond');
+ assert.equal(run('instrumentType(originalData.securities.find(s=>s.name==="Flat, Baner Pune"))'),'Real estate');
  const grid=run('securityGrid()');
- for(const header of ['Name','ISIN','Symbol','Crisil rating','Current price','Asset type','Asset class','Sector','Sub-sector'])
+ for(const header of ['Name','ISIN','Symbol','Crisil rating','Current price','Asset type','Asset class','Super sector','Sector','Sub-sector'])
   assert.ok(grid.includes(header),'missing column: '+header);
  assert.ok(grid.includes('config-fixed'),'source fields are marked read-only');
- assert.ok(grid.includes('data-field="assetClass"')&&grid.includes('data-field="sector"')&&grid.includes('data-field="subsector"'));
+ for(const field of ['assetClass','superSector','sector','subsector'])
+  assert.ok(grid.includes('data-field="'+field+'"'),'missing editable field: '+field);
  assert.ok(!grid.includes('data-field="symbol"'),'a fixed field is never editable');
+ // A verified symbol is shown; ISIN and price have no source and stay absent.
+ assert.ok(grid.includes('HDFCBANK'));
+ assert.ok(grid.includes('config-absent'),'unsupplied fields are marked');
 });
-
-test('A staged classification change is not applied until it is reviewed',()=>{
- const {run,raw}=console_();
- const before=run('originalData.securities.find(s=>s.id==="security-4").tags.sector');
- raw('securityPending={"security-4":{sector:"Information Technology"}}');
- assert.equal(run('originalData.securities.find(s=>s.id==="security-4").tags.sector'),before,'staging alone changes nothing');
- assert.equal(run('pendingCount()'),1);
- assert.equal(run('effectiveField(originalData.securities.find(s=>s.id==="security-4"),"sector")'),'Information Technology','the grid shows the staged value');
- raw('securityEdits["security-4"]={sector:"Information Technology"};applySecurityEdits()');
- assert.equal(run('originalData.securities.find(s=>s.id==="security-4").tags.sector'),'Information Technology','applying writes it through');
+test('A rating that cannot apply reads differently from one that is missing',()=>{
+ const {run}=console_();
+ const grid=run('securityGrid()');
+ assert.ok(grid.includes('A credit rating does not apply to this instrument type'));
+ assert.equal(run('originalData.securities.find(s=>s.name==="HDFC Bank").ratingApplies'),false);
+ assert.equal(run('originalData.securities.find(s=>s.name==="SBI FD (Mar 2028)").ratingApplies'),true);
+ assert.equal(run('originalData.securities.find(s=>s.name==="SBI FD (Mar 2028)").crisilRating'),'AAA');
 });
-
-test('Applied classification feeds the exposure views and asset class gates the credit lens',()=>{
+test('An instrument in the master that nobody holds is shown as not held',()=>{
+ const {run}=console_();
+ const grid=run('securityGrid()');
+ assert.equal(run('originalData.securities.length'),31);
+ assert.equal(run('securityValue(originalData.securities.find(s=>s.name==="Silver ETF").id)'),0);
+ assert.ok(grid.includes('Not held'));
+});
+test('Applied classification feeds the exposure views and asset class gates the credit view',()=>{
  const {run,raw}=console_();
  raw('clientView="accounts"');
- const before=run('(()=>{const r=dashboardRecords().find(x=>x.id==="a1");return exposureRows(r.actual,r.target,"sec").filter(x=>x.name.startsWith("Financials / Private banks")).map(x=>+x.actual.toFixed(2))})()');
- raw('securityEdits["security-4"]={sector:"Information Technology",subsector:"IT services"};applySecurityEdits()');
- const after=run('(()=>{const r=dashboardRecords().find(x=>x.id==="a1");return exposureRows(r.actual,r.target,"sec").filter(x=>x.name.startsWith("Financials / Private banks")).map(x=>+x.actual.toFixed(2))})()');
- assert.ok(after[0]<before[0],'reclassifying moves the exposure');
- // Asset class drives isDebt, which gates the credit and duration lens.
- raw('securityEdits["security-1"]={assetClass:"Debt"};applySecurityEdits()');
+ const financials=()=>run('(()=>{const r=dashboardRecords().find(x=>x.id==="a1");const row=exposureRows(r.actual,r.target,"sec").find(x=>x.name==="Financials");return row?+row.actual.toFixed(2):0})()');
+ const before=financials();
+ assert.ok(before>0);
+ raw('securityEdits["security-4"]={sector:"Information technology",subsector:"IT services"};applySecurityEdits()');
+ assert.ok(financials()<before,'reclassifying moves the exposure');
+ // Asset class drives isDebt, which gates the credit and duration view.
+ raw('securityEdits["security-1"]={assetClass:"Fixed income"};applySecurityEdits()');
  assert.equal(run('originalData.securities.find(s=>s.id==="security-1").tags.isDebt'),true);
  raw('securityEdits["security-1"]={assetClass:"Equity"};applySecurityEdits()');
  assert.equal(run('originalData.securities.find(s=>s.id==="security-1").tags.isDebt'),false);
 });
-
-test('Changing a sector clears a sub-sector that does not belong to it',()=>{
+test('Each classification level offers only what belongs under the level above',()=>{
  const {run}=console_();
- const within=run('[...(subsectorsBySector().get("Energy")||[])]');
- assert.ok(!within.includes('Private banks'),'Private banks is not an Energy sub-sector');
- assert.ok(run('allSubsectors().length')>5);
+ assert.ok(run('superSectorsFor("Equity")').includes('Cyclical'));
+ assert.ok(!run('superSectorsFor("Equity")').includes('Sovereign'),'a Fixed income branch is not offered under Equity');
+ assert.ok(run('sectorsFor("Equity","Cyclical")').includes('Financials'));
+ assert.ok(!run('sectorsFor("Equity","Cyclical")').includes('Oil & gas'),'a Sensitive sector is not offered under Cyclical');
+ assert.ok(run('subsectorsFor("Equity","Cyclical","Financials")').includes('Private banks'));
+ assert.ok(!run('subsectorsFor("Equity","Cyclical","Financials")').includes('Autos'));
+ // A super sector with no sector chosen yet still offers every sector beneath it.
+ assert.ok(run('sectorsFor("Fixed income","")').length>1);
+});
+test('Choosing a level clears a level below it that no longer belongs',()=>{
+ const {raw,run}=console_();
+ raw('securityPending={}');
+ // HDFC Bank sits at Equity > Cyclical > Financials > Private banks.
+ const bank=run('originalData.securities.find(s=>s.name==="HDFC Bank").id');
+ raw(`securityPending[${JSON.stringify(bank)}]={superSector:"Sensitive"}`);
+ assert.equal(run(`effectiveField(originalData.securities.find(s=>s.id===${JSON.stringify(bank)}),"superSector")`),'Sensitive');
+ // Financials is not a Sensitive sector, so the staged grid must not keep it.
+ assert.ok(!run('sectorsFor("Equity","Sensitive")').includes('Financials'));
 });

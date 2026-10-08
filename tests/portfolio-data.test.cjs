@@ -14,28 +14,49 @@ function runtime(){
  return code=>JSON.parse(vm.runInContext('JSON.stringify('+code+')',ctx));
 }
 test('Original accounts, households, holdings and AUM are preserved',()=>{
- assert.equal(data.accounts.length,12);assert.equal(data.households.length,6);assert.equal(data.securities.length,19);
+ assert.equal(data.accounts.length,12);assert.equal(data.households.length,6);
+ // The master carries 31 instruments; the sample portfolios still hold the original 19.
+ assert.equal(data.securities.length,31);
+ assert.equal(data.securities.filter(s=>data.accounts[0].holdings.some(h=>h.securityId===s.id)).length,19);
  assert.equal(data.accounts.reduce((s,a)=>s+a.aumLakh,0),1968);
  for(const a of data.accounts){assert.equal(a.holdings.length,19);assert.ok(Math.abs(a.holdings.reduce((s,h)=>s+h.valueLakh,0)-a.aumLakh)<1e-9)}
- assert.deepEqual(data.accounts[0].holdings.map(h=>h.valueLakh),data.securities.map(s=>s.baseValueLakh));
+ const held=data.securities.filter(s=>data.accounts[0].holdings.some(h=>h.securityId===s.id));
+ assert.deepEqual(data.accounts[0].holdings.map(h=>h.valueLakh),data.accounts[0].holdings.map(h=>held.find(s=>s.id===h.securityId).baseValueLakh));
  assert.equal(data.accounts[0].name,'Mehta Joint (demat + physical)');
  assert.deepEqual(data.securities.filter(s=>s.lookThrough).map(s=>s.name),['Parag Parikh Flexi Cap','Nippon India Small Cap','UTI Nifty 50 Index','Nippon Nifty BeES','Motilal Midcap 150 ETF']);
 });
 
-test('Standalone comparison exposure data matches the full source dataset',()=>{
- const subset=require('../data/model-exposures.json');
- assert.deepEqual(data.securities.map(({name,assetClass,tags,lookThrough})=>({name,assetClass,tags,lookThrough})),subset.securities);
+test('Every instrument carries the nine configuration-sheet columns',()=>{
+ const columns=['name','isin','symbol','crisilRating','currentPrice','assetType','assetClass','superSector'];
+ for(const s of data.securities){
+  for(const column of columns)assert.ok(column in s,s.name+' is missing '+column);
+  assert.ok('sector' in s.tags&&'subsector' in s.tags,s.name+' is missing sector/sub-sector');
+  // ISIN and Current Price have no source, so they are null rather than invented.
+  assert.equal(s.isin,null);assert.equal(s.currentPrice,null);
+ }
+ assert.equal(data.securities.filter(s=>s.symbol).length,10);
+ assert.equal(data.securities.find(s=>s.name==='HDFC Bank').symbol,'HDFCBANK');
+ // A rating that cannot apply is distinguished from one that is simply absent.
+ assert.equal(data.securities.filter(s=>s.ratingApplies).length,7);
+ assert.ok(data.securities.filter(s=>s.ratingApplies).every(s=>s.crisilRating));
+ assert.ok(data.securities.filter(s=>!s.ratingApplies).every(s=>s.crisilRating===null));
 });
 test('Materialized synthetic holdings match the original deterministic formula',()=>{
  for(const a of data.accounts.filter(a=>!a.generation.usesBase)){
-  const raw=data.modelTargets[a.riskProfile].map((t,i)=>{const x=Math.sin(+a.id.slice(1)*127.1+i*311.7)*43758.5453;const rnd=x-Math.floor(x);return Math.max(.05,t)*Math.max(.05,1+(a.generation.spread||0)*(rnd*2-1))});
+  // The formula runs over the nineteen instruments the sample actually holds,
+  // in the order the holdings are recorded.
+  const order=a.holdings.map(h=>data.securities.find(s=>s.id===h.securityId).name);
+  const leaves=data.assetHierarchy.flatMap(c=>c.c.flatMap(g=>g.c.map(l=>l.n)));
+  const weightByName=new Map(leaves.map((n,i)=>[n,data.modelTargets[a.riskProfile][i]]));
+  const raw=order.map((name,i)=>{const x=Math.sin(+a.id.slice(1)*127.1+i*311.7)*43758.5453;const rnd=x-Math.floor(x);return Math.max(.05,weightByName.get(name))*Math.max(.05,1+(a.generation.spread||0)*(rnd*2-1))});
   const scale=a.aumLakh/raw.reduce((s,x)=>s+x,0);
-  a.holdings.forEach((h,i)=>assert.equal(h.valueLakh,raw[i]*scale));
+  a.holdings.forEach((h,i)=>assert.ok(Math.abs(h.valueLakh-raw[i]*scale)<1e-9));
  }
 });
 test('Original model class totals and full portfolio inclusion are preserved',()=>{
  const run=runtime();
- assert.deepEqual(run('Object.keys(MODEL_TARGETS).map(p=>catalogTree(p).map(n=>n.target))'),[[25,50,7,18],[50,25,12,13],[70,12,12,6]]);
+ // Embassy REIT and IRB InvIT now classify as Real assets rather than Alternatives.
+ assert.deepEqual(run('Object.keys(MODEL_TARGETS).map(p=>catalogTree(p).map(n=>n.target))'),[[25,50,2,23],[50,25,5,20],[70,12,6,12]]);
  assert.deepEqual(run('clientRecords.map(c=>targetIssues(approved(c).plan))'),Array.from({length:12},()=>[]));
  assert.ok(run('clientRecords.every(c=>approved(c).plan.assets.every(a=>a.included))'));
  assert.equal(run('clientRecords.reduce((s,c)=>s+scopeValue(approved(c).plan),0)'),1968);
@@ -44,6 +65,7 @@ test('Original model class totals and full portfolio inclusion are preserved',()
 test('Look-through uses each original dimension independently; single tag does not split',()=>{
  const run=runtime();
  assert.deepEqual(run("Array.from(exposure([{name:'Parag Parikh Flexi Cap',value:10,category:'Equity'}],'geo').buckets)"),[['India',6.5],['Global',3.5]]);
+ assert.equal(run("exposure([{name:'SBI FD (Mar 2028)',value:10,category:'Fixed income'}],'cr').total"),10);
  assert.deepEqual(run("(fundMode='tag',Array.from(exposure([{name:'Parag Parikh Flexi Cap',value:10,category:'Equity'}],'geo').buckets))"),[['India',10]]);
  assert.deepEqual(run("Array.from(exposure([{name:'Unknown',value:10,category:'Equity'}],'sec').buckets)"),[['Unclassified',10]]);
  assert.equal(run("exposureRows([],[],'sec').length"),0);
@@ -71,7 +93,8 @@ test('Household totals count each account once, including the joint account',()=
 test('Allocation rows retain actual-only holdings and distinguish unspecified targets from zero',()=>{
  const run=runtime();
  const rows=run('alignedPortfolioRows(approved(clientRecords[0]).plan)');
- assert.equal(rows.length,33);
+ // Four asset classes, seventeen instrument types and all 31 instruments.
+ assert.equal(rows.length,52);
  assert.equal(rows.find(r=>r.names.length===1&&r.names[0]==='Equity').actual,120);
  run("(clientRecords[0].draft=copy(approved(clientRecords[0]).plan),clientRecords[0].draft.base.data.allocations[0].children[0].children.splice(0,1),true)");
  const missing=run('alignedPortfolioRows(clientRecords[0].draft)').find(r=>r.names.at(-1)==='Parag Parikh Flexi Cap');

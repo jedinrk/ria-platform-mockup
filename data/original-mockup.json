@@ -13,7 +13,13 @@
       "No source account ownership shares, risk-assessment dates, financial goals or source-statement evidence were supplied.",
       "Original sample includes all 19 holdings in every account. No residence/jewellery exclusion or target redistribution has been added.",
       "Independent exposure dimensions are preserved; joint geography/market-cap/sector exposures are not known."
-    ]
+    ],
+    "securityMaster": {
+      "sourceFile": "Portfolio Console – wireframes v3.html",
+      "sourceSha256": "35ffb33647489ad2072c808bc4e6470f5ff2d9b8bead630db65797f7d57efc81",
+      "sheet": "RIA-AssetConfig-Type1",
+      "note": "Instruments, instrument types and classification come from data/security-master.json, built from the revised wireframe to the RIA-AssetConfig-Type1 column set. Recorded holdings are unchanged, so an instrument the sample does not hold shows no value."
+    }
   },
   "assetHierarchy": [
     {
@@ -21,7 +27,7 @@
       "tg": 50,
       "c": [
         {
-          "n": "Mutual funds",
+          "n": "Mutual fund",
           "tg": 25,
           "c": [
             {
@@ -42,7 +48,7 @@
           ]
         },
         {
-          "n": "Direct stocks",
+          "n": "Direct equity",
           "tg": 15,
           "c": [
             {
@@ -59,11 +65,31 @@
               "n": "Reliance Industries",
               "v": 14,
               "tg": 4
+            },
+            {
+              "n": "Bajaj Finance",
+              "v": 6,
+              "tg": 0
+            },
+            {
+              "n": "Hindustan Unilever",
+              "v": 6,
+              "tg": 0
+            },
+            {
+              "n": "Sun Pharma",
+              "v": 5,
+              "tg": 0
+            },
+            {
+              "n": "Larsen & Toubro",
+              "v": 7,
+              "tg": 0
             }
           ]
         },
         {
-          "n": "ETFs",
+          "n": "ETF",
           "tg": 10,
           "c": [
             {
@@ -81,18 +107,24 @@
       ]
     },
     {
-      "n": "Debt",
+      "n": "Fixed income",
       "tg": 25,
       "c": [
         {
-          "n": "Bonds",
-          "tg": 8,
+          "n": "Government bond",
+          "tg": 5,
           "c": [
             {
               "n": "GOI 7.18% 2033",
               "v": 15,
               "tg": 5
-            },
+            }
+          ]
+        },
+        {
+          "n": "Corporate bond",
+          "tg": 3,
+          "c": [
             {
               "n": "HDFC Ltd NCD 8.1%",
               "v": 8,
@@ -101,7 +133,7 @@
           ]
         },
         {
-          "n": "Fixed deposits",
+          "n": "Fixed deposit",
           "tg": 7,
           "c": [
             {
@@ -117,7 +149,7 @@
           ]
         },
         {
-          "n": "EPF / PPF",
+          "n": "Retirement account",
           "tg": 10,
           "c": [
             {
@@ -126,12 +158,23 @@
               "tg": 10
             }
           ]
+        },
+        {
+          "n": "Debt fund",
+          "tg": 0,
+          "c": [
+            {
+              "n": "HDFC Short Term Debt Fund",
+              "v": 10,
+              "tg": 0
+            }
+          ]
         }
       ]
     },
     {
       "n": "Alternatives",
-      "tg": 12,
+      "tg": 5,
       "c": [
         {
           "n": "AIF",
@@ -141,9 +184,81 @@
               "n": "360 ONE Cat III AIF",
               "v": 8,
               "tg": 5
+            },
+            {
+              "n": "Infra Fund Cat I AIF",
+              "v": 4,
+              "tg": 0
+            },
+            {
+              "n": "Private Equity Cat II AIF",
+              "v": 5,
+              "tg": 0
             }
           ]
         },
+        {
+          "n": "PMS",
+          "tg": 0,
+          "c": [
+            {
+              "n": "Quality Equity PMS",
+              "v": 8,
+              "tg": 0
+            }
+          ]
+        },
+        {
+          "n": "Private credit",
+          "tg": 0,
+          "c": [
+            {
+              "n": "Private credit note 2029",
+              "v": 5,
+              "tg": 0
+            }
+          ]
+        },
+        {
+          "n": "Commodity",
+          "tg": 0,
+          "c": [
+            {
+              "n": "Silver ETF",
+              "v": 3,
+              "tg": 0
+            }
+          ]
+        },
+        {
+          "n": "Digital asset",
+          "tg": 0,
+          "c": [
+            {
+              "n": "Bitcoin (exchange wallet)",
+              "v": 2,
+              "tg": 0
+            }
+          ]
+        },
+        {
+          "n": "Collectible",
+          "tg": 0,
+          "c": [
+            {
+              "n": "Art and collectibles",
+              "v": 4,
+              "tg": 0,
+              "p": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "n": "Real assets",
+      "tg": 20,
+      "c": [
         {
           "n": "REIT / InvIT",
           "tg": 7,
@@ -159,13 +274,7 @@
               "tg": 3
             }
           ]
-        }
-      ]
-    },
-    {
-      "n": "Real assets",
-      "tg": 13,
-      "c": [
+        },
         {
           "n": "Gold",
           "tg": 5,
@@ -206,6 +315,10 @@
       3,
       2,
       2,
+      0,
+      0,
+      0,
+      0,
       4,
       0,
       14,
@@ -213,7 +326,15 @@
       8,
       6,
       16,
+      0,
       2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
       4,
       1,
       5,
@@ -227,6 +348,10 @@
       6,
       5,
       4,
+      0,
+      0,
+      0,
+      0,
       6,
       4,
       5,
@@ -234,7 +359,15 @@
       4,
       3,
       10,
+      0,
       5,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
       4,
       3,
       3,
@@ -248,6 +381,10 @@
       8,
       7,
       5,
+      0,
+      0,
+      0,
+      0,
       8,
       6,
       3,
@@ -255,7 +392,15 @@
       1,
       1,
       6,
+      0,
       6,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
       4,
       2,
       2,
@@ -1627,8 +1772,15 @@
     {
       "id": "security-1",
       "name": "Parag Parikh Flexi Cap",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Mutual fund",
       "assetClass": "Equity",
-      "subcategory": "Mutual funds",
+      "superSector": "Multi-sector funds",
+      "subcategory": "Mutual fund",
       "baseValueLakh": 30,
       "moderateTargetPercent": 8,
       "physical": false,
@@ -1638,64 +1790,54 @@
       "liquidityCode": 0,
       "originalNote": "Held over 12 months: long-term rate.",
       "tags": {
-        "sector": "Diversified equity",
+        "sector": "Diversified equity funds",
         "subsector": "Flexi cap",
-        "marketCap": "Large",
-        "geography": "India",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Quality",
           "Global diversification"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
       },
+      "attributes": {
+        "cat": "Flexi cap",
+        "er": 0.63,
+        "risk": "Very high",
+        "bm": "Nifty 500 TRI",
+        "aum": 95000
+      },
       "lookThrough": {
         "sector": [
           {
-            "sector": "Financials",
-            "subsector": "Private banks",
-            "weight": 0.18
+            "bucket": "Financials",
+            "weight": 0.24
           },
           {
-            "sector": "Financials",
-            "subsector": "NBFC & others",
+            "bucket": "Information technology",
+            "weight": 0.2
+          },
+          {
+            "bucket": "Energy",
             "weight": 0.06
           },
           {
-            "sector": "Information Technology",
-            "subsector": "IT services",
-            "weight": 0.07
-          },
-          {
-            "sector": "Information Technology",
-            "subsector": "Global technology",
-            "weight": 0.13
-          },
-          {
-            "sector": "Energy",
-            "subsector": "Oil & gas",
-            "weight": 0.06
-          },
-          {
-            "sector": "Consumer",
-            "subsector": "FMCG",
+            "bucket": "Consumer staples",
             "weight": 0.08
           },
           {
-            "sector": "Healthcare",
-            "subsector": "Pharma",
+            "bucket": "Healthcare",
             "weight": 0.04
           },
           {
-            "sector": "Industrials & other",
-            "subsector": "Capital goods",
+            "bucket": "Industrials",
             "weight": 0.1
           },
           {
-            "sector": "Other equity",
-            "subsector": "Diversified / other",
+            "bucket": "Other",
             "weight": 0.28
           }
         ],
@@ -1728,8 +1870,15 @@
     {
       "id": "security-2",
       "name": "Nippon India Small Cap",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Mutual fund",
       "assetClass": "Equity",
-      "subcategory": "Mutual funds",
+      "superSector": "Multi-sector funds",
+      "subcategory": "Mutual fund",
       "baseValueLakh": 12,
       "moderateTargetPercent": 5,
       "physical": false,
@@ -1739,48 +1888,49 @@
       "liquidityCode": 0,
       "originalNote": "Held over 12 months.",
       "tags": {
-        "sector": "Diversified equity",
+        "sector": "Diversified equity funds",
         "subsector": "Small cap",
-        "marketCap": "Small",
-        "geography": "India",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Small-cap growth"
         ],
-        "custom": "Satellite",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
       },
+      "attributes": {
+        "cat": "Small cap",
+        "er": 0.68,
+        "risk": "Very high",
+        "bm": "Nifty Smallcap 250 TRI",
+        "aum": 65000
+      },
       "lookThrough": {
         "sector": [
           {
-            "sector": "Industrials & other",
-            "subsector": "Capital goods",
+            "bucket": "Industrials",
             "weight": 0.28
           },
           {
-            "sector": "Financials",
-            "subsector": "NBFC & others",
+            "bucket": "Financials",
             "weight": 0.12
           },
           {
-            "sector": "Healthcare",
-            "subsector": "Pharma",
+            "bucket": "Healthcare",
             "weight": 0.1
           },
           {
-            "sector": "Consumer",
-            "subsector": "FMCG",
+            "bucket": "Consumer staples",
             "weight": 0.08
           },
           {
-            "sector": "Information Technology",
-            "subsector": "IT services",
+            "bucket": "Information technology",
             "weight": 0.07
           },
           {
-            "sector": "Other equity",
-            "subsector": "Diversified / other",
+            "bucket": "Other",
             "weight": 0.35
           }
         ],
@@ -1809,8 +1959,15 @@
     {
       "id": "security-3",
       "name": "UTI Nifty 50 Index",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Mutual fund",
       "assetClass": "Equity",
-      "subcategory": "Mutual funds",
+      "superSector": "Multi-sector funds",
+      "subcategory": "Mutual fund",
       "baseValueLakh": 20,
       "moderateTargetPercent": 12,
       "physical": false,
@@ -1820,58 +1977,53 @@
       "liquidityCode": 0,
       "originalNote": "Held over 12 months.",
       "tags": {
-        "sector": "Diversified equity",
-        "subsector": "Index",
-        "marketCap": "Large",
-        "geography": "India",
+        "sector": "Diversified equity funds",
+        "subsector": "Large-cap & index",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Broad market"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
       },
+      "attributes": {
+        "cat": "Index fund",
+        "er": 0.18,
+        "risk": "Very high",
+        "bm": "Nifty 50 TRI",
+        "aum": 20000
+      },
       "lookThrough": {
         "sector": [
           {
-            "sector": "Financials",
-            "subsector": "Private banks",
-            "weight": 0.3
+            "bucket": "Financials",
+            "weight": 0.38
           },
           {
-            "sector": "Financials",
-            "subsector": "NBFC & others",
-            "weight": 0.08
-          },
-          {
-            "sector": "Information Technology",
-            "subsector": "IT services",
+            "bucket": "Information technology",
             "weight": 0.13
           },
           {
-            "sector": "Energy",
-            "subsector": "Oil & gas",
+            "bucket": "Energy",
             "weight": 0.11
           },
           {
-            "sector": "Consumer",
-            "subsector": "FMCG",
+            "bucket": "Consumer staples",
             "weight": 0.09
           },
           {
-            "sector": "Healthcare",
-            "subsector": "Pharma",
+            "bucket": "Healthcare",
             "weight": 0.04
           },
           {
-            "sector": "Industrials & other",
-            "subsector": "Capital goods",
+            "bucket": "Industrials",
             "weight": 0.08
           },
           {
-            "sector": "Other equity",
-            "subsector": "Diversified / other",
+            "bucket": "Other",
             "weight": 0.17
           }
         ],
@@ -1892,8 +2044,15 @@
     {
       "id": "security-4",
       "name": "HDFC Bank",
+      "isin": null,
+      "symbol": "HDFCBANK",
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Direct equity",
       "assetClass": "Equity",
-      "subcategory": "Direct stocks",
+      "superSector": "Cyclical",
+      "subcategory": "Direct equity",
       "baseValueLakh": 18,
       "moderateTargetPercent": 6,
       "physical": false,
@@ -1911,18 +2070,32 @@
           "Quality",
           "Dividend"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
+      },
+      "attributes": {
+        "mcap": "Large",
+        "risk": "High",
+        "geo": "India",
+        "dy": 1.1,
+        "pe": 18
       },
       "lookThrough": null
     },
     {
       "id": "security-5",
       "name": "Infosys",
+      "isin": null,
+      "symbol": "INFY",
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Direct equity",
       "assetClass": "Equity",
-      "subcategory": "Direct stocks",
+      "superSector": "Sensitive",
+      "subcategory": "Direct equity",
       "baseValueLakh": 12,
       "moderateTargetPercent": 5,
       "physical": false,
@@ -1932,7 +2105,7 @@
       "liquidityCode": 0,
       "originalNote": "Held under 12 months and at a loss: selling books a short-term loss.",
       "tags": {
-        "sector": "Information Technology",
+        "sector": "Information technology",
         "subsector": "IT services",
         "marketCap": "Large",
         "geography": "India",
@@ -1940,18 +2113,32 @@
           "Digital India",
           "Dividend"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
+      },
+      "attributes": {
+        "mcap": "Large",
+        "risk": "High",
+        "geo": "India",
+        "dy": 2.6,
+        "pe": 24
       },
       "lookThrough": null
     },
     {
       "id": "security-6",
       "name": "Reliance Industries",
+      "isin": null,
+      "symbol": "RELIANCE",
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Direct equity",
       "assetClass": "Equity",
-      "subcategory": "Direct stocks",
+      "superSector": "Sensitive",
+      "subcategory": "Direct equity",
       "baseValueLakh": 14,
       "moderateTargetPercent": 4,
       "physical": false,
@@ -1968,18 +2155,32 @@
         "themes": [
           "Energy transition"
         ],
-        "custom": "Satellite",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
+      },
+      "attributes": {
+        "mcap": "Large",
+        "risk": "High",
+        "geo": "India",
+        "dy": 0.4,
+        "pe": 25
       },
       "lookThrough": null
     },
     {
       "id": "security-7",
       "name": "Nippon Nifty BeES",
+      "isin": null,
+      "symbol": "NIFTYBEES",
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "ETF",
       "assetClass": "Equity",
-      "subcategory": "ETFs",
+      "superSector": "Multi-sector funds",
+      "subcategory": "ETF",
       "baseValueLakh": 10,
       "moderateTargetPercent": 6,
       "physical": false,
@@ -1989,58 +2190,52 @@
       "liquidityCode": 0,
       "originalNote": "Held over 12 months.",
       "tags": {
-        "sector": "Diversified equity",
-        "subsector": "Index",
-        "marketCap": "Large",
-        "geography": "India",
+        "sector": "Diversified equity funds",
+        "subsector": "Large-cap & index",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Broad market"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
       },
+      "attributes": {
+        "idx": "Nifty 50",
+        "er": 0.04,
+        "risk": "Very high",
+        "te": 0.05
+      },
       "lookThrough": {
         "sector": [
           {
-            "sector": "Financials",
-            "subsector": "Private banks",
-            "weight": 0.3
+            "bucket": "Financials",
+            "weight": 0.38
           },
           {
-            "sector": "Financials",
-            "subsector": "NBFC & others",
-            "weight": 0.08
-          },
-          {
-            "sector": "Information Technology",
-            "subsector": "IT services",
+            "bucket": "Information technology",
             "weight": 0.13
           },
           {
-            "sector": "Energy",
-            "subsector": "Oil & gas",
+            "bucket": "Energy",
             "weight": 0.11
           },
           {
-            "sector": "Consumer",
-            "subsector": "FMCG",
+            "bucket": "Consumer staples",
             "weight": 0.09
           },
           {
-            "sector": "Healthcare",
-            "subsector": "Pharma",
+            "bucket": "Healthcare",
             "weight": 0.04
           },
           {
-            "sector": "Industrials & other",
-            "subsector": "Capital goods",
+            "bucket": "Industrials",
             "weight": 0.08
           },
           {
-            "sector": "Other equity",
-            "subsector": "Diversified / other",
+            "bucket": "Other",
             "weight": 0.17
           }
         ],
@@ -2061,8 +2256,15 @@
     {
       "id": "security-8",
       "name": "Motilal Midcap 150 ETF",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "ETF",
       "assetClass": "Equity",
-      "subcategory": "ETFs",
+      "superSector": "Multi-sector funds",
+      "subcategory": "ETF",
       "baseValueLakh": 4,
       "moderateTargetPercent": 4,
       "physical": false,
@@ -2072,58 +2274,52 @@
       "liquidityCode": 0,
       "originalNote": "Held under 12 months: short-term rate. Consider waiting.",
       "tags": {
-        "sector": "Diversified equity",
+        "sector": "Diversified equity funds",
         "subsector": "Mid cap",
-        "marketCap": "Mid",
-        "geography": "India",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Mid-cap growth"
         ],
-        "custom": "Satellite",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
       },
+      "attributes": {
+        "idx": "Nifty Midcap 150",
+        "er": 0.2,
+        "risk": "Very high",
+        "te": 0.12
+      },
       "lookThrough": {
         "sector": [
           {
-            "sector": "Financials",
-            "subsector": "Private banks",
-            "weight": 0.08
-          },
-          {
-            "sector": "Financials",
-            "subsector": "NBFC & others",
-            "weight": 0.14
-          },
-          {
-            "sector": "Industrials & other",
-            "subsector": "Capital goods",
+            "bucket": "Financials",
             "weight": 0.22
           },
           {
-            "sector": "Healthcare",
-            "subsector": "Pharma",
+            "bucket": "Industrials",
+            "weight": 0.22
+          },
+          {
+            "bucket": "Healthcare",
             "weight": 0.12
           },
           {
-            "sector": "Consumer",
-            "subsector": "FMCG",
+            "bucket": "Consumer staples",
             "weight": 0.08
           },
           {
-            "sector": "Information Technology",
-            "subsector": "IT services",
+            "bucket": "Information technology",
             "weight": 0.09
           },
           {
-            "sector": "Energy",
-            "subsector": "Oil & gas",
+            "bucket": "Energy",
             "weight": 0.05
           },
           {
-            "sector": "Other equity",
-            "subsector": "Diversified / other",
+            "bucket": "Other",
             "weight": 0.22
           }
         ],
@@ -2150,10 +2346,187 @@
       }
     },
     {
+      "id": "security-20",
+      "name": "Bajaj Finance",
+      "isin": null,
+      "symbol": "BAJFINANCE",
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Direct equity",
+      "assetClass": "Equity",
+      "superSector": "Cyclical",
+      "subcategory": "Direct equity",
+      "baseValueLakh": 6,
+      "moderateTargetPercent": 0,
+      "physical": false,
+      "costBasisLakh": 4.2,
+      "illustrativeTaxRatePercent": 12.5,
+      "liquidity": "Liquid",
+      "liquidityCode": 0,
+      "originalNote": "Held over 12 months.",
+      "tags": {
+        "sector": "Financials",
+        "subsector": "NBFC & others",
+        "marketCap": "Large",
+        "geography": "India",
+        "themes": [
+          "Consumer credit"
+        ],
+        "custom": null,
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "attributes": {
+        "mcap": "Large",
+        "risk": "High",
+        "geo": "India",
+        "dy": 0.5,
+        "pe": 30
+      },
+      "lookThrough": null
+    },
+    {
+      "id": "security-21",
+      "name": "Hindustan Unilever",
+      "isin": null,
+      "symbol": "HINDUNILVR",
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Direct equity",
+      "assetClass": "Equity",
+      "superSector": "Defensive",
+      "subcategory": "Direct equity",
+      "baseValueLakh": 6,
+      "moderateTargetPercent": 0,
+      "physical": false,
+      "costBasisLakh": 5.5,
+      "illustrativeTaxRatePercent": 12.5,
+      "liquidity": "Liquid",
+      "liquidityCode": 0,
+      "originalNote": "Held over 12 months.",
+      "tags": {
+        "sector": "Consumer staples",
+        "subsector": "FMCG",
+        "marketCap": "Large",
+        "geography": "India",
+        "themes": [
+          "Consumption",
+          "Dividend"
+        ],
+        "custom": null,
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "attributes": {
+        "mcap": "Large",
+        "risk": "Moderately high",
+        "geo": "India",
+        "dy": 1.6,
+        "pe": 52
+      },
+      "lookThrough": null
+    },
+    {
+      "id": "security-22",
+      "name": "Sun Pharma",
+      "isin": null,
+      "symbol": "SUNPHARMA",
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Direct equity",
+      "assetClass": "Equity",
+      "superSector": "Defensive",
+      "subcategory": "Direct equity",
+      "baseValueLakh": 5,
+      "moderateTargetPercent": 0,
+      "physical": false,
+      "costBasisLakh": 4.6,
+      "illustrativeTaxRatePercent": 20,
+      "liquidity": "Liquid",
+      "liquidityCode": 0,
+      "originalNote": "Held under 12 months: short-term rate.",
+      "tags": {
+        "sector": "Healthcare",
+        "subsector": "Pharma",
+        "marketCap": "Large",
+        "geography": "India",
+        "themes": [
+          "Ageing and health"
+        ],
+        "custom": null,
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "attributes": {
+        "mcap": "Large",
+        "risk": "High",
+        "geo": "India",
+        "dy": 0.8,
+        "pe": 33
+      },
+      "lookThrough": null
+    },
+    {
+      "id": "security-23",
+      "name": "Larsen & Toubro",
+      "isin": null,
+      "symbol": "LT",
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Direct equity",
+      "assetClass": "Equity",
+      "superSector": "Sensitive",
+      "subcategory": "Direct equity",
+      "baseValueLakh": 7,
+      "moderateTargetPercent": 0,
+      "physical": false,
+      "costBasisLakh": 5.1,
+      "illustrativeTaxRatePercent": 12.5,
+      "liquidity": "Liquid",
+      "liquidityCode": 0,
+      "originalNote": "Held over 12 months.",
+      "tags": {
+        "sector": "Industrials",
+        "subsector": "Capital goods",
+        "marketCap": "Large",
+        "geography": "India",
+        "themes": [
+          "Infrastructure",
+          "Make in India"
+        ],
+        "custom": null,
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "attributes": {
+        "mcap": "Large",
+        "risk": "High",
+        "geo": "India",
+        "dy": 1,
+        "pe": 34
+      },
+      "lookThrough": null
+    },
+    {
       "id": "security-9",
       "name": "GOI 7.18% 2033",
-      "assetClass": "Debt",
-      "subcategory": "Bonds",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": "Sovereign",
+      "currentPrice": null,
+      "ratingApplies": true,
+      "assetType": "Government bond",
+      "assetClass": "Fixed income",
+      "superSector": "Sovereign",
+      "subcategory": "Government bond",
       "baseValueLakh": 15,
       "moderateTargetPercent": 5,
       "physical": false,
@@ -2163,25 +2536,39 @@
       "liquidityCode": 0,
       "originalNote": "Gains taxed at slab rate (assumed 30%).",
       "tags": {
-        "sector": "Fixed income",
-        "subsector": "Government securities",
-        "marketCap": "Non-equity",
-        "geography": "India",
+        "sector": "Government securities",
+        "subsector": "Central government",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Capital preservation"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": "Sovereign",
         "duration": "Long",
         "isDebt": true
+      },
+      "attributes": {
+        "cpn": 7.18,
+        "mat": "Aug 2033",
+        "rating": "Sovereign",
+        "ytm": 6.9,
+        "dur": "Long"
       },
       "lookThrough": null
     },
     {
       "id": "security-10",
       "name": "HDFC Ltd NCD 8.1%",
-      "assetClass": "Debt",
-      "subcategory": "Bonds",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": "AAA",
+      "currentPrice": null,
+      "ratingApplies": true,
+      "assetType": "Corporate bond",
+      "assetClass": "Fixed income",
+      "superSector": "Credit",
+      "subcategory": "Corporate bond",
       "baseValueLakh": 8,
       "moderateTargetPercent": 3,
       "physical": false,
@@ -2191,25 +2578,40 @@
       "liquidityCode": 1,
       "originalNote": "Thin secondary-market liquidity.",
       "tags": {
-        "sector": "Fixed income",
-        "subsector": "Corporate bonds",
-        "marketCap": "Non-equity",
-        "geography": "India",
+        "sector": "Corporate bonds",
+        "subsector": "AAA rated",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Income"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": "AAA",
         "duration": "Medium",
         "isDebt": true
+      },
+      "attributes": {
+        "cpn": 8.1,
+        "mat": "May 2028",
+        "rating": "AAA",
+        "ytm": 7.8,
+        "dur": "Medium",
+        "sc": "Secured"
       },
       "lookThrough": null
     },
     {
       "id": "security-11",
       "name": "SBI FD (Mar 2028)",
-      "assetClass": "Debt",
-      "subcategory": "Fixed deposits",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": "AAA",
+      "currentPrice": null,
+      "ratingApplies": true,
+      "assetType": "Fixed deposit",
+      "assetClass": "Fixed income",
+      "superSector": "Credit",
+      "subcategory": "Fixed deposit",
       "baseValueLakh": 14,
       "moderateTargetPercent": 4,
       "physical": false,
@@ -2219,25 +2621,39 @@
       "liquidityCode": 1,
       "originalNote": "Premature withdrawal carries a penalty; interest is taxed at slab rate.",
       "tags": {
-        "sector": "Fixed income",
-        "subsector": "Bank deposits",
-        "marketCap": "Non-equity",
-        "geography": "India",
+        "sector": "Bank deposits",
+        "subsector": "Scheduled bank FDs",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Capital preservation"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": "AAA",
-        "duration": "Short",
+        "duration": "Medium",
         "isDebt": true
+      },
+      "attributes": {
+        "rate": 7.1,
+        "mat": "Mar 2028",
+        "pen": 1,
+        "rating": "AAA",
+        "dur": "Medium"
       },
       "lookThrough": null
     },
     {
       "id": "security-12",
       "name": "HDFC Bank FD (Jun 2027)",
-      "assetClass": "Debt",
-      "subcategory": "Fixed deposits",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": "AAA",
+      "currentPrice": null,
+      "ratingApplies": true,
+      "assetType": "Fixed deposit",
+      "assetClass": "Fixed income",
+      "superSector": "Credit",
+      "subcategory": "Fixed deposit",
       "baseValueLakh": 6,
       "moderateTargetPercent": 3,
       "physical": false,
@@ -2247,25 +2663,39 @@
       "liquidityCode": 1,
       "originalNote": "Premature withdrawal carries a penalty.",
       "tags": {
-        "sector": "Fixed income",
-        "subsector": "Bank deposits",
-        "marketCap": "Non-equity",
-        "geography": "India",
+        "sector": "Bank deposits",
+        "subsector": "Scheduled bank FDs",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Capital preservation"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": "AAA",
         "duration": "Short",
         "isDebt": true
+      },
+      "attributes": {
+        "rate": 7.25,
+        "mat": "Jun 2027",
+        "pen": 1,
+        "rating": "AAA",
+        "dur": "Short"
       },
       "lookThrough": null
     },
     {
       "id": "security-13",
       "name": "EPF account",
-      "assetClass": "Debt",
-      "subcategory": "EPF / PPF",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": "Sovereign",
+      "currentPrice": null,
+      "ratingApplies": true,
+      "assetType": "Retirement account",
+      "assetClass": "Fixed income",
+      "superSector": "Retirement & small savings",
+      "subcategory": "Retirement account",
       "baseValueLakh": 22,
       "moderateTargetPercent": 10,
       "physical": false,
@@ -2275,24 +2705,81 @@
       "liquidityCode": 2,
       "originalNote": "Employer-linked. Withdrawal restricted until retirement or qualifying events.",
       "tags": {
-        "sector": "Fixed income",
-        "subsector": "Retirement funds",
-        "marketCap": "Non-equity",
-        "geography": "India",
+        "sector": "Retirement funds",
+        "subsector": "EPF",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Retirement"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": "Sovereign",
         "duration": "Medium",
         "isDebt": true
+      },
+      "attributes": {
+        "rate": 8.25,
+        "rule": "Until retirement or qualifying events",
+        "rating": "Sovereign",
+        "dur": "Medium"
+      },
+      "lookThrough": null
+    },
+    {
+      "id": "security-24",
+      "name": "HDFC Short Term Debt Fund",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": "AAA",
+      "currentPrice": null,
+      "ratingApplies": true,
+      "assetType": "Debt fund",
+      "assetClass": "Fixed income",
+      "superSector": "Debt funds",
+      "subcategory": "Debt fund",
+      "baseValueLakh": 10,
+      "moderateTargetPercent": 0,
+      "physical": false,
+      "costBasisLakh": 9.2,
+      "illustrativeTaxRatePercent": 30,
+      "liquidity": "Liquid",
+      "liquidityCode": 0,
+      "originalNote": "Debt fund gains are taxed at slab rate (assumed 30%).",
+      "tags": {
+        "sector": "Duration funds",
+        "subsector": "Short duration",
+        "marketCap": null,
+        "geography": null,
+        "themes": [
+          "Income"
+        ],
+        "custom": null,
+        "creditQuality": "AAA",
+        "duration": "Short",
+        "isDebt": true
+      },
+      "attributes": {
+        "cat": "Short duration",
+        "er": 0.4,
+        "risk": "Moderate",
+        "ytm": 7.4,
+        "dm": 2.1,
+        "rating": "AAA",
+        "dur": "Short"
       },
       "lookThrough": null
     },
     {
       "id": "security-14",
       "name": "360 ONE Cat III AIF",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "AIF",
       "assetClass": "Alternatives",
+      "superSector": "Pooled vehicles",
       "subcategory": "AIF",
       "baseValueLakh": 8,
       "moderateTargetPercent": 5,
@@ -2303,24 +2790,334 @@
       "liquidityCode": 2,
       "originalNote": "Closed-ended. Lock-in until Mar 2029; exit only at fund redemption.",
       "tags": {
-        "sector": "Alternatives",
-        "subsector": "Long-short (Cat III)",
-        "marketCap": "Non-equity",
-        "geography": "India",
+        "sector": "AIF",
+        "subsector": "Category III",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Absolute return"
         ],
-        "custom": "Satellite",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
+      },
+      "attributes": {
+        "cat": "Category III",
+        "lock": 3,
+        "com": 8,
+        "vin": 2024,
+        "tgt": 14,
+        "risk": "High"
+      },
+      "lookThrough": null
+    },
+    {
+      "id": "security-25",
+      "name": "Infra Fund Cat I AIF",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "AIF",
+      "assetClass": "Alternatives",
+      "superSector": "Pooled vehicles",
+      "subcategory": "AIF",
+      "baseValueLakh": 4,
+      "moderateTargetPercent": 0,
+      "physical": false,
+      "costBasisLakh": 3.5,
+      "illustrativeTaxRatePercent": 12.5,
+      "liquidity": "Locked",
+      "liquidityCode": 2,
+      "originalNote": "Closed-ended. Capital comes back as projects exit; no early redemption.",
+      "tags": {
+        "sector": "AIF",
+        "subsector": "Category I",
+        "marketCap": null,
+        "geography": null,
+        "themes": [
+          "Infrastructure",
+          "Private markets"
+        ],
+        "custom": null,
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "attributes": {
+        "cat": "Category I",
+        "lock": 7,
+        "com": 4,
+        "vin": 2023,
+        "tgt": 13,
+        "risk": "High"
+      },
+      "lookThrough": null
+    },
+    {
+      "id": "security-26",
+      "name": "Private Equity Cat II AIF",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "AIF",
+      "assetClass": "Alternatives",
+      "superSector": "Pooled vehicles",
+      "subcategory": "AIF",
+      "baseValueLakh": 5,
+      "moderateTargetPercent": 0,
+      "physical": false,
+      "costBasisLakh": 4,
+      "illustrativeTaxRatePercent": 12.5,
+      "liquidity": "Locked",
+      "liquidityCode": 2,
+      "originalNote": "Closed-ended with capital calls. Exit only at fund wind-up.",
+      "tags": {
+        "sector": "AIF",
+        "subsector": "Category II",
+        "marketCap": null,
+        "geography": null,
+        "themes": [
+          "Private markets"
+        ],
+        "custom": null,
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "attributes": {
+        "cat": "Category II",
+        "lock": 8,
+        "com": 6,
+        "vin": 2022,
+        "tgt": 16,
+        "risk": "Very high"
+      },
+      "lookThrough": null
+    },
+    {
+      "id": "security-27",
+      "name": "Quality Equity PMS",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "PMS",
+      "assetClass": "Alternatives",
+      "superSector": "Pooled vehicles",
+      "subcategory": "PMS",
+      "baseValueLakh": 8,
+      "moderateTargetPercent": 0,
+      "physical": false,
+      "costBasisLakh": 6.5,
+      "illustrativeTaxRatePercent": 12.5,
+      "liquidity": "Semi-liquid",
+      "liquidityCode": 1,
+      "originalNote": "Withdrawals possible at month-end. Stocks sold inside the PMS are taxed in the client's hands.",
+      "tags": {
+        "sector": "PMS",
+        "subsector": "Equity PMS",
+        "marketCap": null,
+        "geography": null,
+        "themes": [
+          "Quality"
+        ],
+        "custom": null,
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "attributes": {
+        "str": "Quality large and mid cap",
+        "min": 50,
+        "fee": 2,
+        "perf": "15% over a 10% hurdle",
+        "risk": "High"
+      },
+      "lookThrough": null
+    },
+    {
+      "id": "security-28",
+      "name": "Private credit note 2029",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": "BBB & below",
+      "currentPrice": null,
+      "ratingApplies": true,
+      "assetType": "Private credit",
+      "assetClass": "Alternatives",
+      "superSector": "Private markets",
+      "subcategory": "Private credit",
+      "baseValueLakh": 5,
+      "moderateTargetPercent": 0,
+      "physical": false,
+      "costBasisLakh": 5,
+      "illustrativeTaxRatePercent": 30,
+      "liquidity": "Locked",
+      "liquidityCode": 2,
+      "originalNote": "Unlisted note. Exit only at maturity or through a negotiated buyback.",
+      "tags": {
+        "sector": "Private credit",
+        "subsector": "Direct lending",
+        "marketCap": null,
+        "geography": null,
+        "themes": [
+          "Income",
+          "Private markets"
+        ],
+        "custom": null,
+        "creditQuality": "BBB & below",
+        "duration": "Medium",
+        "isDebt": false
+      },
+      "attributes": {
+        "cpn": 12.5,
+        "mat": "Sep 2029",
+        "rating": "BBB & below",
+        "sc": "Secured",
+        "dur": "Medium"
+      },
+      "lookThrough": null
+    },
+    {
+      "id": "security-29",
+      "name": "Silver ETF",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Commodity",
+      "assetClass": "Alternatives",
+      "superSector": "Other alternatives",
+      "subcategory": "Commodity",
+      "baseValueLakh": 3,
+      "moderateTargetPercent": 0,
+      "physical": false,
+      "costBasisLakh": 2.6,
+      "illustrativeTaxRatePercent": 12.5,
+      "liquidity": "Liquid",
+      "liquidityCode": 0,
+      "originalNote": "Listed ETF. Liquid.",
+      "tags": {
+        "sector": "Commodities",
+        "subsector": "Silver & base metals",
+        "marketCap": null,
+        "geography": null,
+        "themes": [
+          "Inflation hedge",
+          "Industrial demand"
+        ],
+        "custom": null,
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "attributes": {
+        "cm": "Silver",
+        "veh": "ETF",
+        "er": 0.45,
+        "risk": "High"
+      },
+      "lookThrough": null
+    },
+    {
+      "id": "security-30",
+      "name": "Bitcoin (exchange wallet)",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Digital asset",
+      "assetClass": "Alternatives",
+      "superSector": "Other alternatives",
+      "subcategory": "Digital asset",
+      "baseValueLakh": 2,
+      "moderateTargetPercent": 0,
+      "physical": false,
+      "costBasisLakh": 1.2,
+      "illustrativeTaxRatePercent": 30,
+      "liquidity": "Semi-liquid",
+      "liquidityCode": 1,
+      "originalNote": "Gains are taxed at a flat 30% with no loss set-off. Exchange and custody risk apply.",
+      "tags": {
+        "sector": "Digital assets",
+        "subsector": "Cryptocurrency",
+        "marketCap": null,
+        "geography": null,
+        "themes": [
+          "Digital assets"
+        ],
+        "custom": null,
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "attributes": {
+        "as": "Bitcoin",
+        "cust": "Exchange",
+        "risk": "Very high"
+      },
+      "lookThrough": null
+    },
+    {
+      "id": "security-31",
+      "name": "Art and collectibles",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Collectible",
+      "assetClass": "Alternatives",
+      "superSector": "Other alternatives",
+      "subcategory": "Collectible",
+      "baseValueLakh": 4,
+      "moderateTargetPercent": 0,
+      "physical": true,
+      "costBasisLakh": 2.8,
+      "illustrativeTaxRatePercent": 12.5,
+      "liquidity": "Locked",
+      "liquidityCode": 2,
+      "originalNote": "A sale needs a valuer and a buyer. Allow several months.",
+      "tags": {
+        "sector": "Collectibles",
+        "subsector": "Art & antiques",
+        "marketCap": null,
+        "geography": null,
+        "themes": [
+          "Passion assets"
+        ],
+        "custom": null,
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "attributes": {
+        "it": "Contemporary art, three works",
+        "vd": "Mar 2026",
+        "vm": "Registered valuer",
+        "risk": "High"
       },
       "lookThrough": null
     },
     {
       "id": "security-15",
       "name": "Embassy REIT",
-      "assetClass": "Alternatives",
+      "isin": null,
+      "symbol": "EMBASSY",
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "REIT / InvIT",
+      "assetClass": "Real assets",
+      "superSector": "Real estate",
       "subcategory": "REIT / InvIT",
       "baseValueLakh": 6,
       "moderateTargetPercent": 4,
@@ -2331,25 +3128,38 @@
       "liquidityCode": 0,
       "originalNote": "Listed. Distributions have separate tax treatment.",
       "tags": {
-        "sector": "Real estate",
-        "subsector": "REIT & InvIT",
-        "marketCap": "Non-equity",
-        "geography": "India",
+        "sector": "Listed real estate",
+        "subsector": "REITs",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Income",
           "Real assets"
         ],
-        "custom": "Satellite",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
+      },
+      "attributes": {
+        "dy": 6.2,
+        "pt": "Commercial offices",
+        "occ": 90,
+        "risk": "Moderate"
       },
       "lookThrough": null
     },
     {
       "id": "security-16",
       "name": "IRB InvIT",
-      "assetClass": "Alternatives",
+      "isin": null,
+      "symbol": "IRBINVIT",
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "REIT / InvIT",
+      "assetClass": "Real assets",
+      "superSector": "Infrastructure",
       "subcategory": "REIT / InvIT",
       "baseValueLakh": 3,
       "moderateTargetPercent": 3,
@@ -2360,25 +3170,37 @@
       "liquidityCode": 0,
       "originalNote": "Held under 12 months.",
       "tags": {
-        "sector": "Real estate",
-        "subsector": "REIT & InvIT",
-        "marketCap": "Non-equity",
-        "geography": "India",
+        "sector": "Listed infrastructure",
+        "subsector": "InvITs",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Income",
           "Infrastructure"
         ],
-        "custom": "Satellite",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
+      },
+      "attributes": {
+        "dy": 9.1,
+        "pt": "Toll roads",
+        "risk": "Moderately high"
       },
       "lookThrough": null
     },
     {
       "id": "security-17",
       "name": "Sovereign Gold Bond 2028",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Gold",
       "assetClass": "Real assets",
+      "superSector": "Precious metals",
       "subcategory": "Gold",
       "baseValueLakh": 7,
       "moderateTargetPercent": 3,
@@ -2390,23 +3212,36 @@
       "originalNote": "Exchange sale is thin. Redemption at maturity is tax-free.",
       "tags": {
         "sector": "Gold",
-        "subsector": "Gold bonds & physical",
-        "marketCap": "Non-equity",
-        "geography": "India",
+        "subsector": "Gold bonds",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Inflation hedge"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
+      },
+      "attributes": {
+        "form": "Sovereign gold bond",
+        "cpn": 2.5,
+        "mat": "2028",
+        "pur": "999"
       },
       "lookThrough": null
     },
     {
       "id": "security-18",
       "name": "Physical gold (jewellery, bars)",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Gold",
       "assetClass": "Real assets",
+      "superSector": "Precious metals",
       "subcategory": "Gold",
       "baseValueLakh": 4,
       "moderateTargetPercent": 2,
@@ -2418,23 +3253,34 @@
       "originalNote": "Valuation and purity checks needed before sale.",
       "tags": {
         "sector": "Gold",
-        "subsector": "Gold bonds & physical",
-        "marketCap": "Non-equity",
-        "geography": "India",
+        "subsector": "Physical gold",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Inflation hedge"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
+      },
+      "attributes": {
+        "form": "Physical",
+        "pur": "22k jewellery, 24k bars"
       },
       "lookThrough": null
     },
     {
       "id": "security-19",
       "name": "Flat, Baner Pune",
+      "isin": null,
+      "symbol": null,
+      "crisilRating": null,
+      "currentPrice": null,
+      "ratingApplies": false,
+      "assetType": "Real estate",
       "assetClass": "Real assets",
+      "superSector": "Real estate",
       "subcategory": "Real estate",
       "baseValueLakh": 60,
       "moderateTargetPercent": 8,
@@ -2445,24 +3291,29 @@
       "liquidityCode": 2,
       "originalNote": "Sale takes months. Includes brokerage and registration costs.",
       "tags": {
-        "sector": "Real estate",
-        "subsector": "Direct property",
-        "marketCap": "Non-equity",
-        "geography": "India",
+        "sector": "Direct property",
+        "subsector": "Residential",
+        "marketCap": null,
+        "geography": null,
         "themes": [
           "Real assets"
         ],
-        "custom": "Core",
+        "custom": null,
         "creditQuality": null,
         "duration": null,
         "isDebt": false
+      },
+      "attributes": {
+        "pt": "Residential",
+        "loc": "Baner, Pune",
+        "ry": 2.6,
+        "val": "Jun 2026"
       },
       "lookThrough": null
     }
   ],
   "settings": {
     "fundMode": "look",
-    "customLensName": "Core / Satellite",
     "firmThresholdPP": 5,
     "originalAssetBandsPP": [
       5,
@@ -2502,18 +3353,28 @@
     "sectorCapPercent": 25,
     "classificationOrder": {
       "sec": [
+        "Diversified equity funds",
         "Financials",
-        "Information Technology",
+        "Information technology",
         "Energy",
-        "Consumer",
+        "Consumer staples",
         "Healthcare",
-        "Industrials & other",
-        "Other equity",
-        "Diversified equity",
-        "Fixed income",
-        "Real estate",
+        "Industrials",
+        "Government securities",
+        "Corporate bonds",
+        "Bank deposits",
+        "Retirement funds",
+        "Duration funds",
+        "AIF",
+        "PMS",
+        "Private credit",
+        "Commodities",
+        "Digital assets",
+        "Collectibles",
+        "Listed real estate",
+        "Listed infrastructure",
         "Gold",
-        "Alternatives"
+        "Direct property"
       ],
       "mc": [
         "Large",
@@ -2536,6 +3397,53 @@
         "Short",
         "Medium",
         "Long"
+      ],
+      "sub": [
+        "Flexi cap",
+        "Small cap",
+        "Large-cap & index",
+        "Private banks",
+        "IT services",
+        "Oil & gas",
+        "Mid cap",
+        "NBFC & others",
+        "FMCG",
+        "Pharma",
+        "Capital goods",
+        "Central government",
+        "AAA rated",
+        "Scheduled bank FDs",
+        "EPF",
+        "Short duration",
+        "Category III",
+        "Category I",
+        "Category II",
+        "Equity PMS",
+        "Direct lending",
+        "Silver & base metals",
+        "Cryptocurrency",
+        "Art & antiques",
+        "REITs",
+        "InvITs",
+        "Gold bonds",
+        "Physical gold",
+        "Residential"
+      ],
+      "superSector": [
+        "Multi-sector funds",
+        "Cyclical",
+        "Sensitive",
+        "Defensive",
+        "Sovereign",
+        "Credit",
+        "Retirement & small savings",
+        "Debt funds",
+        "Pooled vehicles",
+        "Private markets",
+        "Other alternatives",
+        "Real estate",
+        "Infrastructure",
+        "Precious metals"
       ]
     },
     "palette": [
@@ -2551,6 +3459,1099 @@
       "#a0813a",
       "#8a6e5a",
       "#3f7f9a"
+    ],
+    "instrumentTypes": [
+      {
+        "name": "Direct equity",
+        "ratingApplies": false,
+        "attributes": [
+          {
+            "key": "mcap",
+            "label": "Market cap",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Large",
+              "Mid",
+              "Small"
+            ]
+          },
+          {
+            "key": "risk",
+            "label": "Risk rating",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Low",
+              "Low to moderate",
+              "Moderate",
+              "Moderately high",
+              "High",
+              "Very high"
+            ]
+          },
+          {
+            "key": "geo",
+            "label": "Geography",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "India",
+              "Global"
+            ]
+          },
+          {
+            "key": "dy",
+            "label": "Dividend yield",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "pe",
+            "label": "P/E",
+            "kind": "number",
+            "unit": "x",
+            "options": null
+          }
+        ]
+      },
+      {
+        "name": "Mutual fund",
+        "ratingApplies": false,
+        "attributes": [
+          {
+            "key": "cat",
+            "label": "SEBI category",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "er",
+            "label": "Expense ratio",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "risk",
+            "label": "Risk-o-meter",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Low",
+              "Low to moderate",
+              "Moderate",
+              "Moderately high",
+              "High",
+              "Very high"
+            ]
+          },
+          {
+            "key": "bm",
+            "label": "Benchmark",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "aum",
+            "label": "Fund size",
+            "kind": "number",
+            "unit": "₹ Cr",
+            "options": null
+          }
+        ]
+      },
+      {
+        "name": "ETF",
+        "ratingApplies": false,
+        "attributes": [
+          {
+            "key": "idx",
+            "label": "Tracks",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "er",
+            "label": "Expense ratio",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "risk",
+            "label": "Risk-o-meter",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Low",
+              "Low to moderate",
+              "Moderate",
+              "Moderately high",
+              "High",
+              "Very high"
+            ]
+          },
+          {
+            "key": "te",
+            "label": "Tracking error",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          }
+        ]
+      },
+      {
+        "name": "Government bond",
+        "ratingApplies": true,
+        "attributes": [
+          {
+            "key": "cpn",
+            "label": "Coupon",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "mat",
+            "label": "Maturity",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "rating",
+            "label": "Credit rating",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Sovereign",
+              "AAA",
+              "AA",
+              "A",
+              "BBB & below",
+              "Unrated"
+            ]
+          },
+          {
+            "key": "ytm",
+            "label": "Yield to maturity",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "dur",
+            "label": "Duration bucket",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Short",
+              "Medium",
+              "Long"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Corporate bond",
+        "ratingApplies": true,
+        "attributes": [
+          {
+            "key": "cpn",
+            "label": "Coupon",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "mat",
+            "label": "Maturity",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "rating",
+            "label": "Credit rating",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Sovereign",
+              "AAA",
+              "AA",
+              "A",
+              "BBB & below",
+              "Unrated"
+            ]
+          },
+          {
+            "key": "ytm",
+            "label": "Yield",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "dur",
+            "label": "Duration bucket",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Short",
+              "Medium",
+              "Long"
+            ]
+          },
+          {
+            "key": "sc",
+            "label": "Security",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Secured",
+              "Unsecured"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Fixed deposit",
+        "ratingApplies": true,
+        "attributes": [
+          {
+            "key": "rate",
+            "label": "Interest rate",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "mat",
+            "label": "Maturity",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "pen",
+            "label": "Premature exit penalty",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "rating",
+            "label": "Issuer rating",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Sovereign",
+              "AAA",
+              "AA",
+              "A",
+              "BBB & below",
+              "Unrated"
+            ]
+          },
+          {
+            "key": "dur",
+            "label": "Duration bucket",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Short",
+              "Medium",
+              "Long"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Retirement account",
+        "ratingApplies": true,
+        "attributes": [
+          {
+            "key": "rate",
+            "label": "Declared rate",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "rule",
+            "label": "Withdrawal rule",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "rating",
+            "label": "Credit rating",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Sovereign",
+              "AAA",
+              "AA",
+              "A",
+              "BBB & below",
+              "Unrated"
+            ]
+          },
+          {
+            "key": "dur",
+            "label": "Duration bucket",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Short",
+              "Medium",
+              "Long"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Debt fund",
+        "ratingApplies": true,
+        "attributes": [
+          {
+            "key": "cat",
+            "label": "SEBI category",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "er",
+            "label": "Expense ratio",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "risk",
+            "label": "Risk-o-meter",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Low",
+              "Low to moderate",
+              "Moderate",
+              "Moderately high",
+              "High",
+              "Very high"
+            ]
+          },
+          {
+            "key": "ytm",
+            "label": "Portfolio yield",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "dm",
+            "label": "Modified duration",
+            "kind": "number",
+            "unit": "yrs",
+            "options": null
+          },
+          {
+            "key": "rating",
+            "label": "Credit quality",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Sovereign",
+              "AAA",
+              "AA",
+              "A",
+              "BBB & below",
+              "Unrated"
+            ]
+          },
+          {
+            "key": "dur",
+            "label": "Duration bucket",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Short",
+              "Medium",
+              "Long"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "REIT / InvIT",
+        "ratingApplies": false,
+        "attributes": [
+          {
+            "key": "dy",
+            "label": "Distribution yield",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "pt",
+            "label": "Asset type",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "occ",
+            "label": "Occupancy",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "risk",
+            "label": "Risk rating",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Low",
+              "Low to moderate",
+              "Moderate",
+              "Moderately high",
+              "High",
+              "Very high"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "AIF",
+        "ratingApplies": false,
+        "attributes": [
+          {
+            "key": "cat",
+            "label": "AIF category",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Category I",
+              "Category II",
+              "Category III"
+            ]
+          },
+          {
+            "key": "lock",
+            "label": "Lock-in",
+            "kind": "number",
+            "unit": "yrs",
+            "options": null
+          },
+          {
+            "key": "com",
+            "label": "Commitment",
+            "kind": "number",
+            "unit": "₹ L",
+            "options": null
+          },
+          {
+            "key": "vin",
+            "label": "Vintage",
+            "kind": "number",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "tgt",
+            "label": "Target net return",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "risk",
+            "label": "Risk rating",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Low",
+              "Low to moderate",
+              "Moderate",
+              "Moderately high",
+              "High",
+              "Very high"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "PMS",
+        "ratingApplies": false,
+        "attributes": [
+          {
+            "key": "str",
+            "label": "Strategy",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "min",
+            "label": "Minimum ticket",
+            "kind": "number",
+            "unit": "₹ L",
+            "options": null
+          },
+          {
+            "key": "fee",
+            "label": "Management fee",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "perf",
+            "label": "Performance fee",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "risk",
+            "label": "Risk rating",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Low",
+              "Low to moderate",
+              "Moderate",
+              "Moderately high",
+              "High",
+              "Very high"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Private credit",
+        "ratingApplies": true,
+        "attributes": [
+          {
+            "key": "cpn",
+            "label": "Coupon",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "mat",
+            "label": "Maturity",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "rating",
+            "label": "Credit rating",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Sovereign",
+              "AAA",
+              "AA",
+              "A",
+              "BBB & below",
+              "Unrated"
+            ]
+          },
+          {
+            "key": "sc",
+            "label": "Security",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Secured",
+              "Unsecured"
+            ]
+          },
+          {
+            "key": "dur",
+            "label": "Duration bucket",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Short",
+              "Medium",
+              "Long"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Commodity",
+        "ratingApplies": false,
+        "attributes": [
+          {
+            "key": "cm",
+            "label": "Commodity",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "veh",
+            "label": "Vehicle",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "ETF",
+              "Physical",
+              "Futures"
+            ]
+          },
+          {
+            "key": "er",
+            "label": "Expense ratio",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "risk",
+            "label": "Risk rating",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Low",
+              "Low to moderate",
+              "Moderate",
+              "Moderately high",
+              "High",
+              "Very high"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Digital asset",
+        "ratingApplies": false,
+        "attributes": [
+          {
+            "key": "as",
+            "label": "Asset",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "cust",
+            "label": "Custody",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Exchange",
+              "Self-custody",
+              "Qualified custodian"
+            ]
+          },
+          {
+            "key": "risk",
+            "label": "Risk rating",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Low",
+              "Low to moderate",
+              "Moderate",
+              "Moderately high",
+              "High",
+              "Very high"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Collectible",
+        "ratingApplies": false,
+        "attributes": [
+          {
+            "key": "it",
+            "label": "Item",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "vd",
+            "label": "Last valued",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "vm",
+            "label": "Valuation method",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Registered valuer",
+              "Auction comparables",
+              "Self-assessed"
+            ]
+          },
+          {
+            "key": "risk",
+            "label": "Risk rating",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Low",
+              "Low to moderate",
+              "Moderate",
+              "Moderately high",
+              "High",
+              "Very high"
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Gold",
+        "ratingApplies": false,
+        "attributes": [
+          {
+            "key": "form",
+            "label": "Form",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Sovereign gold bond",
+              "Gold ETF",
+              "Physical"
+            ]
+          },
+          {
+            "key": "cpn",
+            "label": "Coupon",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "mat",
+            "label": "Maturity",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "pur",
+            "label": "Purity",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          }
+        ]
+      },
+      {
+        "name": "Real estate",
+        "ratingApplies": false,
+        "attributes": [
+          {
+            "key": "pt",
+            "label": "Property type",
+            "kind": "select",
+            "unit": null,
+            "options": [
+              "Residential",
+              "Commercial",
+              "Land"
+            ]
+          },
+          {
+            "key": "loc",
+            "label": "Location",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          },
+          {
+            "key": "ry",
+            "label": "Rental yield",
+            "kind": "number",
+            "unit": "%",
+            "options": null
+          },
+          {
+            "key": "val",
+            "label": "Last valued",
+            "kind": "text",
+            "unit": null,
+            "options": null
+          }
+        ]
+      }
+    ],
+    "taxonomy": [
+      {
+        "assetClass": "Equity",
+        "superSector": "Cyclical",
+        "sector": "Financials",
+        "subSector": "Private banks"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Cyclical",
+        "sector": "Financials",
+        "subSector": "PSU banks"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Cyclical",
+        "sector": "Financials",
+        "subSector": "NBFC & others"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Cyclical",
+        "sector": "Consumer discretionary",
+        "subSector": "Autos"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Cyclical",
+        "sector": "Materials",
+        "subSector": "Metals & mining"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Sensitive",
+        "sector": "Information technology",
+        "subSector": "IT services"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Sensitive",
+        "sector": "Energy",
+        "subSector": "Oil & gas"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Sensitive",
+        "sector": "Industrials",
+        "subSector": "Capital goods"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Defensive",
+        "sector": "Consumer staples",
+        "subSector": "FMCG"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Defensive",
+        "sector": "Healthcare",
+        "subSector": "Pharma"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Defensive",
+        "sector": "Utilities",
+        "subSector": "Power utilities"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Multi-sector funds",
+        "sector": "Diversified equity funds",
+        "subSector": "Large-cap & index"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Multi-sector funds",
+        "sector": "Diversified equity funds",
+        "subSector": "Flexi cap"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Multi-sector funds",
+        "sector": "Diversified equity funds",
+        "subSector": "Mid cap"
+      },
+      {
+        "assetClass": "Equity",
+        "superSector": "Multi-sector funds",
+        "sector": "Diversified equity funds",
+        "subSector": "Small cap"
+      },
+      {
+        "assetClass": "Fixed income",
+        "superSector": "Sovereign",
+        "sector": "Government securities",
+        "subSector": "Central government"
+      },
+      {
+        "assetClass": "Fixed income",
+        "superSector": "Sovereign",
+        "sector": "Government securities",
+        "subSector": "State development loans"
+      },
+      {
+        "assetClass": "Fixed income",
+        "superSector": "Credit",
+        "sector": "Corporate bonds",
+        "subSector": "AAA rated"
+      },
+      {
+        "assetClass": "Fixed income",
+        "superSector": "Credit",
+        "sector": "Corporate bonds",
+        "subSector": "AA and below"
+      },
+      {
+        "assetClass": "Fixed income",
+        "superSector": "Credit",
+        "sector": "Bank deposits",
+        "subSector": "Scheduled bank FDs"
+      },
+      {
+        "assetClass": "Fixed income",
+        "superSector": "Retirement & small savings",
+        "sector": "Retirement funds",
+        "subSector": "EPF"
+      },
+      {
+        "assetClass": "Fixed income",
+        "superSector": "Retirement & small savings",
+        "sector": "Retirement funds",
+        "subSector": "PPF and others"
+      },
+      {
+        "assetClass": "Fixed income",
+        "superSector": "Debt funds",
+        "sector": "Duration funds",
+        "subSector": "Liquid & ultra-short"
+      },
+      {
+        "assetClass": "Fixed income",
+        "superSector": "Debt funds",
+        "sector": "Duration funds",
+        "subSector": "Short duration"
+      },
+      {
+        "assetClass": "Fixed income",
+        "superSector": "Debt funds",
+        "sector": "Duration funds",
+        "subSector": "Long duration"
+      },
+      {
+        "assetClass": "Alternatives",
+        "superSector": "Pooled vehicles",
+        "sector": "AIF",
+        "subSector": "Category I"
+      },
+      {
+        "assetClass": "Alternatives",
+        "superSector": "Pooled vehicles",
+        "sector": "AIF",
+        "subSector": "Category II"
+      },
+      {
+        "assetClass": "Alternatives",
+        "superSector": "Pooled vehicles",
+        "sector": "AIF",
+        "subSector": "Category III"
+      },
+      {
+        "assetClass": "Alternatives",
+        "superSector": "Pooled vehicles",
+        "sector": "PMS",
+        "subSector": "Equity PMS"
+      },
+      {
+        "assetClass": "Alternatives",
+        "superSector": "Pooled vehicles",
+        "sector": "PMS",
+        "subSector": "Multi-asset PMS"
+      },
+      {
+        "assetClass": "Alternatives",
+        "superSector": "Private markets",
+        "sector": "Private credit",
+        "subSector": "Direct lending"
+      },
+      {
+        "assetClass": "Alternatives",
+        "superSector": "Other alternatives",
+        "sector": "Commodities",
+        "subSector": "Silver & base metals"
+      },
+      {
+        "assetClass": "Alternatives",
+        "superSector": "Other alternatives",
+        "sector": "Commodities",
+        "subSector": "Agricultural"
+      },
+      {
+        "assetClass": "Alternatives",
+        "superSector": "Other alternatives",
+        "sector": "Digital assets",
+        "subSector": "Cryptocurrency"
+      },
+      {
+        "assetClass": "Alternatives",
+        "superSector": "Other alternatives",
+        "sector": "Collectibles",
+        "subSector": "Art & antiques"
+      },
+      {
+        "assetClass": "Real assets",
+        "superSector": "Real estate",
+        "sector": "Direct property",
+        "subSector": "Residential"
+      },
+      {
+        "assetClass": "Real assets",
+        "superSector": "Real estate",
+        "sector": "Direct property",
+        "subSector": "Commercial"
+      },
+      {
+        "assetClass": "Real assets",
+        "superSector": "Real estate",
+        "sector": "Listed real estate",
+        "subSector": "REITs"
+      },
+      {
+        "assetClass": "Real assets",
+        "superSector": "Infrastructure",
+        "sector": "Listed infrastructure",
+        "subSector": "InvITs"
+      },
+      {
+        "assetClass": "Real assets",
+        "superSector": "Precious metals",
+        "sector": "Gold",
+        "subSector": "Gold bonds"
+      },
+      {
+        "assetClass": "Real assets",
+        "superSector": "Precious metals",
+        "sector": "Gold",
+        "subSector": "Physical gold"
+      }
+    ],
+    "ratingScale": [
+      "Sovereign",
+      "AAA",
+      "AA",
+      "A",
+      "BBB & below",
+      "Unrated"
     ]
   },
   "cashPlanning": {

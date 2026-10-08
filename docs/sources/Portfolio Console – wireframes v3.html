@@ -1,0 +1,939 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Portfolio Console – wireframes</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+--bg:#f5f6f4;--panel:#fff;--ink:#1d2b2a;--mut:#69767a;--line:#dde2e0;--acc:#0f6b62;--over:#b4472c;--under:#2f5fa8;--ok:#5b8a4f;--track:#e8ecea}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121817;--panel:#1a2221;--ink:#e6eceb;--mut:#8d9b9a;--line:#2d3a39;--acc:#4cbfb2;--over:#e58b6f;--under:#7ea6e6;--ok:#8fc07f;--track:#2a3534}}
+:root[data-theme="dark"]{--bg:#121817;--panel:#1a2221;--ink:#e6eceb;--mut:#8d9b9a;--line:#2d3a39;--acc:#4cbfb2;--over:#e58b6f;--under:#7ea6e6;--ok:#8fc07f;--track:#2a3534}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.45 "Instrument Sans","Segoe UI",system-ui,sans-serif;font-variant-numeric:tabular-nums}
+header{padding:16px 20px 0;max-width:1280px;margin:0 auto}
+h1{font-size:20px;margin:0 0 2px;font-weight:650}
+.sub{color:var(--mut);margin:0 0 12px}
+.ctx{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.ctx span{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 10px}
+.ctx b{font-weight:600}
+nav{display:flex;gap:4px;border-bottom:1px solid var(--line)}
+nav button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 14px;font:inherit;color:var(--mut);cursor:pointer}
+nav button[aria-selected=true]{color:var(--ink);border-color:var(--acc);font-weight:600}
+button:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+main{max-width:1280px;margin:0 auto;padding:16px 20px 40px}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.tools button{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font:inherit;color:var(--ink);cursor:pointer}
+.tools .sp{flex:1}
+.leg{color:var(--mut);display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.leg i{display:inline-block;width:18px;height:8px;border-radius:2px;margin-right:5px;vertical-align:middle}
+.wrap{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:860px}
+th{font-weight:600;color:var(--mut);text-align:right;padding:9px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+tr.l0 td{font-weight:650;background:color-mix(in srgb,var(--track) 55%,var(--panel))}
+tr.l1 td:first-child{font-weight:560}
+tr:last-child td{border-bottom:0}
+.nm{display:flex;align-items:center;gap:6px}
+.car{width:22px;height:22px;border:0;background:none;color:var(--mut);cursor:pointer;font-size:12px;padding:0;transform:rotate(0)}
+.car[aria-expanded=true]{transform:rotate(90deg)}
+.car.none{visibility:hidden}
+.tag{font-size:11px;color:var(--mut);border:1px solid var(--line);border-radius:10px;padding:0 7px}
+.tag.p{border-color:var(--acc);color:var(--acc)}
+.bar{position:relative;height:10px;width:170px;background:var(--track);border-radius:3px;display:inline-block;vertical-align:middle}
+.bar b{position:absolute;left:0;top:0;bottom:0;border-radius:3px}
+.bar u{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink);text-decoration:none}
+.over{color:var(--over)}.under{color:var(--under)}.ok{color:var(--ok)}
+.st{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:14px}
+.card h2{font-size:15px;margin:0 0 10px}
+.row{display:grid;grid-template-columns:110px 1fr 90px;gap:10px;align-items:center;margin:9px 0}
+.row .bar{width:100%}
+.trade{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--line)}
+.trade:last-child{border:0}
+.trade small{color:var(--mut);display:block}
+.note{color:var(--mut);margin-top:12px;font-size:13px}
+.lf{cursor:pointer}.lf:hover td{background:var(--track)}
+.tag.x{border-color:var(--over);color:var(--over)}.tag.s{border-color:#b08a2e;color:#b08a2e}
+aside{position:fixed;top:0;right:0;bottom:0;width:380px;max-width:100%;background:var(--panel);border-left:1px solid var(--line);padding:calc(16px + env(safe-area-inset-top,0px)) 18px calc(16px + env(safe-area-inset-bottom,0px));overflow:auto;box-shadow:-8px 0 24px rgba(0,0,0,.14);transform:translateX(105%);transition:transform .2s;z-index:5}
+aside.on{transform:none}
+aside h2{font-size:17px;margin:0 0 4px}aside h3{font-size:13px;color:var(--mut);margin:18px 0 6px;font-weight:600}
+.cl{float:right;background:none;border:1px solid var(--line);border-radius:6px;padding:4px 9px;color:var(--ink);cursor:pointer;font:inherit}
+dl{display:grid;grid-template-columns:1fr auto;gap:6px 12px;margin:0}dt{color:var(--mut)}dd{margin:0;text-align:right}
+.box{border:1px solid var(--line);border-radius:6px;padding:9px 11px;margin-top:8px}
+.chk{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.segw{display:flex;gap:4px}.sb{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:7px 14px;font:inherit;color:var(--ink);cursor:pointer}
+.sb[aria-pressed=true]{border-color:var(--acc);background:var(--track);font-weight:650}
+input[type=number]{width:78px;text-align:right;padding:5px 7px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--ink);font:inherit}
+select{padding:3px 6px;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--ink);font:inherit}
+.stk{display:flex;height:14px;border-radius:3px;overflow:hidden}.stk span{display:block}
+.cr{display:grid;grid-template-columns:100px 1fr 120px;gap:10px;align-items:center;margin:9px 0}.cr.sel{font-weight:650}
+.lg2{display:flex;gap:14px;flex-wrap:wrap;color:var(--mut);margin-top:6px}.lg2 i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:5px}
+.bk{display:inline-block;margin-bottom:8px;color:var(--acc);text-decoration:none;font-weight:600}
+.lk{color:var(--ink);font-weight:600;text-decoration:none}.lk:hover{text-decoration:underline}
+.fl{padding:2px 10px;border-radius:10px;font-size:12px;font-weight:650;white-space:nowrap}
+.fl.r{background:color-mix(in srgb,var(--over) 18%,transparent);color:var(--over)}.fl.g{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}
+.dwrap{max-width:1280px;margin:0 auto;padding:16px 20px 40px}
+.kp{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:12px 0}
+.kc{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px}.kc small{display:block;color:var(--mut)}.kc b{font-size:20px;font-weight:650}
+#dsh th:nth-child(2),#dsh td:nth-child(2),#dsh th:nth-child(4),#dsh td:nth-child(4),#dsh th:nth-child(5),#dsh td:nth-child(5){text-align:left}
+th[data-s]{cursor:pointer}.ti{width:66px}
+.xp{padding:4px 0 10px 8px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.cd{display:grid;grid-template-columns:1fr 70px 90px 90px;gap:8px;padding:3px 0}.xp h3{margin:0 0 6px;font-size:13px;color:var(--mut)}
+#dtb tr.xr td{background:color-mix(in srgb,var(--track) 40%,var(--panel))}
+.pc{display:flex;flex-wrap:wrap;gap:20px;align-items:center}.pd{flex:0 0 auto}.pl{flex:1;min-width:290px}
+.pr{display:grid;grid-template-columns:14px 1fr 64px 64px 84px;gap:8px;align-items:center;padding:5px 0;text-align:right}.pr span:nth-child(2){text-align:left}.pr i{width:10px;height:10px;border-radius:2px}.pr.ph{color:var(--mut);font-weight:600;border-bottom:1px solid var(--line)}
+.fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:10px}.fg label{display:flex;flex-direction:column;gap:3px;color:var(--mut)}.fg input,.fg select{width:100%}
+.pri{background:var(--acc);color:var(--bg);border:0;border-radius:6px;padding:8px 14px;font:inherit;font-weight:650;cursor:pointer}.pri:disabled{opacity:.6;cursor:default}
+.tt th:last-child,.tt td:last-child{text-align:left;white-space:normal}.tt td:nth-child(2){text-align:left}
+.fl.n{background:var(--track);color:var(--mut)}.fl.s{background:color-mix(in srgb,#b08a2e 20%,transparent);color:#b08a2e}
+details.evd{border-bottom:1px solid var(--line);padding:9px 0}details.evd:last-child{border:0}details.evd summary{cursor:pointer}
+.warn{border-left:3px solid #b08a2e;padding:6px 10px;margin-top:8px;background:var(--bg)}
+.tools button.pri{background:var(--acc);color:var(--bg);border-color:var(--acc);font-weight:650}
+.sc{margin-right:6px}
+.segw{flex-wrap:wrap}
+.sin{width:118px;padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--bg);color:var(--ink);font:inherit}
+#sc th,#sc td{text-align:left}
+.topbar{position:sticky;top:0;z-index:20;background:var(--panel);border-bottom:1px solid var(--line)}
+.tbi{max-width:1280px;margin:0 auto;padding:0 20px;display:flex;align-items:center;gap:22px;height:46px}
+.brand{font-weight:700}#gn{display:flex;gap:4px;height:100%;border:0}
+#gn a{display:flex;align-items:center;padding:0 12px;color:var(--mut);text-decoration:none;border-bottom:2px solid transparent;font-weight:560}
+#gn a:hover{color:var(--ink)}#gn a[aria-current]{color:var(--ink);border-color:var(--acc)}.asof{color:var(--mut);font-size:12px}
+.crumb{display:flex;gap:8px;align-items:center;color:var(--mut);margin-bottom:8px}.crumb a{color:var(--acc);text-decoration:none;font-weight:600}.crumb b{color:var(--ink);font-size:18px}
+.sumbar{display:flex;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:8px;margin-bottom:12px}
+.sk{padding:8px 16px;border-right:1px solid var(--line);min-width:120px}.sk:last-child{border:0}.sk small{display:block;color:var(--mut);font-size:12px}.sk b{font-weight:650}
+.kp{display:flex;flex-wrap:wrap;background:var(--panel);border:1px solid var(--line);border-radius:8px;margin:10px 0 12px}
+.kc{flex:1;min-width:150px;background:none;border:0;border-right:1px solid var(--line);border-radius:0;padding:10px 16px}.kc:last-child{border-right:0}
+.ph2{display:flex;align-items:baseline;gap:12px;margin-bottom:2px}.ph2 h1{margin:0}
+td{padding:6px 10px}th{padding:8px 10px}
+#dsh .wrap,#sc .wrap{max-height:calc(100vh - 230px);overflow:auto}
+#dsh th,#sc th,#rb th{position:sticky;top:0;background:var(--panel);z-index:2}
+tbody tr:hover td{background:color-mix(in srgb,var(--track) 45%,var(--panel))}
+#dsh td:nth-child(4){color:var(--mut)}
+details.card>summary{cursor:pointer;font-size:15px;font-weight:650}
+details.rules{position:relative}details.rules summary{cursor:pointer;list-style:none;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--panel)}details.rules summary::-webkit-details-marker{display:none}
+details.rules .rp{position:absolute;right:0;top:calc(100% + 6px);z-index:6;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;min-width:290px;box-shadow:0 8px 24px rgba(0,0,0,.14)}
+main{padding-top:12px}
+.lsc{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:14px}
+.lcard{text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;cursor:pointer;font:inherit;color:var(--ink);display:flex;flex-direction:column;gap:3px}
+.lcard small{color:var(--mut)}.lcard b{font-size:16px}.lcard span{color:var(--mut);font-size:12px}.lcard.on{border-color:var(--acc);box-shadow:inset 0 0 0 1px var(--acc)}
+.act{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line)}
+.srow{display:grid;grid-template-columns:1fr 90px 110px 60px;gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line)}.srow small{display:block}
+.srow button{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:4px 8px;color:var(--ink);font:inherit;cursor:pointer}
+.sub-h{margin:10px 0 2px;font-weight:600;color:var(--mut)}
+details.sg{margin-bottom:10px}details.sg summary{cursor:pointer;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.alg{display:grid;grid-template-columns:repeat(auto-fit,minmax(440px,1fr));gap:14px;margin-bottom:14px}
+.stk{background:var(--track)}
+.mi{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:2px 24px;padding:4px 0 8px 28px}
+.sumrow td{font-weight:650;background:color-mix(in srgb,var(--track) 55%,var(--panel))}
+[hidden]{display:none!important}
+button.lkb{background:none;border:0;padding:0;font:inherit;cursor:pointer;color:var(--ink);font-weight:600;text-align:left}button.lkb:hover{text-decoration:underline}
+#sc td:nth-child(5),#sc td:nth-child(6){white-space:normal}
+.cr{grid-template-columns:160px 1fr 130px}
+.tgp{display:inline-flex;align-items:center;gap:3px;margin:2px 6px 2px 0;border:1px solid var(--line);border-radius:10px;padding:0 4px 0 7px;font-size:11px;background:var(--bg)}.tgp small{color:var(--mut);margin-right:2px}
+button.tv{background:none;border:0;padding:1px 4px;border-radius:8px;font:inherit;font-size:11px;color:var(--ink);cursor:pointer}button.tv:hover{background:var(--track)}button.tv.on{background:var(--acc);color:var(--bg);font-weight:650}
+input.ei{width:62px;padding:3px 5px}input.ei.ov{border-color:var(--acc);font-weight:700}button.rst{border:0;background:none;color:var(--acc);cursor:pointer;font-size:15px;padding:0 4px}#alk{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr))}#md .mbar{margin-bottom:12px}#md .mhead{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:14px;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-radius:8px}#md .mhead .note{flex:1 1 420px}#md .mact{display:flex;align-items:center;gap:14px;margin-left:auto}#md .mact #tot3{white-space:nowrap}
+#md .sb,#md .tools button,#md .mact button,#md .tools .rules summary{min-height:34px;box-sizing:border-box;display:inline-flex;align-items:center;padding:0 14px;border:1px solid var(--line);border-radius:6px;background:var(--panel);font:inherit;color:var(--ink);cursor:pointer;line-height:1}
+#md .sb[aria-pressed="true"]{background:var(--acc);color:var(--bg);border-color:var(--acc)}#md .tools{margin:0 0 10px;padding:10px 0;border-top:1px solid var(--line)}#md .tools .rules summary{list-style:none}
+#md #seg{gap:6px;align-items:center}#md #seg .leg2{margin:0 4px 0 12px}</style>
+</head>
+<body>
+<div id="topb" class="topbar"><div class="tbi"><span class="brand">Portfolio Console</span>
+ <nav id="gn"><a href="#/" data-r="dash">Portfolios</a><a href="#/models" data-r="md">Models</a><a href="#/securities" id="secb" data-r="sc">Security master</a></nav><span class="sp" style="flex:1"></span><span class="asof">As of 03 Oct 2026</span></div></div>
+<div id="dsh"><div class="dwrap">
+<div class="ph2"><h1>Portfolios</h1><span class="sub">All portfolios under management</span></div>
+<div class="card" id="flash" hidden style="margin:8px 0;padding:8px 12px"></div>
+<div class="kp" id="kp"></div>
+<div class="tools"><div class="segw" id="vw"><button class="sb" data-v="h" aria-pressed="true">Households</button><button class="sb" data-v="a" aria-pressed="false">Accounts</button></div>
+<input id="q" type="search" placeholder="Search portfolio" aria-label="Search portfolio"><select id="fr" aria-label="Filter by model"></select>
+<label class="chk" style="margin:0"><input type="checkbox" id="fo"> Flagged only</label><button id="selp">Select flagged</button><span class="sp"></span>
+<details class="rules"><summary>Rebalance rules ▾</summary><div class="rp"><label>Firm default threshold ± <input type="number" id="ft" value="5" step="0.5" min="0.5" style="width:66px"> pp</label><label class="chk" style="margin:10px 0 0"><input type="checkbox" id="lbt" checked> Sub-class breaches also trigger rebalance</label></div></details></div>
+<div class="tools card" id="sbar" hidden style="padding:8px 12px"><b id="sn"></b><button class="pri" id="rv">Review rebalance</button><button id="clr">Clear selection</button></div>
+<div class="wrap"><table style="min-width:1100px"><thead><tr><th><input type="checkbox" id="sa" aria-label="Select all shown"></th><th data-s="n">Portfolio</th><th data-s="aum">AUM (₹ L)</th><th>Model</th><th>Risk profile</th><th data-s="ag">Aggregated drift (pp)</th><th>Threshold (pp)</th><th>Sub-class breaches</th><th>Financial plan</th><th>Rebalance</th></tr></thead><tbody id="dtb"></tbody></table></div>
+<p class="note">Aggregated drift is the largest drift in any asset class. The bar is scaled so its midline is the threshold; leave a threshold blank to use the firm default. Click a portfolio name to open its details. When “Sub-class breaches also trigger rebalance” is on, a portfolio is also flagged if any super sector, sector, sub-sector or security (down to the depth its model sets targets for) is outside its band.</p></div></div>
+<div id="rb" class="dwrap" hidden>
+ <a class="bk" href="#/">← All portfolios</a><h1>Bulk rebalance review</h1><p class="sub">Trades that bring each selected portfolio back to its model</p>
+ <div class="card" style="margin-bottom:12px"><div class="fg"><label>Minimum trade size (₹ L)<input type="number" id="rmt" value="0.5" min="0" step="0.5"></label><label>LTCG exemption per client (₹ L)<input type="number" id="rex" value="1.25" min="0" step="0.25"></label></div>
+ <label class="chk"><input type="checkbox" id="rsl" checked> Skip locked assets (EPF, AIF, real estate)</label><label class="chk"><input type="checkbox" id="rns" checked> Avoid short-term gains</label><label class="chk"><input type="checkbox" id="rlf" checked> Trade down to sector and sub-sector targets (off: fix asset classes only)</label></div>
+ <div class="kp" id="rkp"></div>
+ <div class="wrap"><table class="tt" style="min-width:940px"><thead><tr><th></th><th>Portfolio</th><th>AUM (₹ L)</th><th>Drift before to after (pp)</th><th>Threshold (pp)</th><th>Sub-class breaches before to after</th><th>Sells (₹ L)</th><th>Buys (₹ L)</th><th>Est. tax (₹ L)</th><th>After rebalance</th></tr></thead><tbody id="rtb"></tbody></table></div>
+ <div class="card" style="margin-top:14px"><h2>Approval</h2><textarea id="rcm" rows="2" placeholder="Comment for the approval record (optional)" style="width:100%;padding:8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);font:inherit"></textarea>
+ <div class="tools" style="margin-top:10px"><button class="pri" id="rok">Approve</button><a class="bk" href="#/" style="margin:0">Cancel</a></div>
+ <p class="note">This wireframe does not send trades for execution. Tax figures are illustrative.</p></div>
+</div>
+<div id="au" class="dwrap" hidden><a class="bk" href="#/">← All portfolios</a><h1>Audit log</h1><p class="sub">Approvals and decisions recorded in this session</p><div class="card"><div id="aud"></div></div></div>
+<div id="sc" class="dwrap" hidden>
+ <div class="ph2"><h1>Security master</h1><span class="sub">One tiered hierarchy for the whole firm: Asset class › Super sector › Sector › Sub-sector › Security. Themes are supporting tags.</span></div>
+ <div class="kp" id="skp"></div>
+ <div class="tools"><div class="segw" id="slb"></div><input id="sq" type="search" placeholder="Search name, type, theme or attribute" aria-label="Search securities" style="min-width:230px"><select id="sty" aria-label="Filter by instrument type"></select><label class="chk" style="margin:0"><input type="checkbox" id="suo"> Unclassified only</label><button id="sxa">Expand all</button><button id="sxc">Collapse all</button><span class="sp"></span><button id="srs">Reset all</button></div>
+ <datalist id="dls"></datalist>
+ <div class="wrap"><table class="tt" style="min-width:1240px"><thead><tr><th style="min-width:300px">Hierarchy</th><th>Instrument type</th><th>Held firm-wide (₹ L)</th><th>% of firm AUM</th><th style="min-width:300px">Key attributes</th><th>Themes</th><th>Status</th></tr></thead><tbody id="sgr"></tbody></table></div>
+ <p class="note">Classify each security once; every model and portfolio follows. Attributes depend on the instrument type (coupon and rating for bonds, market cap and risk rating for equity, lock-in and commitment for AIFs, and so on). Open a security to change its place in the hierarchy, its type, themes or attributes.</p>
+</div>
+<aside id="sdr" aria-label="Edit security"></aside>
+<div id="md" class="dwrap" hidden>
+ <div class="ph2"><h1>Models</h1><span class="sub">Firm-wide models, by risk profile and by strategy, on the same hierarchy as the Security master. Portfolios inherit these and can override targets and bands inline on their own Allocation &amp; drift tab.</span></div>
+ <div class="mbar"><div id="seg" class="segw"></div></div>
+ <div class="mhead"><p class="note" id="mdesc" style="margin:0"></p><div class="mact"><span id="tot3"></span><button id="rs">Reset model to default</button></div></div>
+ <div class="card" style="margin-bottom:14px"><h2>Model comparison</h2><div id="cmp3"></div></div>
+ <div class="card" style="margin-bottom:14px"><h2>How deep each asset class is modelled</h2><div class="fg" id="dpc" style="grid-template-columns:repeat(auto-fit,minmax(170px,1fr));margin-bottom:6px"></div><p class="note" style="margin:0">Targets are set down to the chosen level. Below it, portfolio pages still show what is held, but there is no target. Changing a depth splits or adds up existing targets for every model and portfolio override. It applies to every model.</p></div>
+ <div class="tools"><details class="rules" id="tfd"><summary id="tfs">Filter by tags ▾</summary><div class="rp" id="tfp" style="left:0;right:auto;min-width:520px;max-width:80vw;max-height:60vh;overflow:auto"></div></details><button id="tfc" hidden>Clear filters</button><span id="tfa"></span><span class="sp"></span><button id="mxa">Expand all</button><button id="mxc">Collapse all</button></div>
+ <div class="wrap"><table style="min-width:1080px"><thead><tr><th>Hierarchy</th><th>Target %</th><th>Band ± pp</th><th>Firm today %</th><th style="text-align:left;min-width:380px">Tags</th></tr></thead><tbody id="ed"></tbody></table></div>
+ <p class="note">Every level has a target and a tolerance band, and the children of a node always add up to it. Editing a node rescales what is under it and moves its siblings, so the level above never changes. The Tags column lists the attributes of the securities under each node. Click a tag, or use the filter, to narrow the tree to nodes holding matching securities. Edits last until you reload.</p>
+</div>
+<header id="dh" hidden>
+  <div class="crumb"><a href="#/">Portfolios</a><span>/</span><b id="pn"></b></div>
+  <div class="sumbar">
+   <div class="sk"><small>AUM</small><b id="tot"></b></div>
+   <div class="sk"><small>Model</small><select id="rp" aria-label="Model"></select></div>
+   <div class="sk"><small>Asset-class drift</small><span id="sumd"></span></div>
+   <div class="sk"><small>Sub-class breaches</small><span id="suml"></span></div>
+   <div class="sk"><small>Status</small><span id="sumf"></span></div>
+  </div>
+  <nav role="tablist">
+    <button role="tab" aria-selected="true" data-t="al">1 Assets &amp; liabilities</button>
+    <button role="tab" aria-selected="false" data-t="a">2 Allocation &amp; drift</button>
+    <button role="tab" aria-selected="false" data-t="b">3 Gap summary &amp; trade recommendations</button>
+    <button role="tab" aria-selected="false" data-t="cp">4 Cash &amp; planning</button>
+  </nav>
+</header>
+<main id="dm" hidden>
+<section id="al">
+  <p class="note" id="alnote" style="margin-top:0"></p>
+  <div class="kp" id="alk"></div>
+  <div class="alg">
+   <div class="card"><div class="tools" style="margin:0 0 8px"><h2 style="margin:0">Assets</h2><span class="sp"></span><button id="axm" title="Expand to the level the model sets targets at">To model level</button><button id="axa">Expand all</button><button id="axc">Collapse all</button></div><div id="alab"></div><div class="wrap" style="margin-top:10px"><table style="min-width:520px"><thead><tr><th>Asset</th><th>Value (₹ L)</th><th>% of assets</th><th>Liquidity</th><th>Days to cash</th></tr></thead><tbody id="alas"></tbody></table></div></div>
+   <div class="card"><h2>Liabilities</h2><div class="wrap"><table style="min-width:520px"><thead><tr><th>Liability</th><th>Type</th><th>Outstanding (₹ L)</th><th>Rate</th><th>EMI a month (₹ L)</th><th>Months left</th></tr></thead><tbody id="alli"></tbody></table></div><p class="note" id="alln"></p></div>
+  </div>
+  <div class="card" style="margin-bottom:14px"><h2>Projected monthly cash flow, next 12 months</h2><div id="alch"></div><div class="wrap" style="margin-top:10px"><table style="min-width:780px"><thead><tr><th>Month</th><th>Income</th><th>Debt service</th><th>Regular needs</th><th>Yearly and quarterly bills</th><th>Total outflow</th><th>Net</th><th>Cumulative net</th></tr></thead><tbody id="alm"></tbody></table></div><p class="note" id="almn"></p></div>
+  <div class="card" style="margin-bottom:14px"><h2>Yearly expenses</h2><div id="aly"></div></div>
+</section>
+<section id="a" hidden>
+  <div class="card" id="lact" style="margin-bottom:14px"></div>
+  <details class="card" open style="margin-bottom:14px"><summary>Asset distribution: current vs model</summary><div id="pies" style="margin-top:10px"></div></details>
+  <div class="tools">
+    <button id="exp">Expand all</button><button id="col">Collapse all</button><button id="brx">Expand to breaches</button>
+    <span class="sp"></span>
+    <button id="lmr" title="Remove every portfolio override and follow the model">Reset to model</button><span id="lmn" class="note"></span><span class="sp"></span>
+    <span class="leg"><span><i style="background:var(--acc)"></i>Current</span><span><i style="background:var(--ink);width:2px;height:12px"></i>Model target</span>
+    <span><span class="st" style="background:var(--over)"></span>Overweight</span><span><span class="st" style="background:var(--under)"></span>Underweight</span><span><span class="st" style="background:var(--ok)"></span>Within band</span></span>
+  </div>
+  <div class="wrap"><table>
+    <thead><tr><th>Hierarchy</th><th>Value (₹ L)</th><th>Current %</th><th style="text-align:center">Current vs model</th><th>Model %</th><th>Band ±</th><th>Drift (pp)</th><th>To reach model (₹ L)</th></tr></thead>
+    <tbody id="tb"></tbody>
+  </table></div>
+  <p class="note">Asset class › super sector › sector › sub-sector › security. Percentages are of the whole portfolio at every level. Targets and bands exist down to the level the model sets for each asset class (marked “target level”); below that, rows show what is held. Targets and bands are editable here: change one to override the model for this portfolio (shown highlighted, with ↺ to reset), and the siblings under the same parent move so the level above does not change. Clear a box to follow the model again. To change the model itself, go to Models. Click a security for its detail. “Physical” marks assets held outside demat.</p>
+</section>
+<section id="b" hidden>
+  <div class="grid">
+    <div class="card"><h2>Asset class: current vs model</h2><div id="cls"></div></div>
+    <div class="card"><h2>Proposed rebalance (to model)</h2><label class="chk"><input type="checkbox" id="skip" checked> Skip locked assets (EPF, AIF, real estate)</label><div id="tr"></div>
+      <p class="note">Draft only. Real estate and EPF can’t be traded quickly, so a later step should mark holdings as locked or illiquid and route the gap to new money.</p></div>
+  </div>
+</section>
+
+<section id="cp" hidden>
+  <p class="note" id="fnote" style="margin-top:0"></p>
+  <div class="kp" id="fkp"></div>
+  <div class="grid" style="margin-bottom:14px">
+   <div class="card"><h2>Income and assumptions</h2><div class="fg" id="finp"></div><p class="note" style="margin-bottom:0">Liabilities and recurring needs below feed the planning flags and cash plans. The 6-month emergency target and the sources for raising cash use investable holdings only (locked assets such as EPF, AIF and real estate are left out). All amounts are in ₹ L and illustrative.</p></div>
+   <div class="card"><h2>Planning flags</h2><div id="fflags"></div></div>
+  </div>
+  <div class="grid" id="bld" style="margin-bottom:14px">
+   <div class="card"><h2>Raise or invest cash</h2>
+    <div class="fg"><label>Event<select id="ety"><option value="raise">Raise cash</option><option value="invest">Invest cash</option></select></label>
+     <label>Amount (₹ L)<input type="number" id="eam" value="20" min="0.5" step="0.5"></label>
+     <label>Reason<select id="ere"></select></label>
+     <label id="dpw">Deployment<select id="dpl"><option value="1">Lump sum</option><option value="3">3-month STP</option><option value="6">6-month STP</option></select></label></div>
+    <details class="rules" style="margin:12px 0 4px"><summary>Tax and trade options</summary>
+     <div class="fg" style="margin-top:10px"><label>Selection strategy<select id="stg"><option value="tax">Minimise tax</option><option value="model">Closest to model</option><option value="pro">Pro-rata across holdings</option></select></label>
+      <label>LTCG exemption left (₹ L)<input type="number" id="exm" value="1.25" min="0" step="0.25"></label>
+      <label>Carry-forward losses (₹ L)<input type="number" id="cfl" value="0" min="0" step="0.5"></label></div>
+     <label class="chk"><input type="checkbox" id="ns" checked> Avoid short-term gains (raise cash)</label>
+     <label class="chk"><input type="checkbox" id="hv" checked> Sell loss-making holdings first to harvest losses (raise cash)</label>
+     <label class="chk"><input type="checkbox" id="sl" checked> Skip locked assets (EPF, AIF, real estate)</label></details>
+    <button class="pri" id="gen" style="margin-top:8px">Suggest trades</button></div>
+   <div class="card" id="sug"></div>
+  </div>
+  <div class="card" id="alc" style="margin-bottom:14px"></div>
+  <div class="card" id="alr" style="margin-bottom:14px"></div>
+  <div class="card" style="margin-bottom:14px"><div class="tools" style="margin:0 0 8px"><h2 style="margin:0">Liabilities</h2><span class="sp"></span><button data-act="addl">Add liability</button></div><div class="wrap"><table class="tt" style="min-width:820px"><thead><tr><th>Liability</th><th>Type</th><th>Outstanding (₹ L)</th><th>Rate %</th><th>EMI per month (₹ L)</th><th>Months left</th><th></th></tr></thead><tbody id="flt"></tbody></table></div></div>
+  <div class="card"><div class="tools" style="margin:0 0 8px"><h2 style="margin:0">Recurring needs</h2><span class="sp"></span><button data-act="addn">Add need</button></div><div class="wrap"><table class="tt" style="min-width:1020px"><thead><tr><th>Need</th><th>Category</th><th>Amount (₹ L)</th><th>Frequency</th><th>Due month</th><th>Starts in (yrs)</th><th>Lasts (yrs)</th><th>Inflation %</th><th></th></tr></thead><tbody id="fnt"></tbody></table></div></div>
+</section>
+</main>
+<aside id="dr" aria-label="Holding detail"></aside>
+<script>
+const FT={v:5};
+/* ===== Taxonomy: Asset class > Super sector > Sector > Sub-sector > Security ===== */
+const CLS=["Equity","Fixed income","Alternatives","Real assets"],LVN=["Asset class","Super sector","Sector","Sub-sector","Security"],U="Unclassified";
+const TX={
+"Equity":[["Cyclical",[["Financials",["Private banks","PSU banks","NBFC & others"]],["Consumer discretionary",["Autos"]],["Materials",["Metals & mining"]]]],
+ ["Sensitive",[["Information technology",["IT services"]],["Energy",["Oil & gas"]],["Industrials",["Capital goods"]]]],
+ ["Defensive",[["Consumer staples",["FMCG"]],["Healthcare",["Pharma"]],["Utilities",["Power utilities"]]]],
+ ["Multi-sector funds",[["Diversified equity funds",["Large-cap & index","Flexi cap","Mid cap","Small cap"]]]]],
+"Fixed income":[["Sovereign",[["Government securities",["Central government","State development loans"]]]],
+ ["Credit",[["Corporate bonds",["AAA rated","AA and below"]],["Bank deposits",["Scheduled bank FDs"]]]],
+ ["Retirement & small savings",[["Retirement funds",["EPF","PPF and others"]]]],
+ ["Debt funds",[["Duration funds",["Liquid & ultra-short","Short duration","Long duration"]]]]],
+"Alternatives":[["Pooled vehicles",[["AIF",["Category I","Category II","Category III"]],["PMS",["Equity PMS","Multi-asset PMS"]]]],
+ ["Private markets",[["Private credit",["Direct lending"]]]],
+ ["Other alternatives",[["Commodities",["Silver & base metals","Agricultural"]],["Digital assets",["Cryptocurrency"]],["Collectibles",["Art & antiques"]]]]],
+"Real assets":[["Real estate",[["Direct property",["Residential","Commercial"]],["Listed real estate",["REITs"]]]],
+ ["Infrastructure",[["Listed infrastructure",["InvITs"]]]],
+ ["Precious metals",[["Gold",["Gold bonds","Physical gold"]]]]]};
+const DEP=[3,2,4,2],DEP0=DEP.slice(),DEFB=[null,6,4,3,2];
+const RISK=["Low","Low to moderate","Moderate","Moderately high","High","Very high"],CRD=["Sovereign","AAA","AA","A","BBB & below","Unrated"],DUR=["Short","Medium","Long"];
+/* Instrument types: attributes that apply to each. Field = [key, label, kind(t/n/s), unit or options] */
+const INS={
+"Direct equity":[["mcap","Market cap","s",["Large","Mid","Small"]],["risk","Risk rating","s",RISK],["geo","Geography","s",["India","Global"]],["dy","Dividend yield","n","%"],["pe","P/E","n","x"]],
+"Mutual fund":[["cat","SEBI category","t"],["er","Expense ratio","n","%"],["risk","Risk-o-meter","s",RISK],["bm","Benchmark","t"],["aum","Fund size","n","₹ Cr"]],
+"ETF":[["idx","Tracks","t"],["er","Expense ratio","n","%"],["risk","Risk-o-meter","s",RISK],["te","Tracking error","n","%"]],
+"Government bond":[["cpn","Coupon","n","%"],["mat","Maturity","t"],["rating","Credit rating","s",CRD],["ytm","Yield to maturity","n","%"],["dur","Duration bucket","s",DUR]],
+"Corporate bond":[["cpn","Coupon","n","%"],["mat","Maturity","t"],["rating","Credit rating","s",CRD],["ytm","Yield","n","%"],["dur","Duration bucket","s",DUR],["sc","Security","s",["Secured","Unsecured"]]],
+"Fixed deposit":[["rate","Interest rate","n","%"],["mat","Maturity","t"],["pen","Premature exit penalty","n","%"],["rating","Issuer rating","s",CRD],["dur","Duration bucket","s",DUR]],
+"Retirement account":[["rate","Declared rate","n","%"],["rule","Withdrawal rule","t"],["rating","Credit rating","s",CRD],["dur","Duration bucket","s",DUR]],
+"Debt fund":[["cat","SEBI category","t"],["er","Expense ratio","n","%"],["risk","Risk-o-meter","s",RISK],["ytm","Portfolio yield","n","%"],["dm","Modified duration","n","yrs"],["rating","Credit quality","s",CRD],["dur","Duration bucket","s",DUR]],
+"REIT / InvIT":[["dy","Distribution yield","n","%"],["pt","Asset type","t"],["occ","Occupancy","n","%"],["risk","Risk rating","s",RISK]],
+"AIF":[["cat","AIF category","s",["Category I","Category II","Category III"]],["lock","Lock-in","n","yrs"],["com","Commitment","n","₹ L"],["vin","Vintage","n"],["tgt","Target net return","n","%"],["risk","Risk rating","s",RISK]],
+"PMS":[["str","Strategy","t"],["min","Minimum ticket","n","₹ L"],["fee","Management fee","n","%"],["perf","Performance fee","t"],["risk","Risk rating","s",RISK]],
+"Private credit":[["cpn","Coupon","n","%"],["mat","Maturity","t"],["rating","Credit rating","s",CRD],["sc","Security","s",["Secured","Unsecured"]],["dur","Duration bucket","s",DUR]],
+"Commodity":[["cm","Commodity","t"],["veh","Vehicle","s",["ETF","Physical","Futures"]],["er","Expense ratio","n","%"],["risk","Risk rating","s",RISK]],
+"Digital asset":[["as","Asset","t"],["cust","Custody","s",["Exchange","Self-custody","Qualified custodian"]],["risk","Risk rating","s",RISK]],
+"Collectible":[["it","Item","t"],["vd","Last valued","t"],["vm","Valuation method","s",["Registered valuer","Auction comparables","Self-assessed"]],["risk","Risk rating","s",RISK]],
+"Gold":[["form","Form","s",["Sovereign gold bond","Gold ETF","Physical"]],["cpn","Coupon","n","%"],["mat","Maturity","t"],["pur","Purity","t"]],
+"Real estate":[["pt","Property type","s",["Residential","Commercial","Land"]],["loc","Location","t"],["ry","Rental yield","n","%"],["val","Last valued","t"]]};
+const NIFTY={sec:[["Financials",.38],["Information technology",.13],["Energy",.11],["Consumer staples",.09],["Healthcare",.04],["Industrials",.08],["Other",.17]],mc:[["Large",1]],geo:[["India",1]]};
+const X=(n,ty,path,th,a,o)=>({n,type:ty,pa:path.split(">"),th:th?th.split(";"):[],a:a||{},...(o||{})});
+const SEC=[
+X("Parag Parikh Flexi Cap","Mutual fund","Equity>Multi-sector funds>Diversified equity funds>Flexi cap","Quality;Global diversification",{cat:"Flexi cap",er:.63,risk:"Very high",bm:"Nifty 500 TRI",aum:95000},{lt:{sec:[["Financials",.24],["Information technology",.2],["Energy",.06],["Consumer staples",.08],["Healthcare",.04],["Industrials",.1],["Other",.28]],mc:[["Large",.72],["Mid",.18],["Small",.1]],geo:[["India",.65],["Global",.35]]}}),
+X("Nippon India Small Cap","Mutual fund","Equity>Multi-sector funds>Diversified equity funds>Small cap","Small-cap growth",{cat:"Small cap",er:.68,risk:"Very high",bm:"Nifty Smallcap 250 TRI",aum:65000},{lt:{sec:[["Industrials",.28],["Financials",.12],["Healthcare",.1],["Consumer staples",.08],["Information technology",.07],["Other",.35]],mc:[["Small",.85],["Mid",.12],["Large",.03]],geo:[["India",1]]}}),
+X("UTI Nifty 50 Index","Mutual fund","Equity>Multi-sector funds>Diversified equity funds>Large-cap & index","Broad market",{cat:"Index fund",er:.18,risk:"Very high",bm:"Nifty 50 TRI",aum:20000},{lt:NIFTY}),
+X("HDFC Bank","Direct equity","Equity>Cyclical>Financials>Private banks","Quality;Dividend",{mcap:"Large",risk:"High",geo:"India",dy:1.1,pe:18}),
+X("Infosys","Direct equity","Equity>Sensitive>Information technology>IT services","Digital India;Dividend",{mcap:"Large",risk:"High",geo:"India",dy:2.6,pe:24}),
+X("Reliance Industries","Direct equity","Equity>Sensitive>Energy>Oil & gas","Energy transition",{mcap:"Large",risk:"High",geo:"India",dy:.4,pe:25}),
+X("Nippon Nifty BeES","ETF","Equity>Multi-sector funds>Diversified equity funds>Large-cap & index","Broad market",{idx:"Nifty 50",er:.04,risk:"Very high",te:.05},{lt:NIFTY}),
+X("Motilal Midcap 150 ETF","ETF","Equity>Multi-sector funds>Diversified equity funds>Mid cap","Mid-cap growth",{idx:"Nifty Midcap 150",er:.2,risk:"Very high",te:.12},{lt:{sec:[["Financials",.22],["Industrials",.22],["Healthcare",.12],["Consumer staples",.08],["Information technology",.09],["Energy",.05],["Other",.22]],mc:[["Mid",.85],["Small",.08],["Large",.07]],geo:[["India",1]]}}),
+X("Bajaj Finance","Direct equity","Equity>Cyclical>Financials>NBFC & others","Consumer credit",{mcap:"Large",risk:"High",geo:"India",dy:.5,pe:30}),
+X("Hindustan Unilever","Direct equity","Equity>Defensive>Consumer staples>FMCG","Consumption;Dividend",{mcap:"Large",risk:"Moderately high",geo:"India",dy:1.6,pe:52}),
+X("Sun Pharma","Direct equity","Equity>Defensive>Healthcare>Pharma","Ageing and health",{mcap:"Large",risk:"High",geo:"India",dy:.8,pe:33}),
+X("Larsen & Toubro","Direct equity","Equity>Sensitive>Industrials>Capital goods","Infrastructure;Make in India",{mcap:"Large",risk:"High",geo:"India",dy:1,pe:34}),
+X("GOI 7.18% 2033","Government bond","Fixed income>Sovereign>Government securities>Central government","Capital preservation",{cpn:7.18,mat:"Aug 2033",rating:"Sovereign",ytm:6.9,dur:"Long"}),
+X("HDFC Ltd NCD 8.1%","Corporate bond","Fixed income>Credit>Corporate bonds>AAA rated","Income",{cpn:8.1,mat:"May 2028",rating:"AAA",ytm:7.8,dur:"Medium",sc:"Secured"}),
+X("SBI FD (Mar 2028)","Fixed deposit","Fixed income>Credit>Bank deposits>Scheduled bank FDs","Capital preservation",{rate:7.1,mat:"Mar 2028",pen:1,rating:"AAA",dur:"Medium"}),
+X("HDFC Bank FD (Jun 2027)","Fixed deposit","Fixed income>Credit>Bank deposits>Scheduled bank FDs","Capital preservation",{rate:7.25,mat:"Jun 2027",pen:1,rating:"AAA",dur:"Short"}),
+X("EPF account","Retirement account","Fixed income>Retirement & small savings>Retirement funds>EPF","Retirement",{rate:8.25,rule:"Until retirement or qualifying events",rating:"Sovereign",dur:"Medium"}),
+X("HDFC Short Term Debt Fund","Debt fund","Fixed income>Debt funds>Duration funds>Short duration","Income",{cat:"Short duration",er:.4,risk:"Moderate",ytm:7.4,dm:2.1,rating:"AAA",dur:"Short"}),
+X("360 ONE Cat III AIF","AIF","Alternatives>Pooled vehicles>AIF>Category III","Absolute return",{cat:"Category III",lock:3,com:8,vin:2024,tgt:14,risk:"High"}),
+X("Infra Fund Cat I AIF","AIF","Alternatives>Pooled vehicles>AIF>Category I","Infrastructure;Private markets",{cat:"Category I",lock:7,com:4,vin:2023,tgt:13,risk:"High"}),
+X("Private Equity Cat II AIF","AIF","Alternatives>Pooled vehicles>AIF>Category II","Private markets",{cat:"Category II",lock:8,com:6,vin:2022,tgt:16,risk:"Very high"}),
+X("Quality Equity PMS","PMS","Alternatives>Pooled vehicles>PMS>Equity PMS","Quality",{str:"Quality large and mid cap",min:50,fee:2,perf:"15% over a 10% hurdle",risk:"High"}),
+X("Private credit note 2029","Private credit","Alternatives>Private markets>Private credit>Direct lending","Income;Private markets",{cpn:12.5,mat:"Sep 2029",rating:"BBB & below",sc:"Secured",dur:"Medium"}),
+X("Silver ETF","Commodity","Alternatives>Other alternatives>Commodities>Silver & base metals","Inflation hedge;Industrial demand",{cm:"Silver",veh:"ETF",er:.45,risk:"High"}),
+X("Bitcoin (exchange wallet)","Digital asset","Alternatives>Other alternatives>Digital assets>Cryptocurrency","Digital assets",{as:"Bitcoin",cust:"Exchange",risk:"Very high"}),
+X("Art and collectibles","Collectible","Alternatives>Other alternatives>Collectibles>Art & antiques","Passion assets",{it:"Contemporary art, three works",vd:"Mar 2026",vm:"Registered valuer",risk:"High"},{p:1}),
+X("Embassy REIT","REIT / InvIT","Real assets>Real estate>Listed real estate>REITs","Income;Real assets",{dy:6.2,pt:"Commercial offices",occ:90,risk:"Moderate"}),
+X("IRB InvIT","REIT / InvIT","Real assets>Infrastructure>Listed infrastructure>InvITs","Income;Infrastructure",{dy:9.1,pt:"Toll roads",risk:"Moderately high"}),
+X("Sovereign Gold Bond 2028","Gold","Real assets>Precious metals>Gold>Gold bonds","Inflation hedge",{form:"Sovereign gold bond",cpn:2.5,mat:"2028",pur:"999"}),
+X("Physical gold (jewellery, bars)","Gold","Real assets>Precious metals>Gold>Physical gold","Inflation hedge",{form:"Physical",pur:"22k jewellery, 24k bars"},{p:1}),
+X("Flat, Baner Pune","Real estate","Real assets>Real estate>Direct property>Residential","Real assets",{pt:"Residential",loc:"Baner, Pune",ry:2.6,val:"Jun 2026"},{p:1})];
+const SEC0=JSON.parse(JSON.stringify(SEC));
+const BASE=[30,12,20,18,12,14,10,4,6,6,5,7, 15,8,14,6,22,10, 8,4,5,8,5,3,2,4, 6,3,7,4,60];
+const LQ=["Liquid","Semi-liquid","Locked"];
+const M={"Parag Parikh Flexi Cap":{c:21,r:12.5,l:0,t:"Held over 12 months: long-term rate."},"Nippon India Small Cap":{c:9,r:12.5,l:0,t:"Held over 12 months."},"UTI Nifty 50 Index":{c:16,r:12.5,l:0,t:"Held over 12 months."},
+"HDFC Bank":{c:11,r:12.5,l:0,t:"Held over 12 months."},"Infosys":{c:12.5,r:20,l:0,t:"Held under 12 months and at a loss: selling books a short-term loss."},"Reliance Industries":{c:9,r:12.5,l:0,t:"Held over 12 months."},
+"Nippon Nifty BeES":{c:8,r:12.5,l:0,t:"Held over 12 months."},"Motilal Midcap 150 ETF":{c:3.6,r:20,l:0,t:"Held under 12 months: short-term rate. Consider waiting."},
+"Bajaj Finance":{c:4.2,r:12.5,l:0,t:"Held over 12 months."},"Hindustan Unilever":{c:5.5,r:12.5,l:0,t:"Held over 12 months."},"Sun Pharma":{c:4.6,r:20,l:0,t:"Held under 12 months: short-term rate."},"Larsen & Toubro":{c:5.1,r:12.5,l:0,t:"Held over 12 months."},
+"GOI 7.18% 2033":{c:14.6,r:30,l:0,t:"Gains taxed at slab rate (assumed 30%)."},"HDFC Ltd NCD 8.1%":{c:8,r:30,l:1,t:"Thin secondary-market liquidity."},
+"SBI FD (Mar 2028)":{c:14,r:0,l:1,t:"Premature withdrawal carries a penalty; interest is taxed at slab rate."},"HDFC Bank FD (Jun 2027)":{c:6,r:0,l:1,t:"Premature withdrawal carries a penalty."},
+"EPF account":{c:22,r:0,l:2,t:"Employer-linked. Withdrawal restricted until retirement or qualifying events."},
+"HDFC Short Term Debt Fund":{c:9.2,r:30,l:0,t:"Debt fund gains are taxed at slab rate (assumed 30%)."},
+"360 ONE Cat III AIF":{c:6,r:0,l:2,t:"Closed-ended. Lock-in until Mar 2029; exit only at fund redemption."},
+"Infra Fund Cat I AIF":{c:3.5,r:12.5,l:2,t:"Closed-ended. Capital comes back as projects exit; no early redemption."},
+"Private Equity Cat II AIF":{c:4,r:12.5,l:2,t:"Closed-ended with capital calls. Exit only at fund wind-up."},
+"Quality Equity PMS":{c:6.5,r:12.5,l:1,t:"Withdrawals possible at month-end. Stocks sold inside the PMS are taxed in the client's hands."},
+"Private credit note 2029":{c:5,r:30,l:2,t:"Unlisted note. Exit only at maturity or through a negotiated buyback."},
+"Silver ETF":{c:2.6,r:12.5,l:0,t:"Listed ETF. Liquid."},
+"Bitcoin (exchange wallet)":{c:1.2,r:30,l:1,t:"Gains are taxed at a flat 30% with no loss set-off. Exchange and custody risk apply."},
+"Art and collectibles":{c:2.8,r:12.5,l:2,t:"A sale needs a valuer and a buyer. Allow several months."},
+"Embassy REIT":{c:5.5,r:12.5,l:0,t:"Listed. Distributions have separate tax treatment."},"IRB InvIT":{c:3.2,r:20,l:0,t:"Held under 12 months."},
+"Sovereign Gold Bond 2028":{c:4.8,r:12.5,l:1,t:"Exchange sale is thin. Redemption at maturity is tax-free."},"Physical gold (jewellery, bars)":{c:2.5,r:12.5,l:1,t:"Valuation and purity checks needed before sale."},
+"Flat, Baner Pune":{c:38,r:12.5,l:2,t:"Sale takes months. Includes brokerage and registration costs."}};
+const LF=SEC.map((s,i)=>({n:s.n,i,ci:CLS.indexOf(s.pa[0]),p:s.p,v:BASE[i],k:1,tg:0,ty:s.type}));
+const D=CLS.map(n=>({n,v:0,tg:0}));
+/* ===== Node tree (static): built from the taxonomy plus the security master ===== */
+const hpath=s=>[s.pa[0],s.pa[1]||U,s.pa[2]||U,s.pa[3]||U];
+let NODES=[],NB={};
+function buildNodes(){const by={};
+ const add=(key,par,lv,label,ci,i)=>{const n={key,par,lv,label,ci,i,kids:[],hs:[]};by[key]=n;if(par)by[par].kids.push(n);return n};
+ CLS.forEach((c,ci)=>{add(c,null,0,c,ci);(TX[c]||[]).forEach(([su,secs])=>{const k1=c+"|"+su;add(k1,c,1,su,ci);secs.forEach(([se,subs])=>{const k2=k1+"|"+se;add(k2,k1,2,se,ci);subs.forEach(sb=>add(k2+"|"+sb,k2,3,sb,ci))})})});
+ SEC.forEach((s,i)=>{const p=hpath(s),ci=CLS.indexOf(p[0]);let k=p[0];for(let j=1;j<4;j++){const kk=k+"|"+p[j];if(!by[kk])add(kk,k,j,p[j],ci);k=kk}
+  add(k+"|"+s.n,k,4,s.n,ci,i);let a=k+"|"+s.n;while(a){by[a].hs.push(i);a=by[a].par}});
+ const o=[];const dfs=n=>{o.push(n);n.kids.forEach(dfs)};CLS.forEach(c=>dfs(by[c]));NODES=o;NB=by}
+buildNodes();
+const termKey=s=>{const p=hpath(s),d=DEP[CLS.indexOf(p[0])];return d===4?p.join("|")+"|"+s.n:p.slice(0,d+1).join("|")};
+/* ===== Models: target % at each terminal node (depth set per asset class), parents are sums ===== */
+const MT0L={
+Conservative:{"Large-cap & index":10,"Flexi cap":5,"Mid cap":1,"Small cap":0,"Private banks":3,"NBFC & others":0,"IT services":3,"Oil & gas":2,"Capital goods":1,"FMCG":3,"Pharma":2,
+ "Government securities":12,"Corporate bonds":8,"Bank deposits":10,"Retirement funds":10,"Duration funds":5,
+ "360 ONE Cat III AIF":1,"Quality Equity PMS":1,"Private credit note 2029":2,"Silver ETF":.5,"Art and collectibles":.5,
+ "Direct property":10,"Listed real estate":3,"Listed infrastructure":1,"Gold":6},
+Moderate:{"Large-cap & index":11,"Flexi cap":8,"Mid cap":4,"Small cap":3,"Private banks":5,"NBFC & others":2,"IT services":4,"Oil & gas":4,"Capital goods":3,"FMCG":3,"Pharma":3,
+ "Government securities":5,"Corporate bonds":4,"Bank deposits":5,"Retirement funds":8,"Duration funds":3,
+ "360 ONE Cat III AIF":2,"Infra Fund Cat I AIF":1,"Private Equity Cat II AIF":1.5,"Quality Equity PMS":2.5,"Private credit note 2029":1.5,"Silver ETF":.5,"Bitcoin (exchange wallet)":.5,"Art and collectibles":.5,
+ "Direct property":7,"Listed real estate":2,"Listed infrastructure":1,"Gold":5},
+Aggressive:{"Large-cap & index":9,"Flexi cap":12,"Mid cap":8,"Small cap":7,"Private banks":5,"NBFC & others":3,"IT services":5,"Oil & gas":4,"Capital goods":5,"FMCG":3,"Pharma":4,
+ "Government securities":2,"Corporate bonds":2,"Bank deposits":2,"Retirement funds":5,"Duration funds":1,
+ "360 ONE Cat III AIF":3,"Infra Fund Cat I AIF":1.5,"Private Equity Cat II AIF":2.5,"Quality Equity PMS":3,"Private credit note 2029":1.5,"Silver ETF":.5,"Bitcoin (exchange wallet)":1,
+ "Direct property":4,"Listed real estate":2,"Listed infrastructure":1,"Gold":3},
+Growth:{"Large-cap & index":6,"Flexi cap":15,"Mid cap":11,"Small cap":9,"Private banks":3,"NBFC & others":5,"IT services":7,"Oil & gas":3,"Capital goods":7,"FMCG":2,"Pharma":4,
+ "Government securities":1,"Corporate bonds":1,"Bank deposits":1,"Retirement funds":4,"Duration funds":1,
+ "360 ONE Cat III AIF":2,"Infra Fund Cat I AIF":2,"Private Equity Cat II AIF":3,"Quality Equity PMS":3,"Private credit note 2029":1,"Silver ETF":.5,"Bitcoin (exchange wallet)":1.5,"Art and collectibles":1,
+ "Direct property":3,"Listed real estate":1,"Listed infrastructure":.5,"Gold":1.5},
+"Dividend reinvestment":{"Large-cap & index":15,"Flexi cap":4,"Mid cap":1,"Private banks":5,"IT services":6,"Oil & gas":3,"Capital goods":3,"FMCG":6,"Pharma":2,
+ "Government securities":3,"Corporate bonds":7,"Bank deposits":5,"Retirement funds":4,"Duration funds":6,
+ "360 ONE Cat III AIF":2,"Infra Fund Cat I AIF":1,"Quality Equity PMS":3,"Private credit note 2029":4,
+ "Direct property":6,"Listed real estate":6,"Listed infrastructure":4,"Gold":4},
+"Inflation hedge":{"Large-cap & index":8,"Flexi cap":6,"Mid cap":2,"Private banks":3,"IT services":2,"Oil & gas":5,"Capital goods":4,"FMCG":3,"Pharma":2,
+ "Government securities":6,"Corporate bonds":2,"Bank deposits":4,"Retirement funds":6,"Duration funds":2,
+ "Infra Fund Cat I AIF":2,"Private credit note 2029":2,"Silver ETF":4,"Bitcoin (exchange wallet)":1,"Art and collectibles":1,
+ "Direct property":14,"Listed real estate":6,"Listed infrastructure":5,"Gold":10},
+"Alternatives-led":{"Large-cap & index":6,"Flexi cap":8,"Mid cap":3,"Small cap":2,"Private banks":4,"NBFC & others":2,"IT services":4,"Oil & gas":2,"Capital goods":2,"FMCG":1,"Pharma":1,
+ "Government securities":3,"Corporate bonds":3,"Bank deposits":3,"Retirement funds":5,"Duration funds":1,
+ "360 ONE Cat III AIF":6,"Infra Fund Cat I AIF":4,"Private Equity Cat II AIF":7,"Quality Equity PMS":8,"Private credit note 2029":5,"Silver ETF":1,"Bitcoin (exchange wallet)":2,"Art and collectibles":2,
+ "Direct property":7,"Listed real estate":3,"Listed infrastructure":2,"Gold":3}};
+const MI={Conservative:{k:"Risk-based",risk:"Conservative",ab:"Cons",d:"Capital preservation first: mostly debt and real assets, with a small equity core."},
+Moderate:{k:"Risk-based",risk:"Moderate",ab:"Mod",d:"Balanced growth and income across all four asset classes."},
+Aggressive:{k:"Risk-based",risk:"Aggressive",ab:"Aggr",d:"Long-term growth with a high equity share and some alternatives."},
+Growth:{k:"Strategy",risk:"Aggressive",ab:"Growth",d:"Equity-led and tilted to flexi, mid and small cap and to compounding businesses. Dividends are reinvested. Suits long horizons."},
+"Dividend reinvestment":{k:"Strategy",risk:"Moderate",ab:"Div",d:"Dividend-paying large caps, REIT and InvIT distributions and credit income, all reinvested to compound."},
+"Inflation hedge":{k:"Strategy",risk:"Moderate",ab:"Infl",d:"Real assets, gold and commodities alongside energy and infrastructure equity, to protect purchasing power."},
+"Alternatives-led":{k:"Strategy",risk:"Aggressive",ab:"Alts",d:"A large share in AIFs, PMS and private credit for diversification. Needs a long horizon and a liquidity buffer."}};
+const isT=n=>n.lv===DEP[n.ci];
+const P=Object.keys(MT0L),MT={},DEFMT={},BAND={};P.forEach(p=>BAND[p]={});
+Object.keys(MT0L).forEach(p=>{const m={};NODES.filter(isT).forEach(n=>{m[n.key]=MT0L[p][n.label]||0});MT[p]=m;DEFMT[p]={...m}});
+const effT=(e,p)=>{p=p||e.r;return e.ovl?{...MT[p],...e.ovl}:MT[p]};
+const TH=()=>CP&&CP.th!==undefined?CP.th:FT.v;
+function rowsFor(e,prof){prof=prof||e.r;const T=e.vec.reduce((a,b)=>a+b,0)||1,tm=effT(e,prof),mm=MT[prof],bd=BAND[prof]||{},pb=e.bnd||{};
+ const R=NODES.map(n=>({key:n.key,par:n.par,lv:n.lv,label:n.label,ci:n.ci,i:n.i,sec:n.lv===4,hs:n.hs,kids:[],ns:n.i!==undefined?1:n.hs.length,val:n.hs.reduce((a,h)=>a+e.vec[h],0)})),by={};
+ R.forEach(r=>{by[r.key]=r;r.c=r.val/T*100});R.forEach(r=>{if(r.par)by[r.par].kids.push(r)});
+ for(let j=R.length-1;j>=0;j--){const r=R[j],d=DEP[r.ci];
+  if(r.lv===d){r.leaf=true;r.t=tm[r.key]||0;r.mt=mm[r.key]||0}
+  else if(r.lv<d){r.t=r.kids.reduce((a,x)=>a+x.t,0);r.mt=r.kids.reduce((a,x)=>a+x.mt,0)}
+  else{r.t=null;r.mt=null;r.below=true}
+  r.mb=r.lv===0?FT.v:(bd[r.key]??DEFB[r.lv]);r.pbv=r.lv===0?undefined:pb[r.key];
+  r.band=r.lv===0?(e.th??FT.v):(pb[r.key]??bd[r.key]??DEFB[r.lv]);
+  if(r.t!=null){r.d=r.c-r.t;r.out=Math.abs(r.d)>r.band&&(r.c>=.05||r.t>=.05);r.amt=r.t/100*T-r.val;r.src=Math.abs(r.t-r.mt)>.005?"Portfolio override":"Model"}}
+ R.forEach(r=>{r.cnt=!!r.out&&!r.kids.some(k=>k.out)});R.by=by;return R}
+/* Holding-level targets implied by the node targets: a terminal node's target is shared across its holdings pro rata to current value */
+function holdT(e,lvl,R){R=R||rowsFor(e);const out=Array(LF.length).fill(0);
+ R.forEach(r=>{if(!(lvl===0?r.lv===0:r.leaf)||!r.t||!r.hs.length)return;const tot=r.hs.reduce((a,h)=>a+e.vec[h],0);r.hs.forEach(h=>{out[h]+=r.t*(tot>.0001?e.vec[h]/tot:1/r.hs.length)})});return out}
+const LTE=e=>holdT(e);
+const clsT=(e,p)=>rowsFor(e,p).filter(r=>r.lv===0).map(r=>r.t);
+const csE=e=>clsT(e),csP=p=>clsT({vec:BASE,r:p},p);
+const agg=e=>{const R=rowsFor(e).filter(r=>r.lv===0);return Math.max(...R.map(r=>Math.abs(r.c-r.t)))};
+const lensCnt=e=>rowsFor(e).filter(r=>r.lv>0&&r.cnt).length;
+/* Edit a node: its terminal descendants are scaled and its siblings absorb the change, so the parent total never moves */
+function editNode(R,key,v,store){const n=R.by[key];if(!n||n.t==null)return;const P=n.par?R.by[n.par]:null,pt=P?P.t:100;v=Math.max(0,Math.min(pt,v));
+ const lv=r=>r.leaf?[r]:R.filter(x=>x.leaf&&x.key.startsWith(r.key+"|")),rd=x=>Math.round(x*10000)/10000;
+ const sc=(r,val)=>{let L=lv(r);const o=L.reduce((a,x)=>a+x.t,0);if(o<=0){const w=L.filter(x=>x.hs.length);if(w.length)L=w}const n0=o>0?o:L.length;L.forEach(x=>{store[x.key]=rd(o>0?x.t*val/o:val/n0)})};
+ const sib=R.filter(x=>x.par===n.par&&x.key!==key&&x.t!=null),ss=sib.reduce((a,x)=>a+x.t,0),rem=Math.max(0,pt-v);
+ if(!sib.length)v=pt;else sib.forEach(x=>sc(x,ss>0?x.t*rem/ss:rem/sib.length));sc(n,v)}
+/* Changing the depth re-projects every model and every portfolio override */
+function reproj(map,ci,od,nd){const c=CLS[ci],out={};Object.keys(map).forEach(k=>{if(k!==c&&!k.startsWith(c+"|"))out[k]=map[k]});
+ let tot=0;const val=Object.keys(map).filter(k=>k===c||k.startsWith(c+"|"));val.forEach(k=>tot+=map[k]);
+ const at=(lv)=>NODES.filter(n=>n.ci===ci&&n.lv===lv);
+ if(nd<od){val.forEach(k=>{const A=k.split("|"),a=A.slice(0,nd+1).join("|");out[a]=(out[a]||0)+map[k]})}
+ else if(nd>od){val.forEach(k=>{const kids=NODES.filter(n=>n.ci===ci&&n.lv===nd&&n.key.startsWith(k+"|"));if(!kids.length)return;const w=kids.map(n=>n.hs.reduce((a,h)=>a+BASE[h],0)),sw=w.reduce((a,b)=>a+b,0);kids.forEach((n,j)=>{out[n.key]=(out[n.key]||0)+map[k]*(sw>0?w[j]/sw:1/kids.length)})})}
+ else val.forEach(k=>out[k]=map[k]);
+ let t2=0;Object.keys(out).filter(k=>k===c||k.startsWith(c+"|")).forEach(k=>t2+=out[k]);
+ if(t2>0&&Math.abs(t2-tot)>1e-9)Object.keys(out).filter(k=>k===c||k.startsWith(c+"|")).forEach(k=>{out[k]*=tot/t2});return out}
+function setDepth(ci,nd){const od=DEP[ci];if(od===nd)return;const NM={};Object.keys(MT).forEach(p=>NM[p]=reproj(MT[p],ci,od,nd));
+ const DM={};Object.keys(DEFMT).forEach(p=>DM[p]=reproj(DEFMT[p],ci,od,nd));
+ ents().forEach(e=>{if(!e.ovl)return;const full=reproj({...MT[e.r],...e.ovl},ci,od,nd),o={};Object.keys(full).forEach(k=>{if(Math.abs(full[k]-(NM[e.r][k]||0))>.005)o[k]=full[k]});e.ovl=Object.keys(o).length?o:undefined});
+ DEP[ci]=nd;Object.keys(NM).forEach(p=>MT[p]=NM[p]);Object.keys(DM).forEach(p=>DEFMT[p]=DM[p])}
+function reclass(i,pa){const s=SEC[i],ok=termKey(s),d0=DEP[CLS.indexOf(s.pa[0])];s.pa=pa;const nk=termKey(s);
+ if(d0===4&&ok!==nk){const mv=m=>{if(m&&m[ok]!==undefined){const v=m[ok];delete m[ok];m[nk]=(m[nk]||0)+v}};Object.values(MT).forEach(mv);Object.values(DEFMT).forEach(mv);ents().forEach(e=>mv(e.ovl))}
+ LF[i].ci=CLS.indexOf(pa[0]);buildNodes();Object.values(MT).forEach(heal);Object.values(DEFMT).forEach(heal);ents().forEach(e=>{heal(e.ovl);pruneO(e)})}
+function heal(m){if(!m)return;const o={};Object.keys(m).forEach(k=>{if(!NB[k]){const ci=CLS.indexOf(k.split("|")[0]);if(ci>=0)o[ci]=(o[ci]||0)+m[k];delete m[k]}});Object.keys(o).forEach(ci=>{const tn=NODES.filter(n=>n.ci==ci&&isT(n)&&n.hs.length)[0]||NODES.filter(n=>n.ci==ci&&isT(n))[0];if(tn)m[tn.key]=(m[tn.key]||0)+o[ci]})}
+const pruneO=e=>{if(!e.ovl)return;Object.keys(e.ovl).forEach(k=>{if(Math.abs(e.ovl[k]-((MT[e.r]||{})[k]||0))<.005)delete e.ovl[k]});if(!Object.keys(e.ovl).length)e.ovl=undefined};
+const ovn=e=>{let n=0;if(e.ovl){const R=rowsFor(e);n+=R.filter(r=>r.leaf&&r.src==="Portfolio override").length}return n+Object.keys(e.bnd||{}).length+(e.th!==undefined?1:0)};
+
+const f=x=>x.toFixed(1),sg=x=>(x>0?"+":"")+f(x);
+let TOT=0;
+function st(n){const d=n.v/TOT*100-n.tg;return Math.abs(d)<=TH()?["ok","var(--ok)"]:d>0?["over","var(--over)"]:["under","var(--under)"]}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){dr.classList.remove("on");sdr.classList.remove("on")}});
+// tab 2
+function renderCls(){cls.innerHTML=D.map(n=>{const cp=n.v/TOT*100,d=cp-n.tg,[k]=st(n);
+ return `<div class="row"><div>${n.n}</div><div><span class="bar" style="height:8px;display:block;margin-bottom:5px"><b style="width:${cp/80*100}%;background:var(--acc)"></b></span><span class="bar" style="height:8px;display:block"><b style="width:${n.tg/80*100}%;background:var(--mut);opacity:.6"></b></span></div>
+ <div style="text-align:right"><div>${f(cp)} / ${f(n.tg)}</div><div class="${k}">${sg(d)} pp</div></div></div>`}).join("")+
+ `<p class="note">Top bar: current %. Bottom bar: model %.</p>`}
+function trades(){const sk=skip.checked;let net=0,tax=0,blk=[];
+ const h=LF.map(r=>({r,a:r.tg/100*TOT-r.v})).filter(t=>Math.abs(t.a)>=0.5).sort((a,b)=>a.a-b.a).map(t=>{
+  const m=M[t.r.n];t.m=m;t.tx=t.a<0?Math.max(0,(t.r.v-m.c*t.r.k)*(-t.a/t.r.v))*m.r/100:0;return t});
+ tr.innerHTML=h.filter(t=>{if(sk&&t.m.l>1){blk.push(t);return false}return true}).map(t=>{net+=t.a;tax+=t.tx;
+  return `<div class="trade"><div>${t.r.n}<small>${LQ[t.m.l]}${t.r.p?' · physical':''}${t.tx>0?` · est. tax ₹${f(t.tx)} L`:''}</small></div><b class="${t.a>0?'under':'over'}">${t.a>0?'Buy':'Sell'} ${f(Math.abs(t.a))} L</b></div>`}).join("")+
+  `<div class="box">Net cash from these trades: <b>${sg(-net)} L</b><br>Estimated tax on sales: <b>₹${f(tax)} L</b>${blk.length?`<br>Not traded (locked): ${blk.map(t=>t.r.n+" "+sg(t.a)).join(", ")} L. Route this gap through new money.`:''}</div>`}
+skip.onchange=trades;trades();
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll("nav button").forEach(x=>x.setAttribute("aria-selected",x===b));
+ ["al","a","b","cp"].forEach(i=>document.getElementById(i).hidden=b.dataset.t!==i)});
+const CC=["var(--acc)","var(--under)","#b08a2e","var(--mut)"];
+const HT0={};P.forEach(p=>HT0[p]=holdT({vec:BASE,r:p}));
+let cur="Moderate";
+function applyTg(t,e){LF.forEach((r,i)=>r.tg=t[i]);const c=csE(e);D.forEach((n,ci)=>{n.tg=c[ci];n.v=LF.filter(r=>r.ci===ci).reduce((s,r)=>s+r.v,0)})}
+function setModel(p){cur=p;if(CP)CP.r=p;applyTg(LTE(CP),CP);all()}
+function renderPies(){const c=D.map(n=>n.v/TOT*100),t=D.map(n=>n.tg);
+ pies.innerHTML=`<div class="pl" style="max-width:560px"><div class="pr ph"><span></span><span></span><span>Current</span><span>Model</span><span>Drift</span></div>${D.map((n,i)=>{const [k]=st(n);return `<div class="pr"><i style="background:${CC[i]}"></i><span>${n.n}</span><span>${f(c[i])}%</span><span>${f(t[i])}%</span><b class="${k}">${sg(c[i]-t[i])} pp</b></div>`}).join("")}</div>`}
+function all(){renderSum();renderPies();draw();renderFin();renderAL();renderCls();trades();rp.value=cur}
+rp.onchange=()=>setModel(rp.value);
+let CP=null;
+const ex=new Set();let view="h",sk="ag",sd=-1;
+const HH=[{id:"h1",n:"Mehta Family",r:"Moderate"},{id:"h2",n:"Iyer Household",r:"Conservative",th:3},{id:"h3",n:"Kapoor Family",r:"Aggressive"},{id:"h4",n:"Shah & Sons",r:"Dividend reinvestment"},{id:"h5",n:"Nair Household",r:"Conservative"},{id:"h6",n:"Rao Family",r:"Growth",th:7}];
+const AC=[{id:"a1",h:"h1",n:"Mehta Joint (demat + physical)",a:273,base:1},{id:"a2",h:"h1",n:"Ritu Mehta",a:90,s:.5},{id:"a3",h:"h2",n:"Rajan Iyer",a:180,s:.25},{id:"a4",h:"h2",n:"Meena Iyer",a:110,s:.15},{id:"a5",h:"h2",n:"Iyer HUF",a:60,s:.6},
+{id:"a6",h:"h3",n:"Arjun Kapoor",a:320,s:.9},{id:"a7",h:"h3",n:"Kapoor Family Trust",a:210,s:1.1,th:3},{id:"a8",h:"h4",n:"Shah Pvt Ltd Treasury",a:150,s:.2},{id:"a9",h:"h4",n:"Nirav Shah",a:80,s:.35},{id:"a10",h:"h5",n:"Lakshmi Nair",a:95,s:.4},{id:"a11",h:"h6",n:"Vikram Rao",a:260,s:.3},{id:"a12",h:"h6",n:"Rao Family Trust",a:140,s:.55}];
+const rnd=(a,b)=>{const x=Math.sin(a*127.1+b*311.7)*43758.5453;return x-Math.floor(x)};
+const byId=id=>HH.find(h=>h.id===id)||AC.find(a=>a.id===id);
+AC.forEach(a=>{a.r=byId(a.h).r;const raw=HT0[a.r].map((t,i)=>Math.max(.05,t)*Math.max(.05,1+(a.s||0)*(rnd(+a.id.slice(1),i)*2-1)));const k=a.a/raw.reduce((x,y)=>x+y,0);a.vec=a.base?BASE.slice():raw.map(x=>x*k);a.k="a"});
+const ents=()=>HH.map(h=>{h.k="h";h.vec=AC.filter(a=>a.h===h.id).reduce((s,a)=>s.map((x,i)=>x+a.vec[i]),Array(LF.length).fill(0));return h}).concat(AC);
+
+function renderDash(){flash.hidden=!FLASH;flash.textContent=FLASH;FLASH="";
+ const L0=ents().filter(e=>e.k===view).map(e=>({e,m:met(e)})),qq=q.value.toLowerCase();
+ const L=L0.filter(x=>(!fr.value||x.e.r===fr.value)&&(!fo.checked||x.m.br)&&x.e.n.toLowerCase().includes(qq));
+ L.sort((a,b)=>sd*(sk==="n"?a.e.n.localeCompare(b.e.n)*-1:sk==="aum"?a.m.T0-b.m.T0:a.m.ag-b.m.ag));
+ const A=L0.reduce((s,x)=>s+x.m.T0,0),B=L0.filter(x=>x.m.br),BA=B.reduce((s,x)=>s+x.m.T0,0);
+ kp.innerHTML=`<div class="kc"><small>Total AUM</small><b>₹ ${f(A/100)} Cr</b></div><div class="kc"><small>${view==="h"?"Households":"Accounts"}</small><b>${L0.length}</b></div><div class="kc"><small>Past rebalance threshold</small><b class="${B.length?'over':'ok'}">${B.length} of ${L0.length}</b></div><div class="kc"><small>AUM past threshold</small><b>₹ ${f(BA/100)} Cr</b> <small style="display:inline">(${f(BA/A*100)}%)</small></div>`;
+ SHOWN=L.map(x=>x.e.id);FL=L0.filter(x=>x.m.br).map(x=>x.e.id);
+ dtb.innerHTML=L.map(({e,m})=>{const o=ex.has(e.id),kids=AC.filter(a=>a.h===e.id),lbr=hbr(e),fc=e.k==="h"?finCalc(e,e.vec):null;
+  const row=`<tr><td style="white-space:nowrap"><input type="checkbox" class="sc" data-c="${e.id}" ${SEL.has(e.id)?"checked":""} aria-label="Select ${e.n}"><button class="car" aria-expanded="${o}" data-x="${e.id}" aria-label="Show asset class drift for ${e.n}">▶</button></td>
+  <td><a class="lk" href="#/p/${e.id}">${e.n}</a> <span class="tag">${e.k==="h"?kids.length+" accounts":byId(e.h).n}</span></td>
+  <td>${f(m.T0)}</td><td>${e.r}${ovn(e)?` <span class="tag p">${ovn(e)} override${ovn(e)>1?"s":""}</span>`:""}</td><td>${MI[e.r].risk}</td>
+  <td><span class="bar" style="width:110px"><b style="width:${Math.min(m.ag/(m.th*2)*100,100)}%;background:${m.acb?'var(--over)':'var(--ok)'}"></b><u style="left:50%"></u></span> <span class="${m.acb?'over':'ok'}">${f(m.ag)}</span></td>
+  <td><input type="number" class="ti" data-t="${e.id}" value="${e.th??''}" placeholder="${FT.v}" step="0.5" min="0.5" aria-label="Threshold for ${e.n}"></td>
+  <td class="${lbr.n?'over':'ok'}">${lbr.n}</td><td>${fc?(fc.gap?'<span class="fl r">Gap from yr '+fc.gap+'</span>':'<span class="fl g">Funded</span>')+' <small class="'+(fc.runway>=6?'ok':'over')+'">'+f(Math.min(fc.runway,99))+' mo runway</small>':'<span class="note">–</span>'}</td><td>${m.br?'<span class="fl r">Rebalance</span> <small class="note">'+(m.acb&&m.lb?"asset class + sub-class":m.acb?"asset class":"sub-class only")+'</small>':'<span class="fl g">In band</span>'}</td></tr>`;
+  if(!o)return row;
+  const cd=D.map((n,i)=>`<div class="cd"><span>${n.n}</span><span>${f(m.cl[i])}%</span><span>model ${f(m.t[i])}%</span><b class="${Math.abs(m.dv[i])>m.th?(m.dv[i]>0?'over':'under'):'ok'}">${sg(m.dv[i])} pp</b></div>`).join("");
+  const ak=e.k==="h"?`<div><h3>Accounts</h3>${kids.map(a=>{const mm=met(a);return `<div class="cd" style="grid-template-columns:1fr auto"><a class="lk" href="#/p/${a.id}">${a.n}</a><span class="${mm.acb?'over':'ok'}">${f(mm.ag)} pp</span></div>`}).join("")}</div>`:"";
+  return row+`<tr class="xr"><td></td><td colspan="9"><div class="xp"><div><h3>Drift by asset class</h3>${cd}</div>${ak}<div><h3>Sub-class breaches</h3>${lbr.list.join("")||'<span class="ok">All sub-classes within band</span>'}<a class="bk" href="#/p/${e.id}" style="margin-top:8px">Open details</a></div></div></td></tr>`}).join("")||'<tr><td colspan="10" style="text-align:center;padding:24px">No portfolios match these filters. Clear the search or filters.</td></tr>';
+ vw.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.v===view));updBar()}
+dtb.onclick=e=>{const b=e.target.closest(".car");if(!b)return;const id=b.dataset.x;ex.has(id)?ex.delete(id):ex.add(id);renderDash()};
+dtb.onchange=e=>{if(e.target.dataset.c){const c=e.target.dataset.c;e.target.checked?SEL.add(c):SEL.delete(c);updBar();return}const id=e.target.dataset.t;if(!id)return;const v=e.target.value;byId(id).th=v===""?undefined:Math.max(.5,+v);renderDash()};
+ft.onchange=()=>{FT.v=Math.max(.5,+ft.value||5);renderDash()};
+[q,fr,fo].forEach(x=>x.oninput=renderDash);
+vw.onclick=e=>{const b=e.target.closest("button");if(b){view=b.dataset.v;SEL.clear();renderDash()}};
+document.querySelectorAll("#dsh th[data-s]").forEach(h=>h.onclick=()=>{const k=h.dataset.s;sd=sk===k?-sd:-1;sk=k;renderDash()});
+const SPH='<h2>Suggestion</h2><p class="note">Enter an amount and choose Suggest trades. Tax figures are illustrative and use the cost basis and rates in each holding.</p>';
+const RS={raise:["Client withdrawal","Expense or liability","Tax payment"],invest:["Fresh inflow","Maturity proceeds","Dividend or coupon"]};
+let LS=null;
+function setRs(){ere.innerHTML=RS[ety.value].map(x=>`<option>${x}</option>`).join("");dpw.hidden=ety.value==="raise"}
+function taxOf(T,o){let loss=o.cf,hv=0;const G=[];T.forEach(t=>{if(t.gain<0){loss-=t.gain;hv-=t.gain}else if(t.gain>0)G.push({g:t.gain,r:t.rate})});
+ G.sort((a,b)=>b.r-a.r);G.forEach(x=>{const u=Math.min(x.g,loss);x.g-=u;loss-=u});
+ let ex=o.ex;G.filter(x=>x.r===12.5).forEach(x=>{const u=Math.min(x.g,ex);x.g-=u;ex-=u});
+ return{tax:G.reduce((s,x)=>s+x.g*x.r/100,0),hv,ex:o.ex-ex}}
+function tbl(T,type){const R=type!=="invest";
+ return `<div class="wrap"><table class="tt" style="min-width:${R?700:420}px"><thead><tr><th>Holding</th><th>Action</th><th>Amount (₹ L)</th>${R?'<th>Est. gain (₹ L)</th><th>Tax rate</th><th>Est. tax (₹ L)</th>':''}<th>Notes</th></tr></thead><tbody>`+
+ T.map(t=>{const h=t.h,nt=[];if(R){if(t.gain<0)nt.push("Loss harvested");if(h.stcg&&t.gain>0)nt.push("Short-term gain: waiting for 12 months would save about ₹"+f(t.gain*.075)+" L");}
+  if(h.m.l===1)nt.push("Semi-liquid: check exit penalty or market depth");if(h.m.l>1)nt.push("Locked");
+  return `<tr><td>${h.r.n}</td><td>${t.a<0?'Sell':'Buy'}</td><td>${f(Math.abs(t.a))}</td>${R?`<td class="${t.gain<0?'over':''}">${t.a>0?'–':sg(t.gain)}</td><td>${t.a>0?'–':t.rate+'%'}</td><td>${t.gain>0?f(t.gain*t.rate/100):'–'}</td>`:''}<td>${nt.join(", ")}</td></tr>`}).join("")+`</tbody></table></div>`}
+function suggest(){
+ const type=ety.value,R=type==="raise",X=Math.max(.1,+eam.value||0),o={st:stg.value,stcg:ns.checked,harv:hv.checked,skip:sl.checked,ex:Math.max(0,+exm.value||0),cf:Math.max(0,+cfl.value||0),dep:+dpl.value};
+ const hs=LF.map(r=>{const m=M[r.n],cost=m.c*r.k;return{r,m,v:r.v,cost,loss:r.v<cost,stcg:m.r===20,lk:m.l>1}});
+ const S=new Map(),notes=[],T1=R?TOT-X:TOT+X;let need=X;
+ const room=h=>h.v-(S.get(h)||0),put=(h,c)=>{S.set(h,(S.get(h)||0)+c);need-=c};
+ const add=(l,cap)=>{for(const h of l){if(need<=.001)break;const c=Math.min(cap(h),need);if(c>.001)put(h,c)}};
+ const gf=h=>(h.v-h.cost)/h.v,tpr=h=>h.loss?gf(h):gf(h)*h.m.r/100+(h.m.l===1?.02:0);
+ if(R){
+  const el=hs.filter(h=>!(o.skip&&h.lk)&&!(o.stcg&&h.stcg&&!h.loss)),nl=hs.filter(h=>o.skip&&h.lk).length;
+  if(o.harv)add(el.filter(h=>h.loss).sort((a,b)=>tpr(a)-tpr(b)),room);
+  if(o.st==="model"){const g=h=>h.v-h.r.tg/100*T1-(S.get(h)||0);add(el.filter(h=>g(h)>.001).sort((a,b)=>g(b)-g(a)),h=>Math.min(g(h),room(h)))}
+  if(o.st==="pro"){const n0=need,tv=el.reduce((s,h)=>s+room(h),0);el.forEach(h=>{const c=Math.min(room(h),n0*room(h)/tv);if(c>.001)put(h,c)})}
+  add(el.slice().sort((a,b)=>tpr(a)-tpr(b)),room);
+  if(need>.01)notes.push(`Short by ₹${f(need)} L: the eligible holdings can't cover this amount. Turn off "Avoid short-term gains" or "Skip locked assets" to widen the pool.`);
+  if(nl)notes.push(`${nl} locked holdings were skipped. Real estate, EPF and the AIF can't be sold quickly.`);
+ }else{
+  const el=hs.filter(h=>!(o.skip&&h.lk)),gap=h=>h.r.tg/100*T1-h.v;
+  const un=el.filter(h=>gap(h)>.001),sg0=un.reduce((a,h)=>a+gap(h),0);
+  if(sg0>=X)un.forEach(h=>put(h,X*gap(h)/sg0));
+  else{un.forEach(h=>put(h,gap(h)));const tg0=el.reduce((a,h)=>a+h.r.tg,0),n0=need;el.forEach(h=>put(h,n0*h.r.tg/tg0))}
+  const lg=hs.filter(h=>o.skip&&h.lk).reduce((a,h)=>a+Math.max(0,gap(h)),0);
+  if(lg>.05)notes.push(`₹${f(lg)} L of the model gap sits in locked assets and was not bought.`);
+  if(o.dep>1)notes.push(`Park the cash in a liquid or arbitrage fund and move ₹${f(X/o.dep)} L a month. Interest on parked cash is taxable.`);
+ }
+ const sgn=R?-1:1;
+ const T=[...S].map(([h,a])=>({h,a:sgn*a,gain:R?(h.v-h.cost)*a/h.v:0,rate:h.m.r})).filter(t=>Math.abs(t.a)>=.05).sort((x,y)=>x.a-y.a);
+ const tx=R?taxOf(T,o):{tax:0,hv:0,ex:0};
+ const cl=D.map((_,ci)=>LF.filter(r=>r.ci==ci).reduce((a,r)=>{const t=T.find(x=>x.h.r===r);return a+r.v+(t?t.a:0)},0)/T1*100);
+ const after=Math.max(...cl.map((c,i)=>Math.abs(c-D[i].tg))),before=Math.max(...D.map(n=>Math.abs(n.v/TOT*100-n.tg)));
+ if(R&&tx.tax>0&&(tx.hv>0||o.cf>0||tx.ex>0))notes.push(`Tax shown is after offsetting ₹${f(tx.hv+o.cf)} L of losses and using ₹${f(tx.ex)} L of the LTCG exemption.`);
+ LS={type,X,reason:ere.value,o,T,tax:tx.tax,before,after,notes};
+ const kc=(a,b)=>`<div class="kc"><small>${a}</small><b>${b}</b></div>`;
+ sug.innerHTML=`<h2>Suggestion: ${R?'raise':'invest'} ₹${f(X)} L</h2><div class="kp">${R?kc("Gross proceeds","₹ "+f(X-need)+" L")+kc("Est. tax","₹ "+f(tx.tax)+" L")+kc("Net cash","₹ "+f(X-need-tx.tax)+" L"):kc("Amount","₹ "+f(X)+" L")+kc("Holdings","buy "+T.length)+kc("Deployment",o.dep>1?o.dep+"-month STP":"Lump sum")}${kc("Max class drift",f(before)+" to "+f(after)+" pp")}</div>`+
+  (T.length?tbl(T,type):'<p class="note">No trades found with these options.</p>')+notes.map(n=>`<div class="warn">${n}</div>`).join("")}
+ety.onchange=setRs;setRs();gen.onclick=suggest;
+const SEL=new Set(),INC=new Set(),RX=new Set(),AUD=[],USER="Anita Rao, RIA";let SHOWN=[],FL=[],PLS=[];
+const now=()=>new Date().toLocaleString("en-IN",{dateStyle:"medium",timeStyle:"short"});
+function updBar(){sbar.hidden=!SEL.size;sn.textContent=SEL.size+" selected";sa.checked=SHOWN.length>0&&SHOWN.every(x=>SEL.has(x))}
+sa.onchange=()=>{SHOWN.forEach(x=>sa.checked?SEL.add(x):SEL.delete(x));renderDash()};
+selp.onclick=()=>{FL.forEach(x=>SEL.add(x));renderDash()};
+clr.onclick=()=>{SEL.clear();renderDash()};rv.onclick=()=>{location.hash="#/rebalance"};
+function plan(e,o){
+ const T0=e.vec.reduce((a,b)=>a+b,0),tg=holdT(e,o.lf?undefined:0),notes=[];let lockOv=0;
+ const hs=LF.map((r,i)=>{const m=M[r.n],v=e.vec[i];return{r,m,i,v,cost:m.c*v/BASE[i],stcg:m.r===20,lk:m.l>1,d:tg[i]/100*T0-v,s:0,b:0}});
+ const bl=h=>o.skip&&h.lk,cs0=h=>!bl(h)&&!(o.ns&&h.stcg&&h.v>h.cost);
+ hs.forEach(h=>{if(h.d<-o.mt){if(bl(h))lockOv-=h.d;else if(cs0(h))h.s=-h.d}});
+ const G=CLS.map(()=>0);hs.forEach(h=>{G[h.r.ci]+=h.d});hs.forEach(h=>{if(h.d>o.mt&&!bl(h))h.b=h.d});
+ const need=hs.reduce((a,h)=>a+h.b,0),S=CLS.map(()=>0),B=CLS.map(()=>0),sm=a=>a.reduce((x,y)=>x+y,0);hs.forEach(h=>{S[h.r.ci]+=h.s;B[h.r.ci]+=h.b});
+ const E=S.map((s,c)=>Math.max(0,s-B[c])),Dd=B.map((b,c)=>b>S[c]?Math.min(b-S[c],Math.max(0,G[c])):0),sE=sm(E),sD=sm(Dd),rs=sE>0?Math.min(1,sD/sE):0,rb=sD>0?Math.min(1,sE/sD):0;
+ const fs=CLS.map((_,c)=>S[c]>0?(Math.min(S[c],B[c])+rs*E[c])/S[c]:0),fb=CLS.map((_,c)=>B[c]>0?(Math.min(S[c],B[c])+rb*Dd[c])/B[c]:0);
+ hs.forEach(h=>{h.s*=fs[h.r.ci];h.b*=fb[h.r.ci]});
+ const sc=need>0?sm(hs.map(h=>h.b))/need:0;
+ const nv=e.vec.map((x,i)=>x-hs[i].s+hs[i].b),lb0=lensCnt(e);
+ const T=[];let sellTot=0,buyTot=0;
+ hs.forEach((h,i)=>{const dl=nv[i]-e.vec[i];if(dl<=-.05){sellTot-=dl;T.push({h,a:dl,gain:(h.v-h.cost)*(-dl)/h.v,rate:h.m.r})}else if(dl>=.05){buyTot+=dl;T.push({h,a:dl,gain:0,rate:h.m.r})}});
+ T.sort((x,y)=>x.a-y.a);const left=sellTot-buyTot;
+ const tx=taxOf(T.filter(t=>t.a<0),{cf:0,ex:o.ex}),before=agg(e),after=agg({...e,vec:nv}),lb1=lensCnt({...e,vec:nv});
+ if(lockOv>.05)notes.push(`₹${f(lockOv)} L overweight in locked assets was not sold.`);
+ if(sc<1&&need>0)notes.push(`Buys are scaled to ${Math.round(sc*100)}% of the gap because sells were limited.`);
+ const un=100-tg.reduce((x,y)=>x+y,0);if(un>.05)notes.push(`${f(un)}% of the model sits in nodes with no security in the master, so it cannot be traded. Add or map a security there.`);
+ if(lb1>0)notes.push(`${lb1} sub-class bucket${lb1>1?"s are":" is"} still outside band after these trades.`);
+ if(left>.05)notes.push(`₹${f(left)} L of proceeds stays in cash because no eligible holding needs it.`);
+ if(tx.tax>0)notes.push(`Tax is after using ₹${f(tx.ex)} L of the LTCG exemption and ₹${f(tx.hv)} L of harvested losses.`);
+ const th=e.th??FT.v;return{T,tax:tx.tax,before,after,sellTot,buyTot,notes,th,lb0,lb1,ok:after<=th&&(!LBT||lb1===0)}}
+const ropt=()=>({skip:rsl.checked,ns:rns.checked,lf:rlf.checked,mt:Math.max(0,+rmt.value||0),ex:Math.max(0,+rex.value||0)});
+function renderRb(){const o=ropt();PLS=ents().filter(e=>SEL.has(e.id)).map(e=>({e,p:plan(e,o)}));
+ const I=PLS.filter(x=>INC.has(x.e.id)),S=k=>I.reduce((a,x)=>a+x.p[k],0),ib=I.filter(x=>x.p.ok).length,kc=(a,b)=>`<div class="kc"><small>${a}</small><b>${b}</b></div>`;
+ rkp.innerHTML=kc("Portfolios included",I.length+" of "+PLS.length)+kc("Total sells","₹ "+f(S("sellTot"))+" L")+kc("Total buys","₹ "+f(S("buyTot"))+" L")+kc("Est. tax","₹ "+f(S("tax"))+" L")+kc("In band after",ib+" of "+I.length);
+ rtb.innerHTML=PLS.map(({e,p})=>{const o2=RX.has(e.id),ok=p.ok,T0=e.vec.reduce((a,b)=>a+b,0);
+  return `<tr><td style="white-space:nowrap"><input type="checkbox" class="rc sc" data-c="${e.id}" ${INC.has(e.id)?"checked":""} aria-label="Include ${e.n}"><button class="car" aria-expanded="${o2}" data-x="${e.id}" aria-label="Show trades for ${e.n}">▶</button></td><td><a class="lk" href="#/p/${e.id}">${e.n}</a></td><td>${f(T0)}</td><td>${f(p.before)} to <b class="${ok?'ok':'over'}">${f(p.after)}</b></td><td>${f(p.th)}</td><td>${p.lb0} to <b class="${p.lb1?'over':'ok'}">${p.lb1}</b></td><td>${f(p.sellTot)}</td><td>${f(p.buyTot)}</td><td>${f(p.tax)}</td><td><span class="fl ${ok?'g':'r'}">${ok?'In band':'Still past threshold'}</span></td></tr>`+
+  (o2?`<tr class="xr"><td></td><td colspan="9">${p.T.length?tbl(p.T,"rebalance"):'<p class="note">No trades with these options.</p>'}${p.notes.map(n=>`<div class="warn">${n}</div>`).join("")}</td></tr>`:"")}).join("");
+ rok.textContent="Approve "+I.length+" rebalance"+(I.length===1?"":"s");rok.disabled=!I.length}
+[rsl,rns,rlf,rmt,rex].forEach(x=>x.oninput=renderRb);
+rtb.onclick=e=>{const b=e.target.closest(".car");if(!b)return;const id=b.dataset.x;RX.has(id)?RX.delete(id):RX.add(id);renderRb()};
+rtb.onchange=e=>{const c=e.target.dataset.c;if(!c)return;e.target.checked?INC.add(c):INC.delete(c);renderRb()};
+rok.onclick=()=>{const I=PLS.filter(x=>INC.has(x.e.id));if(!I.length)return;const o=ropt(),d=now();
+ AUD.unshift({ts:d,user:USER,action:"Approved bulk rebalance",items:I.map(x=>({n:x.e.n,sell:x.p.sellTot,buy:x.p.buyTot,tax:x.p.tax,b:x.p.before,a:x.p.after,l0:x.p.lb0,l1:x.p.lb1})),opts:`Skip locked: ${o.skip?"yes":"no"}; avoid short-term gains: ${o.ns?"yes":"no"}; lens fix: ${o.lf?"yes":"no"}; minimum trade ₹${f(o.mt)} L; LTCG exemption ₹${f(o.ex)} L`,cm:rcm.value.trim()});
+FLASH="Approved "+I.length+" rebalance"+(I.length>1?"s":"")+". This wireframe does not send trades for execution.";SEL.clear();INC.clear();rcm.value="";location.hash="#/"};
+function renderAud(){aud.innerHTML=AUD.length?AUD.map(a=>`<details class="evd" open><summary><b>${a.action}</b>, ${a.ts}, ${a.user}${a.det?": "+a.det:", "+a.items.length+" portfolio"+(a.items.length>1?"s":"")}</summary>${a.items?`<div class="wrap" style="margin-top:8px"><table class="tt" style="min-width:560px"><thead><tr><th>Portfolio</th><th>Sells (₹ L)</th><th>Buys (₹ L)</th><th>Est. tax (₹ L)</th><th>Drift before to after (pp)</th><th>Exposure breaches before to after</th></tr></thead><tbody>${a.items.map(i=>`<tr><td>${i.n}</td><td>${f(i.sell)}</td><td>${f(i.buy)}</td><td>${f(i.tax)}</td><td>${f(i.b)} to ${f(i.a)}</td><td>${i.l0} to ${i.l1}</td></tr>`).join("")}</tbody></table></div><p class="note">${a.opts}${a.cm?"<br>Comment: "+a.cm.replace(/</g,"&lt;"):""}</p>`:""}</details>`).join(""):'<p class="note">Nothing recorded yet. Approve a rebalance or a cash event to create an entry.</p>'}
+function renderSum(){if(!CP)return;const m=met(CP);
+ sumd.innerHTML=`<b class="${m.acb?'over':'ok'}">${f(m.ag)} pp</b> <span class="tag">limit ${f(m.th)}</span>`;
+ suml.innerHTML=`<b class="${m.lb?'over':'ok'}">${m.lb}</b> outside band`;
+ sumf.innerHTML=m.br?'<span class="fl r">Rebalance</span>':'<span class="fl g">In band</span>'}
+let LBT=true;lbt.onchange=()=>{LBT=lbt.checked;renderDash()};
+/* ===== Shared tree helpers ===== */
+const PAL=["#0f6b62","#2f5fa8","#b08a2e","#69767a","#b4472c","#7a5ea8","#4f9a63","#c27ba0","#5aa0b5","#a0813a","#8a6e5a","#3f7f9a"];
+const anc=(by,k)=>{const o=[];let p=by[k]&&by[k].par;while(p){o.push(p);p=by[p].par}return o};
+const vrows=(R,by,X,fn)=>R.filter(x=>{let p=x.par;while(p){if(!X.has(p))return false;p=by[p].par}return fn?fn(x):true});
+const crt=(has,k,open,l)=>has?`<button class="car" aria-expanded="${open}" data-k="${esc(k)}" aria-label="Toggle ${esc(l)}">▶</button>`:'<span class="car none"></span>';
+const pth=k=>k.split("|").join(" › "),esc=x=>String(x).replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;");
+const firmVec=()=>LF.map((_,i)=>AC.reduce((a,x)=>a+x.vec[i],0));
+const firmAUM=()=>firmVec().reduce((a,b)=>a+b,0);
+const eqs=(a,b)=>a.size===b.size&&[...a].every(x=>b.has(x));
+/* ===== Distribution pivots (read-only): other ways to slice what the portfolio holds ===== */
+const CRB=r=>r==="A"||r==="BBB & below"?"A & below":r,NA="Not applicable";
+function expo(i,k){const s=SEC[i],a=s.a||{},lt=s.lt,eq=LF[i].ci===0;
+ if(k==="th")return s.th.length?s.th.map(t=>[t,1]):[["No theme",1]];
+ if(k==="geo")return lt?lt.geo:[[a.geo||(s.type==="Digital asset"?"Global":"India"),1]];
+ if(k==="mc")return lt?lt.mc:(eq&&a.mcap?[[a.mcap,1]]:[[NA,1]]);
+ if(k==="sec")return lt?lt.sec:(eq&&s.pa[2]?[[s.pa[2],1]]:[[NA,1]]);
+ if(k==="cr")return a.rating?[[CRB(a.rating),1]]:[[NA,1]];
+ return a.dur?[[a.dur,1]]:[[NA,1]]}
+/* ===== Tags: the attributes of the securities under a node, used in the Models tree and its filter ===== */
+const TGRP=["Instrument type","Theme","Market cap","Risk rating","Credit rating","Duration","Geography","Liquidity","Coupon / rate","Dividend / distribution yield","AIF category"];
+const buck=(v,c)=>{for(const [lim,l] of c)if(v<lim)return l;return c[c.length-1][1]};
+function stags(i){const s=SEC[i],a=s.a||{},t=[["Instrument type",s.type]];
+ s.th.forEach(x=>t.push(["Theme",x]));
+ const top=(k,min)=>{const E=expo(i,k).filter(([b,w])=>w>=(min||0)&&b!==NA);const mx=Math.max(0,...E.map(x=>x[1]));return E.filter(x=>min?true:x[1]===mx).map(x=>x[0])};
+ top("mc").forEach(x=>t.push(["Market cap",x]));
+ if(a.risk)t.push(["Risk rating",a.risk]);
+ if(a.rating)t.push(["Credit rating",CRB(a.rating)==="A & below"?a.rating:a.rating]);
+ if(a.dur)t.push(["Duration",a.dur]);
+ top("geo",.25).forEach(x=>t.push(["Geography",x]));
+ t.push(["Liquidity",LQ[M[s.n].l]]);
+ const cp=a.cpn!==undefined?a.cpn:a.rate;if(cp!==undefined)t.push(["Coupon / rate",buck(cp,[[7,"Below 7%"],[9,"7 to 9%"],[1e9,"9% and above"]])]);
+ if(a.dy!==undefined)t.push(["Dividend / distribution yield",buck(a.dy,[[1,"Below 1%"],[2,"1 to 2%"],[4,"2 to 4%"],[1e9,"4% and above"]])]);
+ if(s.type==="AIF"&&a.cat)t.push(["AIF category",a.cat]);
+ return t}
+/* ===== Models page ===== */
+let EP="Moderate",TXm=new Set(CLS),TF={};
+const tfOn=()=>Object.values(TF).some(x=>x.size);
+const tfMatch=(i,ST)=>Object.keys(TF).every(g=>!TF[g].size||ST[i].some(([gg,v])=>gg===g&&TF[g].has(v)));
+function tagCell(hs,ST){const G={};hs.forEach(h=>ST[h].forEach(([g,v])=>{const o=G[g]||(G[g]={});o[v]=(o[v]||0)+1}));
+ return TGRP.filter(g=>G[g]).map(g=>{const E=Object.entries(G[g]).sort((a,b)=>b[1]-a[1]),on=TF[g]||new Set(),sh=E.slice(0,3);
+  return `<span class="tgp"><small>${g}</small>${sh.map(([v,n])=>`<button class="tv${on.has(v)?" on":""}" data-tg="${esc(g)}" data-tv="${esc(v)}" title="${n} of ${hs.length} securit${hs.length===1?"y":"ies"}. Click to filter.">${esc(v)}</button>`).join("")}${E.length>3?`<span class="note" style="margin:0" title="${esc(E.slice(3).map(x=>x[0]).join(", "))}">+${E.length-3}</span>`:""}</span>`}).join("")}
+function renderTF(ST){const cnt={};ST.forEach(t=>t.forEach(([g,v])=>{const o=cnt[g]||(cnt[g]={});o[v]=(o[v]||0)+1}));
+ tfp.innerHTML=TGRP.filter(g=>cnt[g]).map(g=>`<div class="sub-h" style="margin:8px 0 3px">${g}</div><div style="display:flex;flex-wrap:wrap;gap:4px 12px">${Object.entries(cnt[g]).sort((a,b)=>b[1]-a[1]).map(([v,n])=>`<label class="chk" style="margin:0"><input type="checkbox" data-tg="${esc(g)}" data-tv="${esc(v)}" ${TF[g]&&TF[g].has(v)?"checked":""}> ${esc(v)} <span class="note" style="margin:0">${n}</span></label>`).join("")}</div>`).join("");
+ const act=TGRP.filter(g=>TF[g]&&TF[g].size),n=SEC.map((_,i)=>i).filter(i=>tfMatch(i,ST)).length;
+ tfs.textContent="Filter by tags"+(act.length?" ("+act.reduce((a,g)=>a+TF[g].size,0)+")":"")+" ▾";
+ tfa.innerHTML=act.length?`<span class="note" style="margin:0"><b>${n}</b> of ${SEC.length} securities match: ${act.map(g=>g+" "+[...TF[g]].join(" or ")).join("; ")}. A security must match every group listed, and any one value within a group.</span>`:"";
+ tfc.hidden=!act.length}
+function renderModels(){const E={vec:BASE,r:EP},R=rowsFor(E,EP),FR=rowsFor({vec:firmVec(),r:EP},EP).by,by=R.by,ST=SEC.map((_,i)=>stags(i)),filt=tfOn(),mi=MI[EP];
+ seg.innerHTML=["Risk-based","Strategy"].map(k=>`<span class="leg" style="margin:0 2px 0 8px">${k}</span>`+P.filter(p=>MI[p].k===k).map(p=>`<button class="sb" aria-pressed="${p===EP}" data-p="${esc(p)}">${p}</button>`).join("")).join("");
+ mdesc.innerHTML=`<b>${EP}</b> · ${mi.k} model for the ${mi.risk} risk profile. ${mi.d}`;
+ tot3.innerHTML=`<span class="ok">Total 100.0%</span> · ${AC.filter(a=>a.r===EP).length} accounts on this model`;
+ dpc.innerHTML=CLS.map((c,ci)=>`<label>${c}<select data-d="${ci}" aria-label="Target depth for ${c}">${[1,2,3,4].map(l=>`<option value="${l}" ${DEP[ci]===l?"selected":""}>${LVN[l]}</option>`).join("")}</select></label>`).join("");
+ const cs=P.map(p=>csP(p));
+ cmp3.innerHTML=P.map((p,j)=>{const v=cs[j];return `<div class="cr ${p===EP?'sel':''}"><div>${p}</div><div class="stk">${v.map((x,i)=>`<span style="width:${x}%;background:${CC[i]}" title="${CLS[i]} ${f(x)}%"></span>`).join("")}</div><div style="text-align:right">${v.map(x=>Math.round(x)).join(" / ")}</div></div>`}).join("")+`<div class="lg2">${CLS.map((n,i)=>`<span><i style="background:${CC[i]}"></i>${n}</span>`).join("")}</div>`;
+ const base=R.filter(r=>r.lv<=DEP[r.ci]&&(!filt||r.hs.some(h=>tfMatch(h,ST)))),vis=filt?base:vrows(base,by,TXm);
+ ed.innerHTML=vis.map(x=>{const has=x.kids.some(k=>k.lv<=DEP[k.ci]&&(!filt||k.hs.some(h=>tfMatch(h,ST)))),hs=filt?x.hs.filter(h=>tfMatch(h,ST)):x.hs;
+  return `<tr class="l${Math.min(x.lv,2)}"><td><div class="nm" style="padding-left:${x.lv*18}px">${crt(has,x.key,filt||TXm.has(x.key),x.label)}${x.label}${x.leaf&&!x.ns?' <span class="tag x">No security in master</span>':''}${x.leaf&&x.lv<4?` <span class="tag">${filt?hs.length+" of "+x.ns:x.ns} securit${x.ns===1?"y":"ies"}</span>`:filt&&x.lv<4?` <span class="tag">${hs.length} of ${x.ns}</span>`:""}</div></td>
+  <td><input type="number" min="0" max="100" step="0.5" value="${f(x.t)}" data-k="${esc(x.key)}" aria-label="Target for ${esc(pth(x.key))}"> %</td>
+  <td>${x.lv===0?'<span class="note" style="margin:0">per portfolio</span>':`<input type="number" min="0.5" step="0.5" value="${f(x.mb)}" data-b="${esc(x.key)}" aria-label="Band for ${esc(pth(x.key))}">`}</td>
+  <td>${f(FR[x.key]?FR[x.key].c:0)}</td><td style="text-align:left;white-space:normal">${tagCell(hs,ST)}</td></tr>`}).join("")||'<tr><td colspan="5" style="text-align:center;padding:20px">No securities match these tags. Clear a filter.</td></tr>';
+ renderTF(ST)}
+seg.onclick=e=>{const b=e.target.closest("button");if(b&&b.dataset.p){EP=b.dataset.p;renderModels()}};
+dpc.onchange=e=>{const t=e.target;if(t.dataset.d===undefined)return;setDepth(+t.dataset.d,+t.value);renderModels()};
+ed.onchange=e=>{const t=e.target,d=t.dataset;if(d.k!==undefined){editNode(rowsFor({vec:BASE,r:EP},EP),d.k,+t.value||0,MT[EP])}else if(d.b!==undefined){BAND[EP][d.b]=Math.max(.5,+t.value||1)}renderModels()};
+const tfTog=(g,v)=>{const s=TF[g]||(TF[g]=new Set());s.has(v)?s.delete(v):s.add(v)};
+ed.onclick=e=>{const tv=e.target.closest(".tv");if(tv){tfTog(tv.dataset.tg,tv.dataset.tv);renderModels();return}const b=e.target.closest(".car");if(b&&b.dataset.k){const k=b.dataset.k;TXm.has(k)?TXm.delete(k):TXm.add(k);renderModels()}};
+tfp.onchange=e=>{const t=e.target;if(t.dataset.tg===undefined)return;tfTog(t.dataset.tg,t.dataset.tv);renderModels()};
+tfc.onclick=()=>{TF={};renderModels()};
+mxa.onclick=()=>{TXm=new Set(NODES.filter(n=>n.kids.length&&n.lv<DEP[n.ci]).map(n=>n.key));renderModels()};
+mxc.onclick=()=>{TXm=new Set();renderModels()};
+rs.onclick=()=>{MT[EP]={...DEFMT[EP]};BAND[EP]={};renderModels()};
+rp.innerHTML=P.map(p=>`<option>${p}</option>`).join("");fr.innerHTML='<option value="">All models</option>'+P.map(p=>`<option>${p}</option>`).join("");
+/* ===== Security master page ===== */
+const OPT=(a,v)=>a.map(x=>`<option ${x===v?"selected":""}>${x}</option>`).join("");
+let SXs=new Set(CLS),SS=-1,SCL=-1;
+const unc=s=>!s.pa[1]||!s.pa[2]||!s.pa[3];
+const stt=s=>unc(s)?'<span class="fl r">Unclassified</span>':'<span class="fl g">Classified</span>';
+const fmx=i=>AC.reduce((a,x)=>a+x.vec[i],0);
+function sattr(s){const F=INS[s.type]||[];return F.map(([k,l,kind,u])=>({l,kind,u,v:s.a[k]})).filter(x=>x.v!==undefined&&x.v!==""&&!(x.kind==="t"&&String(x.v).length>24)).slice(0,4).map(x=>`${x.l} ${x.v}${x.kind==="n"&&x.u?(x.u.length<=2?x.u:" "+x.u):""}`).join(" · ")}
+function renderSec(){
+ slb.innerHTML=[["-1","All"],...CLS.map((c,i)=>[""+i,c])].map(([k,n])=>`<button class="sb" aria-pressed="${+k===SCL}" data-l="${k}">${n}</button>`).join("");
+ sty.innerHTML='<option value="">All instrument types</option>'+Object.keys(INS).map(t=>`<option ${sty.dataset.v===t?"selected":""}>${t}</option>`).join("");
+ dls.innerHTML=[...new Set(SEC.flatMap(s=>s.th))].map(x=>`<option value="${esc(x)}">`).join("");
+ const q=sq.value.toLowerCase(),uo=suo.checked,ty=sty.dataset.v||"",FA=firmAUM();
+ const hit=new Set(SEC.map((s,i)=>i).filter(i=>{const s=SEC[i];return(SCL<0||LF[i].ci===SCL)&&(!ty||s.type===ty)&&(!uo||unc(s))&&(!q||(s.n+" "+s.type+" "+hpath(s).join(" ")+" "+s.th.join(" ")+" "+Object.values(s.a).join(" ")).toLowerCase().includes(q))}));
+ const filt=!!(q||uo||ty),all=SCL<0;
+ const nd=NODES.filter(n=>(SCL<0||n.ci===SCL)&&(filt?n.hs.some(h=>hit.has(h)):true)),vis=filt?nd:vrows(nd,NB,SXs);
+ const th=new Set(SEC.flatMap(s=>s.th));
+ skp.innerHTML=`<div class="kc"><small>Securities</small><b>${SEC.length}</b></div><div class="kc"><small>Classified</small><b class="ok">${SEC.filter(s=>!unc(s)).length}</b></div><div class="kc"><small>Needs classification</small><b class="${SEC.some(unc)?'over':'ok'}">${SEC.filter(unc).length}</b></div><div class="kc"><small>Themes in use</small><b>${th.size}</b></div><div class="kc"><small>Firm AUM</small><b>₹ ${f(FA/100)} Cr</b></div>`;
+ sgr.innerHTML=vis.length?vis.map(n=>{
+  if(n.lv===4){const i=n.i,s=SEC[i],v=fmx(i);return `<tr class="lf"><td><div class="nm" style="padding-left:${n.lv*18}px"><span class="car none"></span><button class="lk lkb" data-e="${i}">${esc(s.n)}</button>${s.p?'<span class="tag p">Physical</span>':''}</div></td><td>${s.type}</td><td>${f(v)}</td><td>${f(v/FA*100)}</td><td style="white-space:normal">${sattr(s)}</td><td style="white-space:normal">${s.th.map(t=>`<span class="tag">${esc(t)}</span>`).join(" ")}</td><td>${stt(s)}</td></tr>`}
+  const v=n.hs.reduce((a,h)=>a+fmx(h),0),o=SXs.has(n.key)||filt;
+  return `<tr class="l${Math.min(n.lv,2)}"><td><div class="nm" style="padding-left:${n.lv*18}px">${crt(n.kids.length>0,n.key,o,n.label)}${n.label===U?`<span class="over">${U}</span>`:n.label}${n.hs.length?` <span class="tag">${n.hs.length}</span>`:' <span class="note" style="margin:0">no securities</span>'}<span class="tag" style="margin-left:4px">${LVN[n.lv]}</span></div></td><td></td><td>${n.hs.length?f(v):"–"}</td><td>${n.hs.length?f(v/FA*100):"–"}</td><td></td><td></td><td></td></tr>`}).join(""):'<tr><td colspan="7" style="text-align:center;padding:24px">No securities match. Clear the search or filters.</td></tr>'}
+function openSec(i){SS=i;const s=SEC[i],a=s.a,p=hpath(s),ci=LF[i].ci,F=INS[s.type]||[];
+ const sups=TX[CLS[ci]]||[],su=sups.find(x=>x[0]===s.pa[1]),se=su&&su[1].find(x=>x[0]===s.pa[2]);
+ const sl=(lv,l,opts,v)=>`<label>${l}<select class="sin" style="width:100%" data-p="${lv}">${lv?'<option value="">Unclassified</option>':''}${OPT(opts,v)}</select></label>`;
+ const fld=([k,l,kind,u])=>{const v=a[k]===undefined?"":a[k];return kind==="s"?`<label>${l}<select class="sin" style="width:100%" data-a="${k}"><option value=""></option>${OPT(u,v)}</select></label>`:`<label>${l}${kind==="n"&&u?" ("+u+")":""}<input class="sin" style="width:100%" ${kind==="n"?'type="number" step="any"':''} data-a="${k}" value="${esc(v)}"></label>`};
+ const tk=termKey(s),mr=P.map(pr=>{const x=rowsFor({vec:BASE,r:pr},pr).by[tk];return MI[pr].ab+" "+(x?f(x.t):"–")+"%"}).join(" · "),d=DEP[ci];
+ sdr.innerHTML=`<button class="cl" id="sx">Close</button><h2>${esc(s.n)}</h2><p class="sub">${s.type}${s.p?" · physical":""}<br>Held firm-wide: ₹ ${f(fmx(i))} L<br>Path: ${p.join(" › ")}</p>
+ <h3>Classification</h3><div class="fg" style="grid-template-columns:1fr"><div id="sdst">${stt(s)}</div>${sl(0,"Asset class",CLS,s.pa[0])}${sl(1,"Super sector",sups.map(x=>x[0]),s.pa[1])}${sl(2,"Sector",su?su[1].map(x=>x[0]):[],s.pa[2])}${sl(3,"Sub-sector",se?se[1]:[],s.pa[3])}
+ <label>Instrument type<select class="sin" style="width:100%" data-ty="1">${OPT(Object.keys(INS),s.type)}</select></label>
+ <label>Themes (comma separated, supporting tags)<input class="sin" style="width:100%" list="dls" data-th="1" value="${esc(s.th.join(", "))}"></label></div>
+ <h3>${s.type} attributes</h3><div class="fg" style="grid-template-columns:1fr 1fr">${F.map(fld).join("")}</div>
+ <h3>In the models</h3><div class="box">Models set targets down to <b>${LVN[d]}</b> for ${CLS[ci]}. This security sits in <b>${esc(pth(tk))}</b>.<br><span class="note" style="margin:0">Target there: ${mr}</span></div>`+
+ (s.lt?"<h3>Look-through (read-only)</h3>"+[["Sector",s.lt.sec],["Market cap",s.lt.mc],["Geography",s.lt.geo]].map(([h,L])=>`<div class="sub-h">${h}</div>`+L.map(([k,w])=>`<div class="cd" style="grid-template-columns:1fr auto"><span>${k}</span><span>${f(w*100)}%</span></div>`).join("")).join(""):"")+
+ '<p class="note">Edits apply to every portfolio straight away. Changing the classification moves the security, and its model target when the model goes down to securities.</p>';sdr.classList.add("on")}
+sdr.onchange=e=>{const t=e.target,d=t.dataset;if(SS<0)return;const s=SEC[SS];
+ if(d.p!==undefined){const l=+d.p,pa=s.pa.slice(0,4);while(pa.length<4)pa.push("");pa[l]=t.value;for(let j=l+1;j<4;j++)pa[j]="";reclass(SS,pa);openSec(SS);renderSec();return}
+ if(d.ty!==undefined){s.type=t.value;openSec(SS);renderSec();return}
+ if(d.th!==undefined){s.th=t.value.split(",").map(x=>x.trim()).filter(Boolean);renderSec();return}
+ if(d.a!==undefined){const k=d.a,F=(INS[s.type]||[]).find(x=>x[0]===k);if(t.value==="")delete s.a[k];else s.a[k]=F&&F[2]==="n"?+t.value:t.value;renderSec()}};
+sdr.onclick=e=>{if(e.target.id==="sx")sdr.classList.remove("on")};
+sgr.onclick=e=>{const b=e.target.closest("button[data-e]");if(b){openSec(+b.dataset.e);return}const c=e.target.closest(".car");if(c&&c.dataset.k){const k=c.dataset.k;SXs.has(k)?SXs.delete(k):SXs.add(k);renderSec()}};
+slb.onclick=e=>{const b=e.target.closest("button");if(b){SCL=+b.dataset.l;renderSec()}};
+sty.onchange=()=>{sty.dataset.v=sty.value;renderSec()};
+[sq,suo].forEach(x=>x.oninput=renderSec);
+sxa.onclick=()=>{SXs=new Set(NODES.filter(n=>n.kids.length).map(n=>n.key));renderSec()};
+sxc.onclick=()=>{SXs=new Set();renderSec()};
+srs.onclick=()=>{SEC.forEach((s,i)=>{const o=JSON.parse(JSON.stringify(SEC0[i]));reclass(i,o.pa);Object.assign(s,o)});sdr.classList.remove("on");renderSec()};
+secb.onclick=()=>{location.hash="#/securities"};
+
+/* ===== Portfolio: allocation drill-down on the single hierarchy ===== */
+let OPN=new Set(CLS),TXl=new Set(CLS);
+const shown=r=>r.hs.length>0||(r.t||0)>=.05;
+const brk=(R)=>R.filter(r=>r.cnt).sort((a,b)=>(Math.abs(b.d)-b.band)-(Math.abs(a.d)-a.band));
+function draw(){if(!CP)return;const R=rowsFor(CP),by=R.by;
+ const bl=brk(R);
+ lact.innerHTML=`<h2>${bl.length?bl.length+" bucket"+(bl.length>1?"s":"")+" outside band":"Everything is within its band"}</h2>`+(bl.length?bl.slice(0,6).map(x=>`<div class="act"><span class="fl ${x.d>0?'r':'s'}">${x.d>0?'Over':'Under'}</span><div><b>${esc(pth(x.key))}</b> is ${f(Math.abs(x.d))} pp ${x.d>0?'over':'under'} its target (${f(x.c)}% vs ${f(x.t)}%, band ±${f(x.band)}). ${x.d>0?'Reduce':'Add'} about ₹${f(Math.abs(x.amt))} L.${x.src==="Portfolio override"?' <span class="fl s">Portfolio override</span>':''}</div></div>`).join("")+(bl.length>6?`<p class="note" style="margin:6px 0 0">${bl.length-6} more in the table below.</p>`:"")+`<div class="tools" style="margin-top:10px"><button class="pri" id="lfix">Review rebalance for this portfolio</button></div>`:'<p class="note" style="margin:0">Every level of the hierarchy is inside its tolerance band.</p>');
+ const on=ovn(CP);lmn.innerHTML=on?`<b>${on}</b> overridden value${on>1?"s":""} on this portfolio`:"Following the model";lmr.disabled=!on;
+ const vis=vrows(R.filter(shown),by,OPN);
+ tb.innerHTML=vis.map(r=>{const t=r.t,ov=t!=null&&r.src==="Portfolio override",bo=t!=null&&(r.lv===0?CP.th!==undefined:r.pbv!==undefined),k=t==null?"":r.out?(r.d>0?"over":"under"):"ok",col=k==="over"?"var(--over)":k==="under"?"var(--under)":"var(--ok)",has=r.kids.some(shown);
+  const car=crt(has,r.key,OPN.has(r.key),r.label),m=r.sec?M[SEC[r.i].n]:null;
+  return `<tr class="l${Math.min(r.lv,2)}${r.sec?' lf':''}" ${r.sec?`data-i="${r.i}"`:""}><td><div class="nm" style="padding-left:${r.lv*20}px">${car}${esc(r.label)}${r.sec&&SEC[r.i].p?'<span class="tag p">Physical</span>':''}${m&&m.l?`<span class="tag ${m.l>1?'x':'s'}">${LQ[m.l]}</span>`:''}${r.leaf&&r.lv<4?` <span class="tag" title="Model targets stop at this level">target level</span>`:""}</div></td>
+  <td>${f(r.val)}</td><td>${f(r.c)}</td>
+  <td style="text-align:center"><span class="bar"><b style="width:${Math.min(r.c/80*100,100)}%;background:var(--acc)"></b>${t!=null?`<u style="left:${Math.min(t/80*100,100)}%"></u>`:""}</span></td>
+  <td>${t==null?"–":`<input type="number" class="ei${ov?' ov':''}" min="0" max="100" step="0.5" data-lk="${esc(r.key)}" value="${f(t)}" title="Model: ${f(r.mt)}%. Edit to override for this portfolio, clear to follow the model." aria-label="Target for ${esc(pth(r.key))}">${ov||bo?`<button class="rst" data-rk="${esc(r.key)}" title="Reset this level to the model" aria-label="Reset ${esc(pth(r.key))} to model">↺</button>`:""}`}</td><td>${t==null?"–":`±<input type="number" class="ei${bo?' ov':''}" min="0.5" step="0.5" ${r.lv===0?'data-th="1"':`data-lb="${esc(r.key)}"`} value="${f(r.band)}" title="Model: ±${f(r.mb)}. Edit to override for this portfolio, clear to follow the model." aria-label="Band for ${esc(pth(r.key))}">`}</td>
+  <td class="${k}">${t==null?"–":`<span class="st" style="background:${col}"></span>${sg(r.d)}`}</td>
+  <td class="${k}">${t==null?"–":Math.abs(r.amt)<.05?"–":(r.amt>0?"Buy ":"Sell ")+f(Math.abs(r.amt))}</td></tr>`}).join("")}
+/* inline overrides: a changed target or band becomes a portfolio override; a cleared box (or the reset arrow) follows the model again */
+function resetKey(key){const R=rowsFor(CP),n=R.by[key];if(CP.ovl&&n){const pk=n.par,pre=pk?pk+"|":"";Object.keys(CP.ovl).forEach(k=>{if(pk?k.startsWith(pre):true)delete CP.ovl[k]});if(!Object.keys(CP.ovl).length)CP.ovl=undefined}
+ if(CP.bnd){delete CP.bnd[key];if(!Object.keys(CP.bnd).length)CP.bnd=undefined}if(n&&n.lv===0)CP.th=undefined}
+tb.onchange=e=>{const t=e.target,d=t.dataset;if(!CP||(d.lk===undefined&&d.lb===undefined&&d.th===undefined))return;const num=(lo,hi)=>Math.max(lo,Math.min(hi,+t.value||0)),blank=t.value==="";
+ if(d.th!==undefined){CP.th=blank?undefined:num(.5,100)}
+ else if(d.lk!==undefined){if(blank){const n=rowsFor(CP).by[d.lk];if(CP.ovl&&n){const pk=n.par,pre=pk?pk+"|":"";Object.keys(CP.ovl).forEach(k=>{if(pk?k.startsWith(pre):true)delete CP.ovl[k]});if(!Object.keys(CP.ovl).length)CP.ovl=undefined}}
+  else{CP.ovl=CP.ovl||{};editNode(rowsFor(CP),d.lk,num(0,100),CP.ovl);pruneO(CP)}}
+ else{CP.bnd=CP.bnd||{};blank?delete CP.bnd[d.lb]:CP.bnd[d.lb]=num(.5,100);if(!Object.keys(CP.bnd).length)CP.bnd=undefined}
+ setModel(CP.r)};
+lmr.onclick=()=>{if(!CP)return;CP.ovl=CP.bnd=undefined;CP.th=undefined;setModel(CP.r)};
+tb.onclick=e=>{const rs=e.target.closest(".rst");if(rs&&CP){resetKey(rs.dataset.rk);setModel(CP.r);return}if(e.target.closest("input"))return;const b=e.target.closest(".car");if(!b){const r=e.target.closest("tr.lf");if(r)show(+r.dataset.i);return}const k=b.dataset.k;OPN.has(k)?OPN.delete(k):OPN.add(k);draw()};
+exp.onclick=()=>{if(!CP)return;OPN=new Set(NODES.filter(n=>n.kids.length).map(n=>n.key));draw()};
+col.onclick=()=>{OPN=new Set();draw()};
+brx.onclick=()=>{if(!CP)return;const R=rowsFor(CP);OPN=new Set(CLS);R.filter(r=>r.cnt).forEach(r=>anc(R.by,r.key).forEach(k=>OPN.add(k)));draw()};
+lact.onclick=e=>{if(e.target.id==="lfix"&&CP){SEL.clear();SEL.add(CP.id);location.hash="#/rebalance"}};
+function show(i){const r=LF[i],s=SEC[i],m=M[r.n],cp=r.v/TOT*100,d=cp-r.tg,a=r.tg/100*TOT-r.v,F=INS[s.type]||[],at=F.filter(([k])=>s.a[k]!==undefined&&s.a[k]!=="");
+ dr.innerHTML=`<button class="cl" id="x">Close</button><h2>${esc(s.n)}</h2><p class="sub">${hpath(s).join(" › ")}<br>${s.type} · ${r.p?'Physical':'Demat'} · <span class="${m.l>1?'over':''}">${LQ[m.l]}</span></p>
+ <h3>Position vs model</h3><dl><dt>Value</dt><dd>₹ ${f(r.v)} L</dd><dt>Current share</dt><dd>${f(cp)}%</dd><dt>Share implied by the model</dt><dd>${f(r.tg)}%</dd><dt>To reach model</dt><dd>${Math.abs(a)<0.05?'–':(a>0?'Buy ':'Sell ')+f(Math.abs(a))+' L'}</dd></dl>
+ <p class="note" style="margin-top:6px">Models set targets at a node. Where a node holds several securities, its target is shared in proportion to what is held.</p>
+ ${at.length?`<h3>Instrument</h3><dl>${at.map(([k,l,kind,u])=>`<dt>${l}</dt><dd>${esc(s.a[k])}${kind==="n"&&u?(u.length<=2?u:" "+u):""}</dd>`).join("")}</dl>`:""}
+ ${s.th.length?`<h3>Themes</h3><div>${s.th.map(t=>`<span class="tag">${esc(t)}</span>`).join(" ")}</div>`:""}
+ <h3>Cost and tax (illustrative)</h3>${(()=>{const g=r.v-m.c*r.k,tx=a<0?Math.max(0,g*(-a/r.v))*m.r/100:0;return `<dl><dt>Cost basis</dt><dd>₹ ${f(m.c*r.k)} L</dd><dt>Unrealised gain</dt><dd class="${g<0?'over':''}">${sg(g)} L</dd><dt>Applied tax rate</dt><dd>${m.r}%</dd><dt>Est. tax on this trade</dt><dd>${a<0?'₹ '+f(tx)+' L':'n/a (buy)'}</dd></dl>`})()}
+ <h3>Liquidity and constraints</h3><div class="box">${m.t}</div>
+ <p class="note">Tax figures are placeholders for the wireframe. Real values will come from lot-level data and the client's tax profile.</p>`;
+ dr.classList.add("on");x.onclick=()=>dr.classList.remove("on");x.focus()}
+/* Dashboard: sub-class breaches */
+function hbr(e){const R=rowsFor(e),b=brk(R).filter(r=>r.lv>0);return{n:b.length,list:b.slice(0,6).map(x=>`<div class="cd" style="grid-template-columns:1fr auto"><span>${esc(x.key.split("|").slice(-2).join(" › "))}</span><span class="${x.d>0?'over':'under'}">${sg(x.d)} pp</span></div>`)}}
+function met(e){const R=rowsFor(e),T0=e.vec.reduce((x,y)=>x+y,0),C=R.filter(r=>r.lv===0),cl=C.map(r=>r.c),t=C.map(r=>r.t),dv=C.map(r=>r.d),ag=Math.max(...dv.map(Math.abs)),th=e.th??FT.v,lb=R.filter(r=>r.lv>0&&r.cnt).length,acb=ag>th;return{T0,t,cl,dv,ag,th,lb,acb,br:acb||(LBT&&lb>0)}}
+
+let FLASH="";
+const FREQ={Monthly:12,Quarterly:4,Yearly:1},LTYPES=["Home loan","Car loan","Education loan","Personal loan","Business loan","Credit card","Other"],NCAT=["Household expenses","Education","Insurance premium","Healthcare","Family support","Travel and lifestyle","Domestic help & utilities","Property & society charges","Vehicle running","Home maintenance","Festivals & gifting","Retirement income","Other"],RET=[11,7,10,7];
+const FIN0={
+h1:{inc:4,incYrs:15,ig:5,ret:null,liab:[{n:"Home loan (investment flat)",t:"Home loan",o:42,r:8.6,emi:.55,m:96},{n:"Car loan",t:"Car loan",o:6,r:9.2,emi:.14,m:48}],needs:[{n:"Household expenses",c:"Household expenses",a:1.8,f:"Monthly",s:0,d:30,i:6},{n:"Child education",c:"Education",a:6,f:"Yearly",s:3,d:4,i:8},{n:"Parents support",c:"Family support",a:.3,f:"Monthly",s:0,d:15,i:6},{n:"Insurance premiums",c:"Insurance premium",a:1.2,f:"Yearly",s:0,d:20,i:3}]},
+h2:{inc:2.2,incYrs:5,ig:4,ret:null,liab:[{n:"Personal loan",t:"Personal loan",o:5,r:11,emi:.2,m:30}],needs:[{n:"Household expenses",c:"Household expenses",a:1.6,f:"Monthly",s:0,d:30,i:6},{n:"Healthcare",c:"Healthcare",a:1.5,f:"Yearly",s:0,d:30,i:10},{n:"Travel",c:"Travel and lifestyle",a:3,f:"Yearly",s:0,d:10,i:6}]},
+h3:{inc:8,incYrs:12,ig:6,ret:null,liab:[{n:"Business loan",t:"Business loan",o:60,r:10.2,emi:1.2,m:60},{n:"Home loan",t:"Home loan",o:85,r:8.4,emi:1.05,m:180}],needs:[{n:"Household expenses",c:"Household expenses",a:3.5,f:"Monthly",s:0,d:30,i:6},{n:"Children's education",c:"Education",a:12,f:"Yearly",s:2,d:5,i:8},{n:"Insurance premiums",c:"Insurance premium",a:3.5,f:"Yearly",s:0,d:25,i:3}]},
+h4:{inc:5,incYrs:10,ig:5,ret:null,liab:[{n:"Working capital loan",t:"Business loan",o:25,r:11.5,emi:.6,m:48}],needs:[{n:"Household expenses",c:"Household expenses",a:2,f:"Monthly",s:0,d:30,i:6},{n:"Insurance premiums",c:"Insurance premium",a:2.4,f:"Yearly",s:0,d:25,i:3}]},
+h5:{inc:.9,incYrs:0,ig:0,ret:null,liab:[],needs:[{n:"Household expenses",c:"Household expenses",a:.9,f:"Monthly",s:0,d:30,i:6},{n:"Healthcare",c:"Healthcare",a:.8,f:"Yearly",s:0,d:30,i:10}]},
+h6:{inc:6,incYrs:10,ig:5,ret:null,liab:[{n:"Home loan",t:"Home loan",o:55,r:8.8,emi:.7,m:120}],needs:[{n:"Household expenses",c:"Household expenses",a:2.6,f:"Monthly",s:0,d:30,i:6},{n:"Child education",c:"Education",a:8,f:"Yearly",s:5,d:4,i:8},{n:"Insurance premiums",c:"Insurance premium",a:2.8,f:"Yearly",s:0,d:25,i:3}]}};
+const r2=x=>Math.round(x*100)/100,DOM=k=>[{n:"Domestic help & utilities",c:"Domestic help & utilities",a:r2(.3*k),f:"Monthly",s:0,d:30,i:7},{n:"Property tax & society charges",c:"Property & society charges",a:r2(.8*k),f:"Yearly",s:0,d:30,i:6,mo:4},{n:"Vehicle insurance & servicing",c:"Vehicle running",a:r2(.5*k),f:"Yearly",s:0,d:30,i:6,mo:8},{n:"Home maintenance & repairs",c:"Home maintenance",a:r2(.9*k),f:"Yearly",s:0,d:30,i:7,mo:6},{n:"Festivals & gifting",c:"Festivals & gifting",a:r2(1.4*k),f:"Yearly",s:0,d:30,i:6,mo:11}];
+const DSC={h1:1,h2:.8,h3:1.8,h4:1.2,h5:.5,h6:1.3},SCH={h1:[.8,3],h3:[1.5,2],h6:[1,5]};
+HH.forEach(h=>{h.fin=FIN0[h.id];h.fin.needs.forEach(n=>{if(n.f==="Yearly"&&n.mo===undefined)n.mo=n.c==="Insurance premium"?3:n.c==="Travel and lifestyle"?5:4});h.fin.needs.push(...DOM(DSC[h.id]));if(SCH[h.id])h.fin.needs.push({n:"School fees (current)",c:"Education",a:SCH[h.id][0],f:"Quarterly",s:0,d:SCH[h.id][1],i:8,mo:4})});
+const finOf=e=>e.k==="h"?e:byId(e.h);
+function finCalc(h,vec){const F=h.fin,H=30,aum=vec.reduce((a,b)=>a+b,0),iv=vec.map((v,i)=>M[LF[i].n].l<2?v:0),I0=iv.reduce((a,b)=>a+b,0);
+ const cw=D.map((_,ci)=>LF.filter(r=>r.ci==ci).reduce((s,r)=>s+iv[r.i],0)),blend=I0>0?cw.reduce((s,v,ci)=>s+v*RET[ci],0)/I0:7,r=(F.ret??blend)/100;
+ let c=I0,gap=null;const rows=[];
+ for(let t=1;t<=H;t++){const inc=t<=F.incYrs?F.inc*12*Math.pow(1+F.ig/100,t-1):0,
+  emi=F.liab.reduce((a,l)=>{const rem=l.m-12*(t-1);return a+(rem>0?Math.min(12,rem)*l.emi:0)},0),
+  nd=F.needs.reduce((a,n)=>a+((t>n.s&&t<=n.s+n.d)?n.a*FREQ[n.f]*Math.pow(1+n.i/100,t-1):0),0);
+  c=c*(1+r)+(inc-emi-nd)*(1+r/2);rows.push({t,inc,emi,nd,c});if(gap===null&&c<0)gap=t}
+ const liabT=F.liab.reduce((a,l)=>a+l.o,0),emiM=F.liab.reduce((a,l)=>a+(l.m>0?l.emi:0),0),needM=F.needs.reduce((a,n)=>a+(n.s===0?n.a*FREQ[n.f]/12:0),0),mo=emiM+needM;
+ const liq=vec.reduce((a,v,i)=>a+(M[LF[i].n].l===0?v:0),0);const eligible=vec.reduce((a,v,i)=>a+(SEC[i].deb&&M[LF[i].n].l<2?v:0),0);
+ return{aum,I0,blend,r:r*100,rows,gap,liabT,emiM,needM,mo,eligible,emerg:mo*6,nw:aum-liabT,y1:rows[0].emi+rows[0].nd,H,liq,runway:mo>0?liq/mo:99}}
+function renderFin(){if(!CP)return;const h=finOf(CP),F=h.fin,vec=CP.k==="h"?CP.vec:ents().find(x=>x.id===h.id).vec,c=finCalc(h,vec);
+ fnote.innerHTML=CP.k==="h"?`Household plan for <b>${h.n}</b>. Liabilities and needs are kept at household level and use all accounts together.`:`Showing the household plan for <b>${h.n}</b>, because liabilities and needs are kept at household level. Edits here apply to the whole household.`;
+ const kc=(a,b,cl)=>`<div class="kc"><small>${a}</small><b class="${cl||''}">${b}</b></div>`,ef=c.emerg>0?c.eligible/c.emerg:2;
+ fkp.innerHTML=kc("Net worth","₹ "+f(c.nw)+" L")+kc("Liabilities","₹ "+f(c.liabT)+" L")+kc("Monthly commitments","₹ "+f(c.mo)+" L")+kc("Emergency buffer",f(Math.min(ef,9.99)*100)+"% of target",ef>=1?"ok":"over")+kc("Plan",c.gap?"Gap from year "+c.gap:"Funded for "+c.H+" years",c.gap?"over":"ok");
+ finp.innerHTML=`<label>Monthly income (₹ L)<input type="number" min="0" step="0.1" data-k="h" data-f="inc" value="${F.inc}"></label><label>Income continues (years)<input type="number" min="0" step="1" data-k="h" data-f="incYrs" value="${F.incYrs}"></label><label>Income growth % a year<input type="number" min="0" step="0.5" data-k="h" data-f="ig" value="${F.ig}"></label><label>Monthly investment target (₹ L)<input type="number" min="0" step="0.05" data-k="h" data-f="invT" value="${F.invT??''}" placeholder="${f2(Math.max(0,(F.incYrs>=1?F.inc:0)-c.mo)*.8)} (80% of investable)"></label><label>Portfolio return % a year<input type="number" min="0" step="0.5" data-k="h" data-f="ret" value="${F.ret??''}" placeholder="${f(c.blend)} (blended)"></label>`;
+ const fl=[],foir=F.inc>0?c.emiM/F.inc*100:0,short=Math.max(0,c.y1-c.rows[0].inc);
+ fl.push(c.gap?["r",`Debt service and needs outrun the investable portfolio from year ${c.gap}. Review spending, income years or the return assumption.`]:["g",`Funded for the full ${c.H}-year horizon at about ${f(c.r)}% a year.`]);
+ fl.push(ef>=1?["g",`Emergency buffer of ₹${f(c.eligible)} L covers the 6-month target of ₹${f(c.emerg)} L.`]:["r",`Emergency buffer ₹${f(c.eligible)} L is below the 6-month target of ₹${f(c.emerg)} L (deposits and bonds only).`]);
+ if(foir>40)fl.push(["s",`EMIs are ${f(foir)}% of income. Above 40% leaves little room for shocks.`]);
+ F.liab.filter(l=>l.o>0&&l.r>RET[1]+1).forEach(l=>fl.push(["s",`${l.n} costs ${f(l.r)}% against about ${RET[1]}% on debt holdings. Prepaying from deposits may beat holding them.`]));
+ if(!F.needs.some(n=>n.c==="Insurance premium"))fl.push(["s","No insurance premium is recorded. Check life and health cover."]);
+ fl.push([short>.05?"s":"g",`Next 12 months: outflows ₹${f(c.y1)} L against income ₹${f(c.rows[0].inc)} L${short>.05?`, a shortfall of ₹${f(short)} L. <button class="pri" data-act="raise" data-amt="${short.toFixed(1)}" style="margin-left:6px">Plan cash raise</button>`:"."}`]);
+ fflags.innerHTML=fl.map(([k,t])=>`<div class="act"><span class="fl ${k}">${k==="r"?"Attention":k==="s"?"Check":"OK"}</span><div>${t}</div></div>`).join("");
+ const inp=(k,i,fd,v,ty)=>`<input ${ty==="t"?'class="sin"':'type="number" min="0" step="any" style="width:90px"'} data-k="${k}" data-i="${i}" data-f="${fd}" value="${typeof v==="string"?esc(v):v}">`,sel=(k,i,fd,a,v)=>`<select class="sin" data-k="${k}" data-i="${i}" data-f="${fd}">${OPT(a,v)}</select>`;
+ flt.innerHTML=F.liab.length?F.liab.map((l,i)=>`<tr><td>${inp("l",i,"n",l.n,"t")}</td><td>${sel("l",i,"t",LTYPES,l.t)}</td><td>${inp("l",i,"o",l.o)}</td><td>${inp("l",i,"r",l.r)}</td><td>${inp("l",i,"emi",l.emi)}</td><td>${inp("l",i,"m",l.m)}</td><td><button data-act="dell" data-i="${i}">Remove</button></td></tr>`).join(""):'<tr><td colspan="7" class="note" style="text-align:left">No liabilities recorded.</td></tr>';
+ fnt.innerHTML=F.needs.length?F.needs.map((n,i)=>`<tr><td>${inp("n",i,"n",n.n,"t")}</td><td>${sel("n",i,"c",NCAT,n.c)}</td><td>${inp("n",i,"a",n.a)}</td><td>${sel("n",i,"f",Object.keys(FREQ),n.f)}</td><td>${n.f==="Monthly"?"–":`<select class="sin" data-k="n" data-i="${i}" data-f="mo">${[1,2,3,4,5,6,7,8,9,10,11,12].map(m=>`<option value="${m}" ${m===(n.mo??4)?"selected":""}>${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][m-1]}</option>`).join("")}</select>`}</td><td>${inp("n",i,"s",n.s)}</td><td>${inp("n",i,"d",n.d)}</td><td>${inp("n",i,"i",n.i)}</td><td><button data-act="deln" data-i="${i}">Remove</button></td></tr>`).join(""):'<tr><td colspan="9" class="note" style="text-align:left">No recurring needs recorded.</td></tr>'}
+cp.onchange=e=>{const t=e.target,d=t.dataset;if(!CP)return;
+ if(t.id==="csa"){CSa=Math.max(.5,+t.value||20);renderAL();return}
+ if(!d.k)return;const F=finOf(CP).fin,txt=["n","t","c","f"];
+ if(d.k==="h")F[d.f]=(d.f==="ret"||d.f==="invT")?(t.value===""?null:Math.max(0,+t.value||0)):Math.max(0,+t.value||0);
+ else{const o=(d.k==="l"?F.liab:F.needs)[+d.i];o[d.f]=txt.includes(d.f)?t.value:Math.max(0,+t.value||0)}
+ renderFin();renderAL()};
+cp.onclick=e=>{const b=e.target.closest("[data-act],[data-cs]");if(!b||!CP)return;const d=b.dataset,F=finOf(CP).fin;
+ if(d.cs!==undefined){CSm=d.cs;renderAL();return}
+ const fill=(ty,am,rs)=>{ety.value=ty;setRs();eam.value=am;ere.value=rs;if(ty==="invest")dpl.value="1";suggest();if(bld.scrollIntoView)bld.scrollIntoView({behavior:"smooth",block:"start"})};
+ if(d.act==="raise")return fill("raise",d.amt,"Expense or liability");
+ if(d.act==="praise")return fill("raise",d.amt,"Expense or liability");
+ if(d.act==="pinvest")return fill("invest",d.amt,"Fresh inflow");
+ if(d.act==="addl")F.liab.push({n:"New liability",t:"Personal loan",o:0,r:10,emi:0,m:12});
+ if(d.act==="addn")F.needs.push({n:"New need",c:"Other",a:0,f:"Monthly",s:0,d:5,i:6,mo:4});
+ if(d.act==="dell")F.liab.splice(+d.i,1);if(d.act==="deln")F.needs.splice(+d.i,1);renderFin();renderAL()};
+const f2=x=>x.toFixed(2),sg2=x=>(x>0?"+":"")+f2(x),MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],MORD=[10,11,12,1,2,3,4,5,6,7,8,9];
+const DAYS=i=>{const r=LF[i],y=r.ty;return y==="Gold"?(r.p?7:5):({"Mutual fund":3,"Direct equity":2,"ETF":2,"Government bond":3,"Corporate bond":3,"Fixed deposit":2,"REIT / InvIT":2,"Debt fund":2,"PMS":7,"Commodity":2,"Digital asset":1})[y]||5};
+const axModel=()=>new Set(NODES.filter(n=>n.kids.length&&n.lv<DEP[n.ci]).map(n=>n.key));
+let AX=new Set(CLS),MXs=new Set(),YXs=new Set(),LXs=new Set(),CSm="6",CSa=20;
+const go=t=>document.querySelector('nav button[data-t="'+t+'"]').click();
+function monthPlan(F){const Mo=[];
+ MORD.forEach((cal,k)=>{const emi=F.liab.filter(l=>l.m>k&&l.emi>0).map(l=>({n:l.n,c:"Debt service",a:l.emi})),reg=[],per=[];
+  F.needs.forEach(n=>{if(!(n.s<1&&n.s+n.d>=1))return;const mo=n.mo??4;
+   if(n.f==="Monthly")reg.push({n:n.n,c:n.c,a:n.a});
+   else if(n.f==="Quarterly"){if((((cal-mo)%3)+3)%3===0)per.push({n:n.n,c:n.c,a:n.a})}
+   else if(cal===mo)per.push({n:n.n,c:n.c,a:n.a})});
+  const sm=a=>a.reduce((x,y)=>x+y.a,0);
+  Mo.push({cal,yr:cal>=10?2026:2027,inc:F.incYrs>=1?F.inc:0,emi:sm(emi),reg:sm(reg),per:sm(per),items:[...emi,...reg,...per]})});
+ let cum=0;Mo.forEach(m=>{m.out=m.emi+m.reg+m.per;m.net=m.inc-m.out;cum+=m.net;m.cum=cum});return Mo}
+function mChart(Mo){const W=640,Ht=210,pl=42,pr=8,pt=12,pb=26,top=Math.max(...Mo.map(m=>Math.max(m.inc,m.out)),.1),mx=top*1.12,bw=(W-pl-pr)/12,bx=k=>pl+bw*k+bw*.19,y=v=>pt+(Ht-pt-pb)*(1-v/mx),cols=["var(--under)","var(--acc)","#b08a2e"],nm=["Debt service","Regular needs","Yearly and quarterly bills"];
+ let s=`<svg viewBox="0 0 ${W} ${Ht}" width="100%" role="img" aria-label="Projected outflows by month against income">`;
+ [0,.5,1].forEach(g=>{const v=top*g;s+=`<line x1="${pl}" x2="${W-pr}" y1="${y(v)}" y2="${y(v)}" style="stroke:var(--line)"/><text x="${pl-4}" y="${y(v)+3}" text-anchor="end" font-size="10" style="fill:var(--mut)">${f(v)}</text>`});
+ Mo.forEach((m,k)=>{let b=0;[m.emi,m.reg,m.per].forEach((v,j)=>{if(v>0)s+=`<rect x="${bx(k)}" y="${y(b+v)}" width="${bw*.62}" height="${Math.max(0,y(b)-y(b+v))}" style="fill:${cols[j]}"><title>${MN[m.cal-1]}: ${nm[j]} ₹${f2(v)} L</title></rect>`;b+=v});
+  s+=`<line x1="${bx(k)-3}" x2="${bx(k)+bw*.62+3}" y1="${y(m.inc)}" y2="${y(m.inc)}" style="stroke:var(--ink)" stroke-width="2"><title>${MN[m.cal-1]}: income ₹${f2(m.inc)} L</title></line><text x="${bx(k)+bw*.31}" y="${Ht-8}" text-anchor="middle" font-size="10" style="fill:var(--mut)">${MN[m.cal-1]}</text>`});
+ return s+`</svg><div class="lg2">${nm.map((n,j)=>`<span><i style="background:${cols[j]}"></i>${n}</span>`).join("")}<span><i style="background:var(--ink);height:3px;margin-top:4px"></i>Income</span></div>`}
+function contingency(hh,hv,c){const X=CSm==="c"?CSa:(+CSm)*c.mo;
+ const src=LF.map((r,i)=>{const m=M[r.n],v=hv[i],cost=m.c*v/BASE[i],gain=Math.max(0,v-cost),pen=/FD/.test(r.n)?.01:0,tx=v>0?gain/v*m.r/100:0;return{i,r,m,v,gain,days:DAYS(i),pen,tx,cf:tx+pen}}).filter(x=>x.m.l<2&&x.v>.05).sort((a,b)=>a.cf-b.cf||a.days-b.days);
+ let need=X,cum=0;const used=[];src.forEach(x=>{if(need<=.001)return;const a=Math.min(x.v,need);need-=a;cum+=a;used.push({...x,a,cost:a*x.cf,cum})});
+ const nv=hv.slice();used.forEach(u=>{nv[u.i]-=u.a});
+ return{X,used,short:Math.max(0,need),cost:used.reduce((a,u)=>a+u.cost,0),days:Math.max(0,...used.map(u=>u.days)),before:agg({...hh,vec:hv}),after:agg({...hh,vec:nv}),avail:src.reduce((a,x)=>a+x.v,0)}}
+function recur(hh,hv,c){const F=hh.fin,inc=F.incYrs>=1?F.inc:0,surplus=inc-c.emiM-c.needM,sip=F.invT!=null?F.invT:Math.max(0,surplus)*.8,T=hv.reduce((a,b)=>a+b,0),tg=csE(hh),ts=LTE(hh),Tn=T+sip*12;
+ const cur=D.map((_,ci)=>LF.filter(r=>r.ci==ci).reduce((s,r)=>s+hv[r.i],0)),gap=cur.map((v,ci)=>Math.max(0,tg[ci]/100*Tn-v)),gs=gap.reduce((a,b)=>a+b,0),alloc=gap.map(g=>gs>0?sip*g/gs:0),per=[];
+ D.forEach((n,ci)=>{if(alloc[ci]<=.0001)return;const hs=LF.filter(r=>r.ci==ci&&M[r.n].l<2);if(!hs.length)return;
+  const g=hs.map(r=>Math.max(0,ts[r.i]/100*Tn-hv[r.i])),gt=g.reduce((a,b)=>a+b,0),w=hs.map(r=>ts[r.i]),wt=w.reduce((a,b)=>a+b,0);
+  hs.forEach((r,k)=>{const sh=gt>0?g[k]/gt:wt>0?w[k]/wt:1/hs.length,a=alloc[ci]*sh;if(a>.0005)per.push({ci,r,a})})});
+ const placed=per.reduce((a,p)=>a+p.a,0),nv=hv.slice();per.forEach(p=>{nv[p.r.i]+=p.a*12});
+ return{inc,surplus,sip,cur,tg,alloc,per,placed,gs,before:agg({...hh,vec:hv}),after:agg({...hh,vec:nv}),T}}
+function renderAL(){if(!CP)return;
+ const hh=finOf(CP);ents();const hv=hh.vec,F=hh.fin,c=finCalc(hh,hv),Mo=monthPlan(F),T=c.aum,nacc=AC.filter(a=>a.h===hh.id).length;
+ alnote.innerHTML=CP.k==="h"?`Combined balance sheet for <b>${hh.n}</b> across ${nacc} accounts. Liabilities, needs and cash flow are household level and can be edited on the Cash &amp; planning tab.`:`Showing the combined view for <b>${hh.n}</b>, because liabilities and needs sit at household level. <b>${CP.n}</b> is one of ${nacc} accounts in it.`;
+ const kc=(a,b,cl)=>`<div class="kc"><small>${a}</small><b class="${cl||""}">${b}</b></div>`,lq=[0,0,0];LF.forEach((r,i)=>{lq[M[r.n].l]+=hv[i]});
+ const inc0=F.incYrs>=1?F.inc:0,tgt0=F.invT!=null?F.invT:Math.max(0,inc0-c.mo)*.8;
+ alk.innerHTML=kc("Total assets","₹ "+f(T)+" L")+kc("Liabilities","₹ "+f(c.liabT)+" L")+kc("Net worth","₹ "+f(c.nw)+" L")+kc("Liquid assets (sellable in 3 days)","₹ "+f(lq[0])+" L")+kc("Monthly income","₹ "+f2(inc0)+" L")+kc("Monthly commitments","₹ "+f2(c.mo)+" L")+kc("Monthly investable",sg2(inc0-c.mo)+" L",inc0-c.mo<0?"over":"ok")+kc("Monthly investment target","₹ "+f2(tgt0)+" L"+(inc0-c.mo>0?" ("+f(tgt0/(inc0-c.mo)*100)+"%)":""))+kc("Liquidity runway",f(Math.min(c.runway,99))+" months",c.runway>=6?"ok":"over")+kc("Debt to assets",f(T>0?c.liabT/T*100:0)+"%");
+ const mxs=Math.max(T,c.liabT,.1),pc=v=>v/mxs*100,lc=["var(--ok)","#b08a2e","var(--mut)"];
+ alab.innerHTML=`<div class="stk">${[0,1,2].map(k=>`<span style="width:${pc(lq[k])}%;background:${lc[k]}" title="${LQ[k]} ₹${f(lq[k])} L"></span>`).join("")}</div><div class="stk" style="margin-top:6px"><span style="width:${pc(c.liabT)}%;background:var(--over)" title="Liabilities ₹${f(c.liabT)} L"></span></div><div class="lg2">${[0,1,2].map(k=>`<span><i style="background:${lc[k]}"></i>${LQ[k]} ₹${f(lq[k])} L (${f(T>0?lq[k]/T*100:0)}%)</span>`).join("")}<span><i style="background:var(--over)"></i>Liabilities ₹${f(c.liabT)} L</span></div>`;
+ const nv=n=>n.hs.reduce((a,h)=>a+hv[h],0),aN=vrows(NODES.filter(n=>n.hs.length),NB,AX);
+ alas.innerHTML=aN.map(n=>{const v=nv(n),sc=n.lv===4,l=sc?M[SEC[n.i].n].l:-1;return `<tr class="l${Math.min(n.lv,2)}"><td><div class="nm" style="padding-left:${n.lv*20}px">${crt(n.kids.some(k=>k.hs.length),n.key,AX.has(n.key),n.label)}${esc(n.label)}${!sc&&n.lv===DEP[n.ci]?'<span class="tag" title="The model sets targets down to this level. Expand to see what is held below it.">model level</span>':""}${sc&&SEC[n.i].p?'<span class="tag p">Physical</span>':''}</div></td><td>${f(v)}</td><td>${f(T>0?v/T*100:0)}</td><td>${l<0?"":`<span class="tag ${l>1?'x':l?'s':''}">${LQ[l]}</span>`}</td><td>${l<0||l>1?"–":DAYS(n.i)}</td></tr>`}).join("")+`<tr class="sumrow"><td>Total assets</td><td>${f(T)}</td><td>100.0</td><td></td><td></td></tr>`;
+ alli.innerHTML=(F.liab.length?F.liab.map((l,i)=>{const o=LXs.has(i),ri=Math.max(0,l.emi*l.m-l.o),d=new Date(2026,9+l.m,1),inc=F.incYrs>=1?F.inc:0;
+  return `<tr><td><div class="nm"><button class="car" aria-expanded="${o}" data-lx="${i}" aria-label="Details for ${l.n}">▶</button>${l.n}</div></td><td>${l.t}</td><td>${f(l.o)}</td><td>${f(l.r)}%</td><td>${f2(l.emi)}</td><td>${l.m}</td></tr>`+(o?`<tr class="xr"><td colspan="6"><div class="mi"><div class="cd" style="grid-template-columns:1fr auto"><span>Interest still to pay (approx.)</span><span>₹ ${f(ri)} L</span></div><div class="cd" style="grid-template-columns:1fr auto"><span>Ends</span><span>${MN[d.getMonth()]} ${d.getFullYear()}</span></div><div class="cd" style="grid-template-columns:1fr auto"><span>EMI as share of income</span><span>${inc>0?f(l.emi/inc*100)+"%":"no income"}</span></div>${l.r>RET[1]+1?`<div class="warn" style="grid-column:1/-1">Costs ${f(l.r)}% against about ${RET[1]}% on debt holdings. Part-prepaying may beat holding that debt.</div>`:""}</div></td></tr>`:"")}).join("")+`<tr class="sumrow"><td>Total liabilities</td><td></td><td>${f(c.liabT)}</td><td></td><td>${f2(c.emiM)}</td><td></td></tr>`:'<tr><td colspan="6" class="note" style="text-align:left">No liabilities recorded.</td></tr>');
+ alln.innerHTML=`Net worth ₹${f(c.nw)} L = assets ₹${f(T)} L less liabilities ₹${f(c.liabT)} L. Liquid assets cover ${f(c.liabT>0?lq[0]/c.liabT*100:100)}% of liabilities.`;
+ // monthly
+ const pk=Mo.reduce((a,m)=>m.out>a.out?m:a,Mo[0]);
+ alch.innerHTML=mChart(Mo);
+ alm.innerHTML=Mo.map((m,k)=>{const o=MXs.has(k);return `<tr><td><div class="nm"><button class="car" aria-expanded="${o}" data-mx="${k}" aria-label="Show items for ${MN[m.cal-1]}">▶</button>${MN[m.cal-1]} ${m.yr}${m.per>0?' <span class="tag s">bills due</span>':''}</div></td><td>${f2(m.inc)}</td><td>${f2(m.emi)}</td><td>${f2(m.reg)}</td><td>${f2(m.per)}</td><td><b>${f2(m.out)}</b></td><td class="${m.net<0?'over':'ok'}">${sg2(m.net)}</td><td class="${m.cum<0?'over':''}">${f2(m.cum)}</td></tr>`+(o?`<tr class="xr"><td colspan="8"><div class="mi">${m.items.map(x=>`<div class="cd" style="grid-template-columns:1fr auto"><span>${x.n} <span class="tag">${x.c}</span></span><span>₹ ${f2(x.a)} L</span></div>`).join("")||"No outflows"}</div></td></tr>`:"")}).join("")+(()=>{const S=g=>Mo.reduce((a,m)=>a+m[g],0);return `<tr class="sumrow"><td>12 months</td><td>${f2(S("inc"))}</td><td>${f2(S("emi"))}</td><td>${f2(S("reg"))}</td><td>${f2(S("per"))}</td><td>${f2(S("out"))}</td><td class="${S("net")<0?'over':'ok'}">${sg2(S("net"))}</td><td></td></tr>`})();
+ almn.innerHTML=`Year 1 only, before inflation. Heaviest month: <b>${MN[pk.cal-1]}</b> at ₹${f2(pk.out)} L, because yearly and quarterly bills fall then. Click a month to see its items. Income is the monthly amount entered on the Liabilities &amp; needs tab.`;
+ // yearly
+ const act=(n,t)=>n.s<t&&n.s+n.d>=t,G={};
+ F.needs.forEach(n=>{const g=G[n.c]=G[n.c]||{y1:0,y6:0,it:[]},a1=act(n,1)?n.a*FREQ[n.f]:0,a6=act(n,6)?n.a*FREQ[n.f]*Math.pow(1+n.i/100,5):0;g.y1+=a1;g.y6+=a6;g.it.push({n,a1,a6})});
+ const e1=F.liab.reduce((a,l)=>a+Math.min(12,Math.max(0,l.m))*l.emi,0),e6=F.liab.reduce((a,l)=>a+(l.m-60>0?Math.min(12,l.m-60)*l.emi:0),0),cats=Object.entries(G).sort((a,b)=>b[1].y1-a[1].y1),n1=cats.reduce((a,[,g])=>a+g.y1,0),n6=cats.reduce((a,[,g])=>a+g.y6,0),tot1=n1+e1,dom=["Domestic help & utilities","Property & society charges","Vehicle running","Home maintenance","Festivals & gifting"],d1=cats.filter(([k])=>dom.includes(k)).reduce((a,[,g])=>a+g.y1,0);
+ aly.innerHTML=`<div class="kp" style="margin-top:0"><div class="kc"><small>Needs this year</small><b>₹ ${f(n1)} L</b></div><div class="kc"><small>Debt service this year</small><b>₹ ${f(e1)} L</b></div><div class="kc"><small>Total yearly outflow</small><b>₹ ${f(tot1)} L</b></div><div class="kc"><small>Domestic and household items</small><b>₹ ${f(d1)} L</b></div><div class="kc"><small>Total in 5 years (inflated)</small><b>₹ ${f(n6+e6)} L</b></div></div><div class="wrap"><table style="min-width:760px"><thead><tr><th>Category</th><th>This year (₹ L)</th><th>Per month (₹ L)</th><th>Share of outflow</th><th>In 5 years (₹ L)</th></tr></thead><tbody>`+
+ cats.map(([k,g])=>{const o=YXs.has(k),sh=tot1>0?g.y1/tot1*100:0;return `<tr><td><div class="nm"><button class="car" aria-expanded="${o}" data-yx="${k.replace(/"/g,"&quot;")}" aria-label="Show items in ${k}">▶</button>${k}${dom.includes(k)?' <span class="tag">domestic</span>':''}</div></td><td>${f(g.y1)}</td><td>${f2(g.y1/12)}</td><td><span class="bar" style="width:90px"><b style="width:${Math.min(sh*2,100)}%;background:var(--acc)"></b></span> ${f(sh)}%</td><td>${f(g.y6)}</td></tr>`+(o?`<tr class="xr"><td colspan="5"><div class="mi">${g.it.map(({n,a1,a6})=>`<div class="cd" style="grid-template-columns:1fr auto"><span>${n.n} <span class="tag">${n.f==="Monthly"?"monthly":n.f.toLowerCase()+", "+MN[(n.mo??4)-1]}</span>${n.s>=1?` <span class="tag s">starts in ${n.s} yrs</span>`:""}</span><span>₹ ${f2(n.a)} L</span></div>`).join("")}</div></td></tr>`:"")}).join("")+
+ `<tr class="sumrow"><td>Needs total</td><td>${f(n1)}</td><td>${f2(n1/12)}</td><td></td><td>${f(n6)}</td></tr><tr><td>Debt service (EMIs)</td><td>${f(e1)}</td><td>${f2(e1/12)}</td><td></td><td>${f(e6)}</td></tr><tr class="sumrow"><td>Total yearly outflow</td><td>${f(tot1)}</td><td>${f2(tot1/12)}</td><td></td><td>${f(n6+e6)}</td></tr></tbody></table></div><p class="note">The 5-year column applies each item's own inflation rate and includes needs that start by then, such as education. Add or edit items, including their due month, on the Cash &amp; planning tab.</p>`;
+ // contingency
+ const k=contingency(hh,hv,c),why=u=>u.pen?"Premature closure penalty":u.gain<=0.001?"No gain to tax":u.m.r===20?"Short-term gain, taxed at 20%":"Long-term gain";
+ alc.innerHTML=`<h2>Contingency: raise cash</h2><div class="tools" style="margin-bottom:8px"><span class="leg">Cover</span><div class="segw">${[["3","3 months"],["6","6 months"],["12","12 months"],["c","Custom"]].map(([v,l])=>`<button class="sb" aria-pressed="${CSm===v}" data-cs="${v}">${l}</button>`).join("")}</div>${CSm==="c"?`<label>Amount (₹ L) <input type="number" id="csa" min="0.5" step="0.5" value="${CSa}"></label>`:`<span class="note" style="margin:0">of commitments at ₹${f2(c.mo)} L a month = <b>₹ ${f(k.X)} L</b></span>`}</div>`+
+ `<div class="kp"><div class="kc"><small>Raised</small><b>₹ ${f(k.X-k.short)} L</b></div><div class="kc"><small>Tax and penalty cost</small><b>₹ ${f2(k.cost)} L</b></div><div class="kc"><small>Cash in</small><b>${k.days} days</b></div><div class="kc"><small>Max class drift</small><b>${f(k.before)} to ${f(k.after)} pp</b></div></div>`+
+ (k.used.length?`<div class="wrap"><table style="min-width:760px"><thead><tr><th>Order</th><th>Source</th><th>Days to cash</th><th>Amount (₹ L)</th><th>Tax and penalty (₹ L)</th><th>Cumulative (₹ L)</th><th>Why this order</th></tr></thead><tbody>${k.used.map((u,j)=>`<tr><td>${j+1}</td><td>${u.r.n}</td><td>${u.days}</td><td>${f(u.a)}</td><td>${f2(u.cost)}</td><td>${f(u.cum)}</td><td style="text-align:left">${why(u)}</td></tr>`).join("")}</tbody></table></div>`:'<p class="note">Nothing to raise.</p>')+
+ (k.short>.05?`<div class="warn">Short by ₹${f(k.short)} L. Liquid and semi-liquid holdings total ₹${f(k.avail)} L. Locked assets (EPF, AIF, real estate) are left out. A loan against securities, or a smaller or phased amount, may be worth comparing.</div>`:"")+
+ `<p class="note">Sources are used cheapest first by estimated tax and exit penalty on the gain in each holding, then fastest. Estimates ignore the LTCG exemption and loss set-off, so the real cost can be lower. First-line reserve: keep ${f(c.emerg)} L (6 months) in deposits and bonds; today that is ₹${f(c.eligible)} L.</p><div class="tools"><button class="pri" data-act="praise" data-amt="${k.X.toFixed(1)}" ${k.X>0?"":"disabled"}>Plan this cash raise</button></div>`;
+ // recurring
+ const r=recur(hh,hv,c);
+ alr.innerHTML=`<h2>Recurring investment</h2><div class="kp"><div class="kc"><small>Monthly income</small><b>₹ ${f2(r.inc)} L</b></div><div class="kc"><small>Commitments</small><b>₹ ${f2(c.mo)} L</b></div><div class="kc"><small>Monthly investable</small><b class="${r.surplus<0?'over':'ok'}">${sg2(r.surplus)} L</b></div><div class="kc"><small>Monthly investment target</small><b>₹ ${f2(r.sip)} L${r.surplus>0?" ("+f(r.sip/r.surplus*100)+"% of investable)":""}</b></div></div>`+
+ (r.sip<=0?`<div class="warn">${r.surplus<=0?`No investable surplus: commitments exceed income by ₹${f2(-r.surplus)} L a month, so the portfolio is being drawn down. See the planning flags and the contingency plan above. `:""}Set a monthly investment target above 0 under Income and assumptions to see an allocation.</div>`:(r.sip>Math.max(0,r.surplus)+.005?`<div class="warn">The target is ₹${f2(r.sip-Math.max(0,r.surplus))} L a month above what is investable (₹${f2(Math.max(0,r.surplus))} L), so the difference would come out of existing holdings.</div>`:"")+
+ `<div class="wrap"><table style="min-width:820px"><thead><tr><th>Asset class</th><th>Current %</th><th>Target %</th><th>Monthly investment (₹ L)</th><th>Where it goes (₹ L a month)</th></tr></thead><tbody>${D.map((n,ci)=>{const w=r.per.filter(p=>p.ci===ci).sort((a,b)=>b.a-a.a).slice(0,3);return `<tr><td>${n.n}</td><td>${f(r.cur[ci]/r.T*100)}</td><td>${f(r.tg[ci])}</td><td>${r.alloc[ci]>0?f2(r.alloc[ci]):"–"}</td><td style="text-align:left;white-space:normal">${w.length?w.map(p=>`${p.r.n} ${f2(p.a)}`).join(", "):'<span class="note">At or above target</span>'}</td></tr>`}).join("")}</tbody></table></div><p class="note">Allocated to the asset classes furthest below target, using holdings that are not locked. At this pace the largest class drift moves from ${f(r.before)} to ${f(r.after)} pp in 12 months${r.gs>0&&r.sip>0?` and the full gap of ₹${f(r.gs)} L would take about ${Math.ceil(r.gs/r.sip)} months to close`:""}.${r.sip-r.placed>.01?` ₹${f2(r.sip-r.placed)} L a month could not be placed because the shortfall sits in locked assets.`:""} Yearly and quarterly bills are already set aside in the monthly commitments figure.</p><div class="tools"><button class="pri" data-act="pinvest" data-amt="${r.sip.toFixed(2)}">Plan this investment</button></div>`)}
+const alCl=e=>{const cr=e.target.closest(".car[data-k]");if(cr&&CP){const k=cr.dataset.k;AX.has(k)?AX.delete(k):AX.add(k);renderAL();return}
+ if(e.target.id==="axa"&&CP){AX=new Set(NODES.filter(n=>n.kids.length).map(n=>n.key));renderAL();return}
+ if(e.target.id==="axc"&&CP){AX=new Set(CLS);renderAL();return}
+ if(e.target.id==="axm"&&CP){AX=axModel();renderAL();return}
+ const b=e.target.closest("[data-ax],[data-mx],[data-yx],[data-lx],[data-cs],[data-act]");if(!b||!CP)return;const d=b.dataset,tg=(S,v)=>{S.has(v)?S.delete(v):S.add(v);renderAL()};
+ if(d.ax!==undefined)return tg(AX,d.ax);if(d.mx!==undefined)return tg(MXs,+d.mx);if(d.yx!==undefined)return tg(YXs,d.yx);if(d.lx!==undefined)return tg(LXs,+d.lx);
+ if(d.cs!==undefined){CSm=d.cs;renderAL();return}
+};
+al.onclick=alCl;
+function loadP(e){CP=e;LF.forEach((r,i)=>{r.v=e.vec[i];r.k=e.vec[i]/BASE[i]});TOT=e.vec.reduce((a,b)=>a+b,0);OPN=new Set(CLS);TXl=new Set(CLS);AX=axModel();
+ document.getElementById("tot").textContent="₹ "+f(TOT)+" L";pn.textContent=e.n+(e.k==="h"?" (household)":" (account, "+byId(e.h).n+")");
+ document.querySelector("nav button").click();LS=null;sug.innerHTML=SPH;setModel(e.r)}
+function route(){const h=location.hash,m=h.match(/^#\/p\/(\w+)/),v=m?"d":h==="#/rebalance"?"rb":h==="#/audit"?"au":h==="#/securities"?"sc":h==="#/models"?"md":"dash";
+ dsh.hidden=v!=="dash";rb.hidden=v!=="rb";au.hidden=v!=="au";sc.hidden=v!=="sc";md.hidden=v!=="md";dh.hidden=dm.hidden=v!=="d";dr.classList.remove("on");sdr.classList.remove("on");window.scrollTo(0,0);document.querySelectorAll("#gn a").forEach(a=>a.toggleAttribute("aria-current",a.dataset.r===(v==="sc"?"sc":v==="au"?"au":v==="md"?"md":"dash")));
+ if(v==="dash"){CP=null;renderDash();return}
+ if(v==="rb"){if(!SEL.size){location.hash="#/";return}INC.clear();SEL.forEach(x=>INC.add(x));renderRb();return}
+ if(v==="au"){renderAud();return}if(v==="sc"){renderSec();return}if(v==="md"){renderModels();return}
+ const e=ents().find(x=>x.id===m[1]);if(!e){location.hash="#/";return}loadP(e)}
+window.onhashchange=route;route();
+
+</script>
+</body>
+</html>
+
+</body></html>

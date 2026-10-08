@@ -6,15 +6,24 @@ try{fundMode=localStorage.getItem('portfolio-fund-mode')||fundMode}catch{}
 if(!['look','tag'].includes(fundMode))fundMode='look';
 function signed(n){const rounded=Math.round(n*10)/10;return (rounded>0?'+':'')+fmt(rounded)}
 function leafValues(d){return entries(d.allocations).filter(x=>!x.node.children.length).map(x=>({name:x.node.name,value:x.node.target,category:x.key.split(' / ')[0]}))}
+// Market cap and geography are recorded only where they describe the instrument
+// itself: a fund's are a property of what it holds. In Single tag mode, where the
+// whole fund counts in one bucket, fall back to its largest underlying bucket
+// rather than reporting it as unclassified.
+function dominantBucket(s,key){
+ const weights=s.lookThrough?.[key];
+ if(!weights?.length)return null;
+ return weights.reduce((best,x)=>x.weight>best.weight?x:best).bucket;
+}
 function exposure(values,lens){
  const buckets=new Map();let total=0,missing=0;
  for(const h of values){
   const s=originalData.securities.find(s=>s.name===h.name);
-  if(lens==='cr'&&!(s?.tags.isDebt||(!s&&h.category==='Debt')))continue;
+  if(lens==='cr'&&!(s?.tags.isDebt||(!s&&h.category==='Fixed income')))continue;
   total+=h.value;let parts;
   if(!s){parts=[['Unclassified',1]];missing+=h.value}
-  else if(lens==='sec')parts=fundMode==='look'&&s.lookThrough?s.lookThrough.sector.map(x=>[x.sector+' / '+x.subsector,x.weight]):[[s.tags.sector+' / '+s.tags.subsector,1]];
-  else if(lens==='mc'||lens==='geo'){const key=lens==='mc'?'marketCap':'geography';parts=fundMode==='look'&&s.lookThrough?s.lookThrough[key].map(x=>[x.bucket,x.weight]):[[s.tags[key]||'Unclassified',1]]}
+  else if(lens==='sec')parts=fundMode==='look'&&s.lookThrough?s.lookThrough.sector.map(x=>[x.bucket,x.weight]):[[s.tags.sector||'Unclassified',1]];
+  else if(lens==='mc'||lens==='geo'){const key=lens==='mc'?'marketCap':'geography';parts=fundMode==='look'&&s.lookThrough?s.lookThrough[key].map(x=>[x.bucket,x.weight]):[[s.tags[key]||dominantBucket(s,key)||'Unclassified',1]]}
   else if(lens==='th')parts=(s.tags.themes.length?s.tags.themes:['Unclassified']).map(x=>[x,1]);
   else if(lens==='cr')parts=[[(s.tags.creditQuality||'Unclassified')+' / '+(s.tags.duration||'Unclassified'),1]];
   else parts=[[s.tags.custom||'Unclassified',1]];
@@ -25,7 +34,7 @@ function exposure(values,lens){
 function exposureRows(actual,target,lens){const a=exposure(actual,lens),t=exposure(target,lens);return [...new Set([...a.buckets.keys(),...t.buckets.keys()])].sort().map(name=>({name,actual:a.total>0?(a.buckets.get(name)||0)/a.total*100:null,target:t.total>0?(t.buckets.get(name)||0)/t.total*100:null,value:a.buckets.get(name)||0}))}
 let lensControls;
 function lensTable(actual,target,lens,isModel=false){const rows=exposureRows(actual,target,lens);return `<div class="tablewrap"><table><thead><tr><th>Exposure</th>${isModel?'':'<th>Actual %</th>'}<th>${isModel?'Model':'Client target'} %</th>${isModel?'':'<th>Drift (pp)</th>'}</tr></thead><tbody>${rows.map(x=>`<tr><td>${esc(x.name)}</td>${isModel?'':`<td>${x.actual===null?'Unavailable':fmt(x.actual)}</td>`}<td>${x.target===null?'Not defined':fmt(x.target)}</td>${isModel?'':`<td>${x.actual===null||x.target===null?'—':signed(x.actual-x.target)}</td>`}</tr>`).join('')||'<tr><td colspan="4">No data for this lens.</td></tr>'}</tbody></table></div><p><small>${lens==='cr'?'Percentages use debt only.':lens==='th'?'Themes overlap; their percentages can exceed 100% when added.':'Percentages use the whole portfolio.'} Exposure data is illustrative, extracted from the original mockup. Exposure targets are derived from the selected allocation.</small></p>`}
-function lensContent(actual,target,isModel=false){if(activeLens!=='tree')return lensTable(actual,target,activeLens,isModel);return `<p class="note">Hierarchy groups the original asset classes with their exposure dimensions. Geography, market cap and sector are separate views: the source contains no joint underlying-holdings data to combine them reliably.</p>${originalData.assetHierarchy.map(c=>{const aa=actual.filter(x=>x.category===c.n),tt=target.filter(x=>x.category===c.n),dims=c.n==='Equity'?['geo','mc','sec']:c.n==='Debt'?['cr']:['sec'];return `<details class="card" open><summary>${esc(c.n)}</summary>${dims.map(l=>`<details class="review-detail"><summary>${lenses.find(x=>x[0]===l)[1]} (% of ${esc(c.n)})</summary>${lensTable(aa,tt,l,isModel).replace('Percentages use the whole portfolio.','Percentages use this asset class.')}</details>`).join('')}</details>`}).join('')}`}
+function lensContent(actual,target,isModel=false){if(activeLens!=='tree')return lensTable(actual,target,activeLens,isModel);return `<p class="note">Hierarchy groups the original asset classes with their exposure dimensions. Geography, market cap and sector are separate views: the source contains no joint underlying-holdings data to combine them reliably.</p>${originalData.assetHierarchy.map(c=>{const aa=actual.filter(x=>x.category===c.n),tt=target.filter(x=>x.category===c.n),dims=c.n==='Equity'?['geo','mc','sec']:c.n==='Fixed income'?['cr']:['sec'];return `<details class="card" open><summary>${esc(c.n)}</summary>${dims.map(l=>`<details class="review-detail"><summary>${lenses.find(x=>x[0]===l)[1]} (% of ${esc(c.n)})</summary>${lensTable(aa,tt,l,isModel).replace('Percentages use the whole portfolio.','Percentages use this asset class.')}</details>`).join('')}</details>`}).join('')}`}
 function stack(values){return `<div class="allocation" style="margin:8px 0">${values.map((x,i)=>`<span style="width:${Math.max(0,x)}%;background:${palette[i]}" title="${esc(originalData.assetHierarchy[i].n)} ${fmt(x)}%"></span>`).join('')}</div>`}
 
 let distribution;
