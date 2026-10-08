@@ -105,10 +105,58 @@ Kept: themes, fund look-through, credit rating (on a six-point scale), duration,
 cost basis, illustrative tax rate, liquidity and the physical flag.
 
 Of all this, only **AssetType** and **Crisil Rating** land in the sheet's nine
-columns. The other attributes are stored on each security in
-`data/security-master.json` and in the dataset, and are **not displayed** — the
-grid is the sheet's layout. Showing them needs a surface the sheet does not
-define, which is a separate design decision.
+columns. The rest are shown on two surfaces the sheet does not define, described
+next.
+
+## Showing the attributes
+
+A flat table cannot hold them: 17 types, 4.7 attributes each on average, and
+**seven keys change meaning depending on the type** — `rating` is a credit
+rating on a bond but an *issuer* rating on a deposit and *credit quality* on a
+debt fund; `risk` is a risk rating on equity but the SEBI *risk-o-meter* on a
+fund. A shared column would misstate them, so attributes always render through
+their own type's schema.
+
+**Row expansion** is the primary surface. Opening an instrument shows its
+attributes, its fund look-through and its liquidity note. It works for any
+instrument at any time and costs no horizontal space.
+
+**Type-scoped columns** are the secondary one. Filtering to a single instrument
+type appends that type's attributes as real columns, because comparison only
+means anything within a type — a bond's yield against a fund's expense ratio is
+noise. Seven of the 17 types hold two or more instruments, so the comparison is
+worth having. Filtering also drops the now-constant Asset type column, and the
+instrument name is pinned while the grid scrolls.
+
+### Three tiers of ownership
+
+Attributes are grouped by who can actually supply the value, because three
+different parties own this data:
+
+| Tier | Who owns it | Examples |
+|---|---|---|
+| **Source** | a market or provider feed | P/E, expense ratio, occupancy, tracking error |
+| **Firm** | no feed supplies it, and one value is shared by every client who holds the instrument | AIF category and lock-in, PMS fee and minimum, deposit penalty, issuer rating |
+| **Client** | the fact belongs to one client's holding, not to a shared instrument | this deposit's rate and maturity, this investor's AIF commitment and vintage, this flat's valuation, custody of a crypto holding |
+
+Seventeen instruments are feed-backed; fourteen are not. The split matters
+because the sample makes the problem visible: six households each "hold" one
+flat in Pune and one EPF account. Those are client-specific objects sitting in a
+firm-wide master.
+
+**Everything is read-only for now, deliberately.** The client tier in particular
+must not get a firm-wide edit box: editing it would change a value for every
+client at once. Where those assets should live is an open question on the page.
+The firm tier is the one that could reasonably become editable next, through the
+staging and impact review that classification already uses.
+
+### Valuation age
+
+An attribute that records when something was last valued shows how old it is —
+"valued 4 months ago", flagged past twelve. A valuation nobody has refreshed is
+the quiet risk on an illiquid asset: a flat valued four years ago and one valued
+last month look identical in a table, and an adviser quoting net worth off the
+stale one has a real problem.
 
 ## Consequences outside this page
 

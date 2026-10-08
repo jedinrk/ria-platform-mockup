@@ -12,7 +12,7 @@ Models has a searchable library, focused editor, publication history and a scala
 
 Audit log is a single chronological feed of model publications and client-target approvals, with object, action, actor, status and date filters and before/after detail.
 
-Security master is a working firm-wide configuration grid built to the supplied `RIA-AssetConfig-Type1` sheet, carrying its 31 instruments with an explicit instrument type and a four-level classification: asset class, super sector, sector and sub-sector. The levels nest, so each dropdown offers only what belongs under the level above. Changes are staged and reviewed before being applied, and the review states the instruments, value and portfolios affected. ISIN and current price have no source and stay blank; symbols are filled only where one real listed symbol is unambiguous. Attributes beyond the sheet's nine columns are stored but not displayed. See `docs/security-master.md`.
+Security master is a working firm-wide configuration grid built to the supplied `RIA-AssetConfig-Type1` sheet, carrying its 31 instruments with an explicit instrument type and a four-level classification: asset class, super sector, sector and sub-sector. The levels nest, so each dropdown offers only what belongs under the level above. Changes are staged and reviewed before being applied, and the review states the instruments, value and portfolios affected. ISIN and current price have no source and stay blank; symbols are filled only where one real listed symbol is unambiguous. Attributes beyond the sheet's nine columns are shown read-only on row expansion, grouped by whether a feed, the firm or the client owns them, and as comparable columns when the list is filtered to one instrument type. See `docs/security-master.md`.
 
 All original source data is preserved in JSON, including defaults for pending workflows. Existing model storage and earlier client records remain preserved. This is a browser-local illustrative prototype.
 
@@ -20,7 +20,7 @@ All original source data is preserved in JSON, including defaults for pending wo
 
 1. **Bulk planning:** restore flagged-portfolio selection and add multi-portfolio scenario roll-up, per-portfolio feasibility drill-down and bulk approval. The single-portfolio engine is already the basis for this work.
 2. **Overview cash-event state:** restore the original pending cash-event indicator now that cash events themselves are implemented.
-3. **Security master extensions:** Type 2 instruments without a market feed, a surface for the type-specific attributes the sheet does not define, and a real instrument source behind ISIN, symbol and price. The Add instrument surface also needs a real firm/vendor source before it can add anything beyond the closed sample universe.
+3. **Security master extensions:** making the firm-owned attributes editable through the existing staging and review, deciding where client-specific assets live, and a real instrument source behind ISIN, symbol and price. The Add instrument surface also needs a real firm/vendor source before it can add anything beyond the closed sample universe.
 4. **Recommendation lifecycle:** communicated, client accepted, executed and reconciled states remain beyond the current approval-only prototype.
 5. **Production data and controls:** statement ingestion, verified ownership/source evidence, current prices and classifications, tax lots and client tax profiles, authenticated persistence, access control and multi-user approval policy.
 
