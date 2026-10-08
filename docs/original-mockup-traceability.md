@@ -1,20 +1,23 @@
 # Original wireframe traceability
 
-Every component of `Portfolio Console – wireframes.html` is listed here with
-its current state. This is the register the refinement plan was missing: it is
-what stops a component disappearing without a decision.
+Every component of the current baseline `Portfolio Console – wireframes.html`
+is listed here with its implemented state as of 2026-10-08. This is the
+historical baseline register: it prevents a component disappearing without a
+decision and will remain intact when a revised source mockup is supplied.
 
 States: **Delivered** · **Refined** (present, deliberately reshaped) ·
-**Deferred** (in scope, named on a placeholder screen) ·
-**Dropped** (deliberately not carried forward, with a reason).
+**Delivered in part** (a useful subset is working, with the remainder named) ·
+**Deferred** (accepted in scope but not implemented in the current build) ·
+**Dropped** (deliberately not carried forward, with a reason) ·
+**Dropped for now** (withheld pending an unresolved product decision).
 
 ## Global shell
 
 | Original | State | Where it is now |
 |---|---|---|
 | Nav: Portfolios | Delivered | Portfolios |
-| Nav: Security master | Deferred | Nav item present; placeholder names the capability and the open questions |
-| Nav: Models | Delivered | Models, with Library / Comparison / Profile comparison |
+| Nav: Security master | Delivered | Working Security master configuration grid, with unresolved production-policy questions named on the screen |
+| Nav: Models | Delivered | Models, with Library and Model comparison; Intended profile is a comparison view |
 | Nav: Audit log (with count) | Refined | Audit log; the count is replaced by a filterable entry count |
 | "As of 03 Oct 2026" | Delivered | Source stamp on every portfolio screen |
 
@@ -113,3 +116,21 @@ Household view and aggregation; the approved-client-target concept and its
 draft/review/approve lifecycle; asset scope (under advice versus recorded);
 model comparison; profile comparison; review-state reasons; liquidity profile
 per account.
+
+## Pending revised mockup intake
+
+A newer version of the initial mockup is expected from the product owner. When
+it is supplied, do not silently replace this register. Add a revision comparison
+that records, component by component:
+
+- additions in the revised source;
+- changes to an existing requirement, calculation, term or interaction;
+- unchanged capabilities already delivered or deliberately refined;
+- conflicts with an approved product/UX decision in the current build; and
+- removals that need an explicit keep/drop decision.
+
+Only after that comparison should accepted changes be implemented and their
+states added here. The resulting build will then receive a complete feature and
+UI/UX re-evaluation for customer presentation, including responsive behaviour,
+keyboard and dialog usability, demonstration state, disclosures and an
+end-to-end adviser walkthrough.
