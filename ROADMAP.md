@@ -2,24 +2,59 @@
 
 ## Delivered
 
-The original mockup is the data/information reference, not a layout to reproduce verbatim. Portfolios now has Household and Account views using all six original households and twelve accounts, with ownership types labelled rather than recast as individual people.
+The original mockup is the current data/information baseline, not a layout to reproduce verbatim. Portfolios has Household and Account views using all six original households and twelve accounts, with ownership types labelled rather than recast as individual people.
 
-The journey is overview → household/account → Allocation → Target plan → History. The overview retains the original Aggregated drift label, threshold-relative bar and editable Threshold (pp) controls; blank thresholds inherit the firm default. Its row expansion is a concise explanation leading to detail. Allocation contains an actual-versus-approved-target distribution chart, expandable holdings, value gaps and exposure analysis. Target plan separates model assignment and adjustments from recorded holdings. Asset inclusion is managed in a supporting dialog; original examples include every asset.
+The journey is overview → household/account → five numbered review tabs → History. The overview retains the original Aggregated drift label, threshold-relative bar and editable Threshold (pp) controls; blank thresholds inherit the firm default. Its row expansion gives a concise three-column review of asset-class drift, contributing accounts and exposure flags. Allocation contains an actual-versus-approved-client-target distribution chart, expandable holdings, value gaps and exposure analysis. The Client target limits screen separates model assignment and client adjustments from recorded holdings. Asset inclusion is managed in a supporting dialog; original examples include every asset.
 
-Models retains its dedicated scalable comparison page. Routine views use model names; revisions and historical bands remain in History. Drift-band editing is deferred to a possible Review rules feature. Overview attention indicators concern allocations/exposures; draft and model-update notices live inside portfolios.
+Individual Planning is delivered on tabs 2 and 3: gap summary, constrained rebalance scenarios, projected impact, illustrative tax estimates, cash raising/investment, staged deployment and event history. Approval records a recommendation; it does not execute a trade or change recorded holdings.
+
+Models has a searchable library, focused editor, publication history and a scalable comparison workspace. Intended profile is a view within Model comparison rather than a duplicate page. Routine views use model names; revisions and historical bands remain in History. Publishing a model never silently changes an approved client target.
+
+Audit log is a single chronological feed of model publications and client-target approvals, with object, action, actor, status and date filters and before/after detail.
+
+Security master is a working firm-wide configuration grid built from the supplied `RIA-AssetConfig-Type1` sheet. Asset class, sector and sub-sector changes are staged and reviewed before being applied, and the review states the instruments, value and portfolios affected. Applied classifications feed exposure analysis throughout the prototype.
 
 All original source data is preserved in JSON, including defaults for pending workflows. Existing model storage and earlier client records remain preserved. This is a browser-local illustrative prototype.
 
-## Next iterations
+## Remaining implementation
 
-1. Lens limits are now editable per portfolio and drive review flags once approved. Whether an exposure limit is an analytical reference or firm policy is still an open product question (plan §21 Q6); household views keep firm defaults. Model-level lens target overrides remain out of scope.
-2. Individual Planning, tax estimates and cash events are implemented on tabs 2 and 3. A gap is still not a trade recommendation: suggestions appear only when asked for, and approval records a decision rather than an execution. Bulk review across selected portfolios is the remaining piece.
-3. Tax estimates, exemptions and loss harvesting are shown inside Planning with their assumptions stated. The original placeholder rates and cost basis are labelled illustrative throughout and must not be represented as current tax guidance; a real estimate needs lot-level data and the client's tax profile.
-4. Cash inflows, withdrawals, event history and lump-sum or staged investment are implemented. Scenarios do not mutate recorded holdings.
-5. Discuss Security master UI separately as requested. The nav item and placeholder now name the capability and the questions that discussion must settle; the classification data is already retained and drives every exposure view.
+1. **Bulk planning:** restore flagged-portfolio selection and add multi-portfolio scenario roll-up, per-portfolio feasibility drill-down and bulk approval. The single-portfolio engine is already the basis for this work.
+2. **Overview cash-event state:** restore the original pending cash-event indicator now that cash events themselves are implemented.
+3. **Security master extensions:** Type 2 instruments without a market feed, renameable custom lens and the additional classification fields not defined by the supplied Type 1 sheet. The Add instrument surface also needs a real firm/vendor source before it can add anything beyond the closed sample universe.
+4. **Recommendation lifecycle:** communicated, client accepted, executed and reconciled states remain beyond the current approval-only prototype.
+5. **Production data and controls:** statement ingestion, verified ownership/source evidence, current prices and classifications, tax lots and client tax profiles, authenticated persistence, access control and multi-user approval policy.
 
-Household targets aggregate account targets by value; there is no independent household target approval. Beneficial-owner mapping, verified source evidence, statement ingestion, production persistence and authenticated approvals remain outside this milestone.
+Lens limits are editable per portfolio and drive review flags once approved. Whether exposure targets are analytical references, firm policy or both remains an open product question; model-level lens target overrides stay out of scope until that is resolved. Household targets aggregate account targets by value; there is no independent household target approval.
+
+## Next planned phase
+
+### 1. Incorporate the revised source mockup
+
+A newer version of the initial mockup is expected from the product owner. Once supplied:
+
+- preserve the current source file as the baseline rather than overwriting its history;
+- compare new data, screens, controls, terminology, calculations and workflow states against both this implementation and `docs/original-mockup-traceability.md`;
+- classify every change as new, changed, unchanged, intentionally superseded or no longer required;
+- update the normalized source data and extraction process where the revised file changes the sample or its rules;
+- implement accepted deltas without regressing the separation between model, approved client target and actual holdings; and
+- rerun automated and real-browser verification before publishing.
+
+No requirement from the revised mockup is considered accepted or implemented until that comparison is complete.
+
+### 2. Customer-presentation readiness review
+
+After the revised mockup has been incorporated, re-evaluate the complete feature set and UI/UX as one product rather than as a sequence of patches. The final review will cover:
+
+- end-to-end adviser journeys and navigation;
+- terminology, hierarchy, visual consistency and information density;
+- default, empty, loading, invalid, constrained and approval states;
+- desktop, tablet, mobile, keyboard and short-viewport behaviour;
+- a clean and deterministic demonstration state;
+- prototype, data-freshness, tax and non-execution disclosures; and
+- a customer-facing walkthrough that clearly distinguishes delivered prototype behaviour from future production capability.
+
+The exit condition is a final traceability register, resolved presentation-blocking issues, a verified deployed build and an agreed list of post-presentation backlog items.
 
 ## Verification and deployment
 
-Run `node --test tests/*.test.cjs` and real-browser checks for filters/sorting, navigation, hierarchy, lenses, scope isolation, draft reload, approval validation/history, publication isolation and Model comparison. Verify mobile containment and browser errors. Publish the complete root, then confirm GitHub Pages itself.
+Run `node --test tests/*.test.cjs` and real-browser checks for filters/sorting, navigation, hierarchy, lenses, scope isolation, draft reload, approval validation/history, planning constraints, publication isolation, Model comparison, Audit log and Security master staging. Verify mobile containment, short-viewport dialogs and browser errors. Publish the complete root, then confirm GitHub Pages itself and compare its release assets with the intended main-branch version.
