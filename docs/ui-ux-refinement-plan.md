@@ -1207,6 +1207,16 @@ Record every navigation, vocabulary or scope reversal here, with its reason, so 
 | 5 | 2026-10-07 | Global audit destination is named **Audit log** everywhere | mixed "History" / "Audit log" / "Audit trail" | One destination, one name |
 | 6 | 2026-10-07 | Review state reads **Within threshold**, never "Within defaults" | — | A portfolio with its own threshold override is not "within defaults" |
 
+Decision 10 (2026-10-08): **Security master is built**, from the `RIA-AssetConfig-Type1 (Equities, Debt, Alternatives)` sheet. That sheet is the separate product discussion §14 was waiting for, so the area is no longer blocked. Its UX reading:
+
+- One row per instrument. **Name** and **ISIN** are autocomplete, used to find and add an instrument; **Symbol**, **Crisil rating**, **Current price** and **AssetType** are fixed, arriving from the instrument source; **Asset class**, **Sector** and **Sub-sector** are dropdowns. The screen makes that split visible, because what the adviser owns versus what the feed owns is the whole point of the screen.
+- The sheet's companion `RIA-Model-1` reuses the same columns with Target % appended and the classification columns **fixed**, confirming the master is the single source of classification and the model editor consumes it read-only.
+- The *Type1* suffix and the Real Assets block of the model sheet (no Symbol, rating or price) imply a Type 2 layout for instruments with no market feed. Not built; noted.
+
+Two things the sheet does not settle, resolved here and open to challenge: edits are **staged and applied after a review** that states the value and portfolio count affected, rather than the original's immediate write; and a reclassification **changes analysis from now on and does not restate an approved snapshot**. §14's remaining questions — identity and aliases, who approves, effective dating, look-through ownership — stay open on the screen itself.
+
+The sample has no ISIN, symbol or price, so those columns read as not supplied rather than being invented.
+
 ### Closed since the last revision
 
 - §4.1 Model library: search, last-updated date and a top-level allocation preview.
@@ -1215,7 +1225,7 @@ Record every navigation, vocabulary or scope reversal here, with its reason, so 
 - §9.3 Client context: assessed profile, approved revision, and a liquidity profile derived from the holdings, with goals and horizon marked *Not supplied* rather than inferred.
 - §9.4 Model update: three explicit choices — keep, review in context, start a revised draft.
 - §13.2 Audit log: one chronological feed filtered by portfolio/model, action, actor, status and date range, each entry opening to before/after values.
-- §14 Security master: nav item and placeholder naming the capability and the unresolved questions. The area itself is still not designed.
+- §14 Security master: built as a working configuration grid (decision 10).
 - Traceability appendix: `docs/original-mockup-traceability.md`.
 
 Decision 7 (2026-10-08): the original's **Reset profile to default**, **Expand to breaches** and **editable risk profile in the portfolio header** are recorded as *Dropped*, with reasons, in the traceability appendix. Model-level lens target editing stays dropped until §21 Q6 is answered.
@@ -1233,7 +1243,7 @@ Raising cash defaults to *Keep closest to client target* rather than the origina
 
 - §10.5 bulk planning and the original's bulk rebalance review (Phase 7). The scenario engine is shared-ready; only the multi-portfolio selection and roll-up are missing.
 - §10.6 recommendation states beyond approval: communicated, accepted, executed, reconciled. The build deliberately stops at approval and says so.
-- §14 Security master itself (Phase 8), after its own product discussion.
+- §14 Security master: Type 2 layout for instruments with no market feed; renameable custom lens; market cap, geography and theme editing, none of which appear on the supplied sheet.
 - §16 statement ingestion and data-quality surfacing (Phase 9).
 - §9.3 goals and time horizon need a client record before they can be more than *Not supplied*.
 - Multi-user approval policy: whether a second reviewer or client acknowledgement is required (§9.8).
