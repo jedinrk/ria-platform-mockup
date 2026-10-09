@@ -83,3 +83,23 @@ places a trade.
 The workspace now opens on Assets & liabilities, and Cash events is renamed Cash
 & planning for what it also holds. That makes seven tabs for the moment; the
 next phase folds Exposure drift into Allocation, which brings it back to six.
+
+## On the Portfolios overview
+
+The list carries a financial-plan column beside the drift bar. Drift answers
+whether a portfolio is still shaped the way the client agreed; it says nothing
+about whether the family can afford what they are committed to, and a portfolio
+can sit perfectly on model while running out of money in year five. The two
+belong side by side so neither is read alone.
+
+A household row states its own position. An account row reports its household's
+and names it, because the plan is not the account's to own.
+
+The filter beside it now selects a model rather than a risk label. With three
+models named after risk profiles the two are nearly the same; with the seven
+models coming, the model is the sharper filter, and the risk profile each model
+is intended for stays visible in the row.
+
+The Core / Satellite lens is gone. Every security lost its custom tag when the
+revised classification landed, so the lens could only report one meaningless
+bucket covering the whole portfolio.

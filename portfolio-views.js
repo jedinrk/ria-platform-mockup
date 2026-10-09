@@ -1,6 +1,6 @@
 'use strict';
 const palette=originalData.settings.palette;
-const lenses=[['ac','Asset class'],['tree','Hierarchy'],['sec','Sector'],['mc','Market cap'],['geo','Geography'],['th','Theme'],['cr','Credit & duration'],['cu','Core / Satellite']];
+const lenses=[['ac','Asset class'],['tree','Hierarchy'],['sec','Sector'],['mc','Market cap'],['geo','Geography'],['th','Theme'],['cr','Credit & duration']];
 let activeLens='ac',fundMode=originalData.settings.fundMode;
 try{fundMode=localStorage.getItem('portfolio-fund-mode')||fundMode}catch{}
 if(!['look','tag'].includes(fundMode))fundMode='look';
@@ -26,7 +26,6 @@ function exposure(values,lens){
   else if(lens==='mc'||lens==='geo'){const key=lens==='mc'?'marketCap':'geography';parts=fundMode==='look'&&s.lookThrough?s.lookThrough[key].map(x=>[x.bucket,x.weight]):[[s.tags[key]||dominantBucket(s,key)||'Unclassified',1]]}
   else if(lens==='th')parts=(s.tags.themes.length?s.tags.themes:['Unclassified']).map(x=>[x,1]);
   else if(lens==='cr')parts=[[(s.tags.creditQuality||'Unclassified')+' / '+(s.tags.duration||'Unclassified'),1]];
-  else parts=[[s.tags.custom||'Unclassified',1]];
   for(const [key,weight] of parts)buckets.set(key,(buckets.get(key)||0)+h.value*weight);
  }
  return {buckets,total,missing};
