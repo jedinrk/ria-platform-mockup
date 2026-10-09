@@ -63,7 +63,7 @@ States: **Delivered** · **Refined** (present, deliberately reshaped) ·
 | Tab 3 Cash events | Delivered | Raise or invest, gross versus net, staged deployment, tax options and an event history |
 | Tab 4 Exposure drift | Delivered | Tab 4, with the full bucket explorer opened by default |
 | Lens summary cards with worst bucket | Delivered | In the overview row expansion and the flag list |
-| Expand to breaches | Dropped | The flag list is already sorted by severity and capped at four, which serves the same need without a third expand control |
+| Expand to breaches | Delivered | On the Allocation & drift tree, where a five-level hierarchy makes it worth having. The flag list on the overview already serves the same need for the lens view, sorted by severity and capped at four |
 | Status and Target source columns | Refined | Per-flag band plus a "Portfolio limit" badge when an approved limit applies |
 | "Review rebalance for this portfolio" | Delivered | Tab 2 generates the scenario |
 | Tab 5 Model limits: asset-class limits | Delivered | Tab 5 Client target limits |
@@ -116,6 +116,16 @@ Household view and aggregation; the approved-client-target concept and its
 draft/review/approve lifecycle; asset scope (under advice versus recorded);
 model comparison; profile comparison; review-state reasons; liquidity profile
 per account.
+
+## Revised mockup (v3) deltas
+
+| Revised source | State | Where it is now |
+|---|---|---|
+| Targets and bands editable on the drift table, siblings absorbing the change | Delivered | Allocation & drift, behind an Adjust targets control |
+| Overridden values highlighted, with a per-row reset | Delivered | Changed cells are marked and carry ↺ |
+| "Reset to model" removing every portfolio override | Delivered | Toolbar control, with a live count of what differs from the model |
+| Band ± as a column on the drift table | Delivered | Read-only on the approved view, editable in a draft; the asset-class row shows the portfolio threshold |
+| Edits take effect immediately | Refined | They land in the target draft. The approved client target, the holdings and the review summary do not move until Client target approves the draft, which is the gate the rest of this console already enforces |
 
 ## Pending revised mockup intake
 

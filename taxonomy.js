@@ -97,7 +97,13 @@ const TAX = (() => {
    const before = list.reduce((sum, n) => sum + n.target, 0);
    // With nothing to scale, spread across whatever actually holds something.
    if (before <= 0) { const held = list.filter(n => n.securityCount); if (held.length) list = held }
+   if (!list.length) return;
    for (const n of list) n.target = Math.round((before > 0 ? n.target * to / before : to / list.length) * 10000) / 10000;
+   // The rounding residual goes to the largest member, so the group totals
+   // exactly what was asked for and the level above does not move.
+   const after = list.reduce((sum, n) => sum + n.target, 0);
+   const biggest = list.reduce((a, b) => b.target > a.target ? b : a, list[0]);
+   biggest.target = Math.round((biggest.target + to - after) * 10000) / 10000;
   };
   const siblings = (parent ? parent.children : allocations).filter(n => n.key !== key);
   const siblingTotal = siblings.reduce((sum, n) => sum + n.target, 0);
@@ -105,7 +111,7 @@ const TAX = (() => {
   if (!siblings.length) value = ceiling;
   else for (const sibling of siblings) scale(sibling, siblingTotal > 0 ? sibling.target * remaining / siblingTotal : remaining / siblings.length);
   scale(node, value);
-  const roll = n => { if (!n.children.length) return n.target; n.target = n.children.reduce((sum, c) => sum + roll(c), 0); return n.target };
+  const roll = n => { if (!n.children.length) return n.target; n.target = Math.round(n.children.reduce((sum, c) => sum + roll(c), 0) * 10000) / 10000; return n.target };
   allocations.forEach(roll);
   return true;
  }

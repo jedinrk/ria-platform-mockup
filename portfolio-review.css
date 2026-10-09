@@ -277,3 +277,14 @@ tr.config-detail>td{background:#f7faf7;padding:0;border-bottom:1px solid var(--l
 .config-count-filter:disabled{cursor:default;opacity:1}
 .config-count-filter[aria-pressed="true"]{border-color:var(--green);background:#eef5f0;box-shadow:inset 3px 0 var(--green)}
 .config-count-filter[aria-pressed="true"] small:last-child{color:var(--green);font-weight:600}
+
+/* Inline target and band editing on the drift table. An overridden cell is
+   marked so the adviser can see at a glance what this portfolio changed. */
+.allocation-review td.is-override{background:#fffaf0}
+.allocation-review tr.is-custom>th[scope=row]{background:#fffaf0}
+.allocation-review td .target-input-wrap{justify-content:flex-end}
+.allocation-review td .target-input-wrap input{width:76px;text-align:right;padding:6px 8px;border:1px solid #ccd8d0;border-radius:6px;background:white;color:var(--ink)}
+.allocation-review td.is-override .target-input-wrap input{border-color:#d9b26a;background:#fffdf7}
+.allocation-review td.numeric small{display:block;font-size:10px;color:var(--mut)}
+.allocation-tools{align-items:center;flex-wrap:wrap;gap:8px}
+.allocation-tools .lens-override-count{margin-left:auto}
