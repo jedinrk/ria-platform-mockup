@@ -125,8 +125,9 @@ instrument at any time and costs no horizontal space.
 type appends that type's attributes as real columns, because comparison only
 means anything within a type — a bond's yield against a fund's expense ratio is
 noise. Seven of the 17 types hold two or more instruments, so the comparison is
-worth having. Filtering also drops the now-constant Asset type column, and the
-instrument name is pinned while the grid scrolls.
+worth having. Spreadsheet-style filters sit directly beneath their column
+labels; the filtered Asset type column remains visible so the selection can be
+changed or cleared, and the instrument name is pinned while the grid scrolls.
 
 ### Three tiers of ownership
 
