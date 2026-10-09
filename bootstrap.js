@@ -1,12 +1,15 @@
 /* Original illustrative data is separate from persisted edits and UI state. */
-var originalData;
+var originalData, financialPlanData;
 (async function boot(){
   try {
-    const release='20261009-security-master-v3-data';
+    const release='20261009-financial-planning';
     const response = await fetch('data/original-mockup.json?v='+release);
     if (!response.ok) throw new Error('Original data could not load');
     originalData = await response.json();
-    for (const path of ['models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js','comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js','console-extensions.js','planning.js','security-master.js']) {
+    const planResponse = await fetch('data/financial-plans.json?v='+release);
+    if (!planResponse.ok) throw new Error('Financial plans could not load');
+    financialPlanData = await planResponse.json();
+    for (const path of ['financial-plan.js','models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js','comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js','console-extensions.js','planning.js','security-master.js','financial-workspace.js']) {
       await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=path+'?v='+release;script.onload=resolve;script.onerror=reject;document.body.append(script)});
     }
     syncClients(); clientNav();
