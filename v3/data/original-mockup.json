@@ -19,88 +19,312 @@
       "sourceSha256": "35ffb33647489ad2072c808bc4e6470f5ff2d9b8bead630db65797f7d57efc81",
       "sheet": "RIA-AssetConfig-Type1",
       "note": "Instruments, instrument types and classification come from data/security-master.json, built from the revised wireframe to the RIA-AssetConfig-Type1 column set. Recorded holdings are unchanged, so an instrument the sample does not hold shows no value."
+    },
+    "models": {
+      "sourceFile": "Portfolio Console – wireframes v3.html",
+      "sourceSha256": "35ffb33647489ad2072c808bc4e6470f5ff2d9b8bead630db65797f7d57efc81",
+      "note": "Models and the allocation hierarchy come from data/models.json. The tree runs to securities; a model stops at the depth its asset class is modelled to."
     }
   },
   "assetHierarchy": [
     {
       "n": "Equity",
+      "key": "Equity",
+      "level": 0,
       "tg": 50,
+      "targetLevel": false,
       "c": [
         {
-          "n": "Mutual fund",
-          "tg": 25,
+          "n": "Cyclical",
+          "key": "Equity|Cyclical",
+          "level": 1,
+          "tg": 7,
+          "targetLevel": false,
           "c": [
             {
-              "n": "Parag Parikh Flexi Cap",
-              "v": 30,
-              "tg": 8
-            },
-            {
-              "n": "Nippon India Small Cap",
-              "v": 12,
-              "tg": 5
-            },
-            {
-              "n": "UTI Nifty 50 Index",
-              "v": 20,
-              "tg": 12
+              "n": "Financials",
+              "key": "Equity|Cyclical|Financials",
+              "level": 2,
+              "tg": 7,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "Private banks",
+                  "key": "Equity|Cyclical|Financials|Private banks",
+                  "level": 3,
+                  "tg": 5,
+                  "targetLevel": true,
+                  "c": [
+                    {
+                      "n": "HDFC Bank",
+                      "key": "Equity|Cyclical|Financials|Private banks|HDFC Bank",
+                      "level": 4,
+                      "v": 18,
+                      "tg": 5,
+                      "c": []
+                    }
+                  ]
+                },
+                {
+                  "n": "NBFC & others",
+                  "key": "Equity|Cyclical|Financials|NBFC & others",
+                  "level": 3,
+                  "tg": 2,
+                  "targetLevel": true,
+                  "c": [
+                    {
+                      "n": "Bajaj Finance",
+                      "key": "Equity|Cyclical|Financials|NBFC & others|Bajaj Finance",
+                      "level": 4,
+                      "v": 6,
+                      "tg": 2,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
         {
-          "n": "Direct equity",
-          "tg": 15,
+          "n": "Sensitive",
+          "key": "Equity|Sensitive",
+          "level": 1,
+          "tg": 11,
+          "targetLevel": false,
           "c": [
             {
-              "n": "HDFC Bank",
-              "v": 18,
-              "tg": 6
+              "n": "Information technology",
+              "key": "Equity|Sensitive|Information technology",
+              "level": 2,
+              "tg": 4,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "IT services",
+                  "key": "Equity|Sensitive|Information technology|IT services",
+                  "level": 3,
+                  "tg": 4,
+                  "targetLevel": true,
+                  "c": [
+                    {
+                      "n": "Infosys",
+                      "key": "Equity|Sensitive|Information technology|IT services|Infosys",
+                      "level": 4,
+                      "v": 12,
+                      "tg": 4,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             },
             {
-              "n": "Infosys",
-              "v": 12,
-              "tg": 5
+              "n": "Energy",
+              "key": "Equity|Sensitive|Energy",
+              "level": 2,
+              "tg": 4,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "Oil & gas",
+                  "key": "Equity|Sensitive|Energy|Oil & gas",
+                  "level": 3,
+                  "tg": 4,
+                  "targetLevel": true,
+                  "c": [
+                    {
+                      "n": "Reliance Industries",
+                      "key": "Equity|Sensitive|Energy|Oil & gas|Reliance Industries",
+                      "level": 4,
+                      "v": 14,
+                      "tg": 4,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             },
             {
-              "n": "Reliance Industries",
-              "v": 14,
-              "tg": 4
-            },
-            {
-              "n": "Bajaj Finance",
-              "v": 6,
-              "tg": 0
-            },
-            {
-              "n": "Hindustan Unilever",
-              "v": 6,
-              "tg": 0
-            },
-            {
-              "n": "Sun Pharma",
-              "v": 5,
-              "tg": 0
-            },
-            {
-              "n": "Larsen & Toubro",
-              "v": 7,
-              "tg": 0
+              "n": "Industrials",
+              "key": "Equity|Sensitive|Industrials",
+              "level": 2,
+              "tg": 3,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "Capital goods",
+                  "key": "Equity|Sensitive|Industrials|Capital goods",
+                  "level": 3,
+                  "tg": 3,
+                  "targetLevel": true,
+                  "c": [
+                    {
+                      "n": "Larsen & Toubro",
+                      "key": "Equity|Sensitive|Industrials|Capital goods|Larsen & Toubro",
+                      "level": 4,
+                      "v": 7,
+                      "tg": 3,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
         {
-          "n": "ETF",
-          "tg": 10,
+          "n": "Defensive",
+          "key": "Equity|Defensive",
+          "level": 1,
+          "tg": 6,
+          "targetLevel": false,
           "c": [
             {
-              "n": "Nippon Nifty BeES",
-              "v": 10,
-              "tg": 6
+              "n": "Consumer staples",
+              "key": "Equity|Defensive|Consumer staples",
+              "level": 2,
+              "tg": 3,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "FMCG",
+                  "key": "Equity|Defensive|Consumer staples|FMCG",
+                  "level": 3,
+                  "tg": 3,
+                  "targetLevel": true,
+                  "c": [
+                    {
+                      "n": "Hindustan Unilever",
+                      "key": "Equity|Defensive|Consumer staples|FMCG|Hindustan Unilever",
+                      "level": 4,
+                      "v": 6,
+                      "tg": 3,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             },
             {
-              "n": "Motilal Midcap 150 ETF",
-              "v": 4,
-              "tg": 4
+              "n": "Healthcare",
+              "key": "Equity|Defensive|Healthcare",
+              "level": 2,
+              "tg": 3,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "Pharma",
+                  "key": "Equity|Defensive|Healthcare|Pharma",
+                  "level": 3,
+                  "tg": 3,
+                  "targetLevel": true,
+                  "c": [
+                    {
+                      "n": "Sun Pharma",
+                      "key": "Equity|Defensive|Healthcare|Pharma|Sun Pharma",
+                      "level": 4,
+                      "v": 5,
+                      "tg": 3,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "n": "Multi-sector funds",
+          "key": "Equity|Multi-sector funds",
+          "level": 1,
+          "tg": 26,
+          "targetLevel": false,
+          "c": [
+            {
+              "n": "Diversified equity funds",
+              "key": "Equity|Multi-sector funds|Diversified equity funds",
+              "level": 2,
+              "tg": 26,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "Large-cap & index",
+                  "key": "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index",
+                  "level": 3,
+                  "tg": 11,
+                  "targetLevel": true,
+                  "c": [
+                    {
+                      "n": "UTI Nifty 50 Index",
+                      "key": "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index|UTI Nifty 50 Index",
+                      "level": 4,
+                      "v": 20,
+                      "tg": 7.333333333333333,
+                      "c": []
+                    },
+                    {
+                      "n": "Nippon Nifty BeES",
+                      "key": "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index|Nippon Nifty BeES",
+                      "level": 4,
+                      "v": 10,
+                      "tg": 3.6666666666666665,
+                      "c": []
+                    }
+                  ]
+                },
+                {
+                  "n": "Flexi cap",
+                  "key": "Equity|Multi-sector funds|Diversified equity funds|Flexi cap",
+                  "level": 3,
+                  "tg": 8,
+                  "targetLevel": true,
+                  "c": [
+                    {
+                      "n": "Parag Parikh Flexi Cap",
+                      "key": "Equity|Multi-sector funds|Diversified equity funds|Flexi cap|Parag Parikh Flexi Cap",
+                      "level": 4,
+                      "v": 30,
+                      "tg": 8,
+                      "c": []
+                    }
+                  ]
+                },
+                {
+                  "n": "Mid cap",
+                  "key": "Equity|Multi-sector funds|Diversified equity funds|Mid cap",
+                  "level": 3,
+                  "tg": 4,
+                  "targetLevel": true,
+                  "c": [
+                    {
+                      "n": "Motilal Midcap 150 ETF",
+                      "key": "Equity|Multi-sector funds|Diversified equity funds|Mid cap|Motilal Midcap 150 ETF",
+                      "level": 4,
+                      "v": 4,
+                      "tg": 4,
+                      "c": []
+                    }
+                  ]
+                },
+                {
+                  "n": "Small cap",
+                  "key": "Equity|Multi-sector funds|Diversified equity funds|Small cap",
+                  "level": 3,
+                  "tg": 3,
+                  "targetLevel": true,
+                  "c": [
+                    {
+                      "n": "Nippon India Small Cap",
+                      "key": "Equity|Multi-sector funds|Diversified equity funds|Small cap|Nippon India Small Cap",
+                      "level": 4,
+                      "v": 12,
+                      "tg": 3,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -108,65 +332,182 @@
     },
     {
       "n": "Fixed income",
+      "key": "Fixed income",
+      "level": 0,
       "tg": 25,
+      "targetLevel": false,
       "c": [
         {
-          "n": "Government bond",
+          "n": "Sovereign",
+          "key": "Fixed income|Sovereign",
+          "level": 1,
           "tg": 5,
+          "targetLevel": false,
           "c": [
             {
-              "n": "GOI 7.18% 2033",
-              "v": 15,
-              "tg": 5
+              "n": "Government securities",
+              "key": "Fixed income|Sovereign|Government securities",
+              "level": 2,
+              "tg": 5,
+              "targetLevel": true,
+              "c": [
+                {
+                  "n": "Central government",
+                  "key": "Fixed income|Sovereign|Government securities|Central government",
+                  "level": 3,
+                  "tg": 5,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "GOI 7.18% 2033",
+                      "key": "Fixed income|Sovereign|Government securities|Central government|GOI 7.18% 2033",
+                      "level": 4,
+                      "v": 15,
+                      "tg": 5,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
         {
-          "n": "Corporate bond",
-          "tg": 3,
+          "n": "Credit",
+          "key": "Fixed income|Credit",
+          "level": 1,
+          "tg": 9,
+          "targetLevel": false,
           "c": [
             {
-              "n": "HDFC Ltd NCD 8.1%",
-              "v": 8,
-              "tg": 3
-            }
-          ]
-        },
-        {
-          "n": "Fixed deposit",
-          "tg": 7,
-          "c": [
-            {
-              "n": "SBI FD (Mar 2028)",
-              "v": 14,
-              "tg": 4
+              "n": "Corporate bonds",
+              "key": "Fixed income|Credit|Corporate bonds",
+              "level": 2,
+              "tg": 4,
+              "targetLevel": true,
+              "c": [
+                {
+                  "n": "AAA rated",
+                  "key": "Fixed income|Credit|Corporate bonds|AAA rated",
+                  "level": 3,
+                  "tg": 4,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "HDFC Ltd NCD 8.1%",
+                      "key": "Fixed income|Credit|Corporate bonds|AAA rated|HDFC Ltd NCD 8.1%",
+                      "level": 4,
+                      "v": 8,
+                      "tg": 4,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             },
             {
-              "n": "HDFC Bank FD (Jun 2027)",
-              "v": 6,
-              "tg": 3
+              "n": "Bank deposits",
+              "key": "Fixed income|Credit|Bank deposits",
+              "level": 2,
+              "tg": 5,
+              "targetLevel": true,
+              "c": [
+                {
+                  "n": "Scheduled bank FDs",
+                  "key": "Fixed income|Credit|Bank deposits|Scheduled bank FDs",
+                  "level": 3,
+                  "tg": 5,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "SBI FD (Mar 2028)",
+                      "key": "Fixed income|Credit|Bank deposits|Scheduled bank FDs|SBI FD (Mar 2028)",
+                      "level": 4,
+                      "v": 14,
+                      "tg": 3.5,
+                      "c": []
+                    },
+                    {
+                      "n": "HDFC Bank FD (Jun 2027)",
+                      "key": "Fixed income|Credit|Bank deposits|Scheduled bank FDs|HDFC Bank FD (Jun 2027)",
+                      "level": 4,
+                      "v": 6,
+                      "tg": 1.5,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
         {
-          "n": "Retirement account",
-          "tg": 10,
+          "n": "Retirement & small savings",
+          "key": "Fixed income|Retirement & small savings",
+          "level": 1,
+          "tg": 8,
+          "targetLevel": false,
           "c": [
             {
-              "n": "EPF account",
-              "v": 22,
-              "tg": 10
+              "n": "Retirement funds",
+              "key": "Fixed income|Retirement & small savings|Retirement funds",
+              "level": 2,
+              "tg": 8,
+              "targetLevel": true,
+              "c": [
+                {
+                  "n": "EPF",
+                  "key": "Fixed income|Retirement & small savings|Retirement funds|EPF",
+                  "level": 3,
+                  "tg": 8,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "EPF account",
+                      "key": "Fixed income|Retirement & small savings|Retirement funds|EPF|EPF account",
+                      "level": 4,
+                      "v": 22,
+                      "tg": 8,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
         {
-          "n": "Debt fund",
-          "tg": 0,
+          "n": "Debt funds",
+          "key": "Fixed income|Debt funds",
+          "level": 1,
+          "tg": 3,
+          "targetLevel": false,
           "c": [
             {
-              "n": "HDFC Short Term Debt Fund",
-              "v": 10,
-              "tg": 0
+              "n": "Duration funds",
+              "key": "Fixed income|Debt funds|Duration funds",
+              "level": 2,
+              "tg": 3,
+              "targetLevel": true,
+              "c": [
+                {
+                  "n": "Short duration",
+                  "key": "Fixed income|Debt funds|Duration funds|Short duration",
+                  "level": 3,
+                  "tg": 3,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "HDFC Short Term Debt Fund",
+                      "key": "Fixed income|Debt funds|Duration funds|Short duration|HDFC Short Term Debt Fund",
+                      "level": 4,
+                      "v": 10,
+                      "tg": 3,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -174,82 +515,226 @@
     },
     {
       "n": "Alternatives",
-      "tg": 5,
+      "key": "Alternatives",
+      "level": 0,
+      "tg": 10,
+      "targetLevel": false,
       "c": [
         {
-          "n": "AIF",
-          "tg": 5,
+          "n": "Pooled vehicles",
+          "key": "Alternatives|Pooled vehicles",
+          "level": 1,
+          "tg": 7,
+          "targetLevel": false,
           "c": [
             {
-              "n": "360 ONE Cat III AIF",
-              "v": 8,
-              "tg": 5
+              "n": "AIF",
+              "key": "Alternatives|Pooled vehicles|AIF",
+              "level": 2,
+              "tg": 4.5,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "Category I",
+                  "key": "Alternatives|Pooled vehicles|AIF|Category I",
+                  "level": 3,
+                  "tg": 1,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "Infra Fund Cat I AIF",
+                      "key": "Alternatives|Pooled vehicles|AIF|Category I|Infra Fund Cat I AIF",
+                      "level": 4,
+                      "v": 4,
+                      "tg": 1,
+                      "c": []
+                    }
+                  ]
+                },
+                {
+                  "n": "Category II",
+                  "key": "Alternatives|Pooled vehicles|AIF|Category II",
+                  "level": 3,
+                  "tg": 1.5,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "Private Equity Cat II AIF",
+                      "key": "Alternatives|Pooled vehicles|AIF|Category II|Private Equity Cat II AIF",
+                      "level": 4,
+                      "v": 5,
+                      "tg": 1.5,
+                      "c": []
+                    }
+                  ]
+                },
+                {
+                  "n": "Category III",
+                  "key": "Alternatives|Pooled vehicles|AIF|Category III",
+                  "level": 3,
+                  "tg": 2,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "360 ONE Cat III AIF",
+                      "key": "Alternatives|Pooled vehicles|AIF|Category III|360 ONE Cat III AIF",
+                      "level": 4,
+                      "v": 8,
+                      "tg": 2,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             },
             {
-              "n": "Infra Fund Cat I AIF",
-              "v": 4,
-              "tg": 0
+              "n": "PMS",
+              "key": "Alternatives|Pooled vehicles|PMS",
+              "level": 2,
+              "tg": 2.5,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "Equity PMS",
+                  "key": "Alternatives|Pooled vehicles|PMS|Equity PMS",
+                  "level": 3,
+                  "tg": 2.5,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "Quality Equity PMS",
+                      "key": "Alternatives|Pooled vehicles|PMS|Equity PMS|Quality Equity PMS",
+                      "level": 4,
+                      "v": 8,
+                      "tg": 2.5,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "n": "Private markets",
+          "key": "Alternatives|Private markets",
+          "level": 1,
+          "tg": 1.5,
+          "targetLevel": false,
+          "c": [
+            {
+              "n": "Private credit",
+              "key": "Alternatives|Private markets|Private credit",
+              "level": 2,
+              "tg": 1.5,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "Direct lending",
+                  "key": "Alternatives|Private markets|Private credit|Direct lending",
+                  "level": 3,
+                  "tg": 1.5,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "Private credit note 2029",
+                      "key": "Alternatives|Private markets|Private credit|Direct lending|Private credit note 2029",
+                      "level": 4,
+                      "v": 5,
+                      "tg": 1.5,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "n": "Other alternatives",
+          "key": "Alternatives|Other alternatives",
+          "level": 1,
+          "tg": 1.5,
+          "targetLevel": false,
+          "c": [
+            {
+              "n": "Commodities",
+              "key": "Alternatives|Other alternatives|Commodities",
+              "level": 2,
+              "tg": 0.5,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "Silver & base metals",
+                  "key": "Alternatives|Other alternatives|Commodities|Silver & base metals",
+                  "level": 3,
+                  "tg": 0.5,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "Silver ETF",
+                      "key": "Alternatives|Other alternatives|Commodities|Silver & base metals|Silver ETF",
+                      "level": 4,
+                      "v": 3,
+                      "tg": 0.5,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             },
             {
-              "n": "Private Equity Cat II AIF",
-              "v": 5,
-              "tg": 0
-            }
-          ]
-        },
-        {
-          "n": "PMS",
-          "tg": 0,
-          "c": [
+              "n": "Digital assets",
+              "key": "Alternatives|Other alternatives|Digital assets",
+              "level": 2,
+              "tg": 0.5,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "Cryptocurrency",
+                  "key": "Alternatives|Other alternatives|Digital assets|Cryptocurrency",
+                  "level": 3,
+                  "tg": 0.5,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "Bitcoin (exchange wallet)",
+                      "key": "Alternatives|Other alternatives|Digital assets|Cryptocurrency|Bitcoin (exchange wallet)",
+                      "level": 4,
+                      "v": 2,
+                      "tg": 0.5,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
+            },
             {
-              "n": "Quality Equity PMS",
-              "v": 8,
-              "tg": 0
-            }
-          ]
-        },
-        {
-          "n": "Private credit",
-          "tg": 0,
-          "c": [
-            {
-              "n": "Private credit note 2029",
-              "v": 5,
-              "tg": 0
-            }
-          ]
-        },
-        {
-          "n": "Commodity",
-          "tg": 0,
-          "c": [
-            {
-              "n": "Silver ETF",
-              "v": 3,
-              "tg": 0
-            }
-          ]
-        },
-        {
-          "n": "Digital asset",
-          "tg": 0,
-          "c": [
-            {
-              "n": "Bitcoin (exchange wallet)",
-              "v": 2,
-              "tg": 0
-            }
-          ]
-        },
-        {
-          "n": "Collectible",
-          "tg": 0,
-          "c": [
-            {
-              "n": "Art and collectibles",
-              "v": 4,
-              "tg": 0,
-              "p": 1
+              "n": "Collectibles",
+              "key": "Alternatives|Other alternatives|Collectibles",
+              "level": 2,
+              "tg": 0.5,
+              "targetLevel": false,
+              "c": [
+                {
+                  "n": "Art & antiques",
+                  "key": "Alternatives|Other alternatives|Collectibles|Art & antiques",
+                  "level": 3,
+                  "tg": 0.5,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "Art and collectibles",
+                      "key": "Alternatives|Other alternatives|Collectibles|Art & antiques|Art and collectibles",
+                      "level": 4,
+                      "v": 4,
+                      "tg": 0.5,
+                      "p": 1,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -257,50 +742,158 @@
     },
     {
       "n": "Real assets",
-      "tg": 20,
+      "key": "Real assets",
+      "level": 0,
+      "tg": 15,
+      "targetLevel": false,
       "c": [
         {
-          "n": "REIT / InvIT",
-          "tg": 7,
-          "c": [
-            {
-              "n": "Embassy REIT",
-              "v": 6,
-              "tg": 4
-            },
-            {
-              "n": "IRB InvIT",
-              "v": 3,
-              "tg": 3
-            }
-          ]
-        },
-        {
-          "n": "Gold",
-          "tg": 5,
-          "c": [
-            {
-              "n": "Sovereign Gold Bond 2028",
-              "v": 7,
-              "tg": 3
-            },
-            {
-              "n": "Physical gold (jewellery, bars)",
-              "v": 4,
-              "tg": 2,
-              "p": 1
-            }
-          ]
-        },
-        {
           "n": "Real estate",
-          "tg": 8,
+          "key": "Real assets|Real estate",
+          "level": 1,
+          "tg": 9,
+          "targetLevel": false,
           "c": [
             {
-              "n": "Flat, Baner Pune",
-              "v": 60,
-              "tg": 8,
-              "p": 1
+              "n": "Direct property",
+              "key": "Real assets|Real estate|Direct property",
+              "level": 2,
+              "tg": 7,
+              "targetLevel": true,
+              "c": [
+                {
+                  "n": "Residential",
+                  "key": "Real assets|Real estate|Direct property|Residential",
+                  "level": 3,
+                  "tg": 7,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "Flat, Baner Pune",
+                      "key": "Real assets|Real estate|Direct property|Residential|Flat, Baner Pune",
+                      "level": 4,
+                      "v": 60,
+                      "tg": 7,
+                      "p": 1,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "n": "Listed real estate",
+              "key": "Real assets|Real estate|Listed real estate",
+              "level": 2,
+              "tg": 2,
+              "targetLevel": true,
+              "c": [
+                {
+                  "n": "REITs",
+                  "key": "Real assets|Real estate|Listed real estate|REITs",
+                  "level": 3,
+                  "tg": 2,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "Embassy REIT",
+                      "key": "Real assets|Real estate|Listed real estate|REITs|Embassy REIT",
+                      "level": 4,
+                      "v": 6,
+                      "tg": 2,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "n": "Infrastructure",
+          "key": "Real assets|Infrastructure",
+          "level": 1,
+          "tg": 1,
+          "targetLevel": false,
+          "c": [
+            {
+              "n": "Listed infrastructure",
+              "key": "Real assets|Infrastructure|Listed infrastructure",
+              "level": 2,
+              "tg": 1,
+              "targetLevel": true,
+              "c": [
+                {
+                  "n": "InvITs",
+                  "key": "Real assets|Infrastructure|Listed infrastructure|InvITs",
+                  "level": 3,
+                  "tg": 1,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "IRB InvIT",
+                      "key": "Real assets|Infrastructure|Listed infrastructure|InvITs|IRB InvIT",
+                      "level": 4,
+                      "v": 3,
+                      "tg": 1,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "n": "Precious metals",
+          "key": "Real assets|Precious metals",
+          "level": 1,
+          "tg": 5,
+          "targetLevel": false,
+          "c": [
+            {
+              "n": "Gold",
+              "key": "Real assets|Precious metals|Gold",
+              "level": 2,
+              "tg": 5,
+              "targetLevel": true,
+              "c": [
+                {
+                  "n": "Gold bonds",
+                  "key": "Real assets|Precious metals|Gold|Gold bonds",
+                  "level": 3,
+                  "tg": 3.1818181818181817,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "Sovereign Gold Bond 2028",
+                      "key": "Real assets|Precious metals|Gold|Gold bonds|Sovereign Gold Bond 2028",
+                      "level": 4,
+                      "v": 7,
+                      "tg": 3.1818181818181817,
+                      "c": []
+                    }
+                  ]
+                },
+                {
+                  "n": "Physical gold",
+                  "key": "Real assets|Precious metals|Gold|Physical gold",
+                  "level": 3,
+                  "tg": 1.8181818181818183,
+                  "targetLevel": false,
+                  "c": [
+                    {
+                      "n": "Physical gold (jewellery, bars)",
+                      "key": "Real assets|Precious metals|Gold|Physical gold|Physical gold (jewellery, bars)",
+                      "level": 4,
+                      "v": 4,
+                      "tg": 1.8181818181818183,
+                      "p": 1,
+                      "c": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }
@@ -308,142 +901,287 @@
     }
   ],
   "modelTargets": {
-    "Conservative": [
-      5,
-      1,
-      8,
-      3,
-      2,
-      2,
-      0,
-      0,
-      0,
-      0,
-      4,
-      0,
-      14,
-      6,
-      8,
-      6,
-      16,
-      0,
-      2,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      4,
-      1,
-      5,
-      2,
-      11
-    ],
-    "Moderate": [
-      8,
-      5,
-      12,
-      6,
-      5,
-      4,
-      0,
-      0,
-      0,
-      0,
-      6,
-      4,
-      5,
-      3,
-      4,
-      3,
-      10,
-      0,
-      5,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      4,
-      3,
-      3,
-      2,
-      8
-    ],
-    "Aggressive": [
-      12,
-      10,
-      14,
-      8,
-      7,
-      5,
-      0,
-      0,
-      0,
-      0,
-      8,
-      6,
-      3,
-      1,
-      1,
-      1,
-      6,
-      0,
-      6,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      4,
-      2,
-      2,
-      1,
-      3
-    ]
+    "Conservative": {
+      "Equity|Cyclical|Financials|Private banks": 3,
+      "Equity|Cyclical|Financials|PSU banks": 0,
+      "Equity|Cyclical|Financials|NBFC & others": 0,
+      "Equity|Cyclical|Consumer discretionary|Autos": 0,
+      "Equity|Cyclical|Materials|Metals & mining": 0,
+      "Equity|Sensitive|Information technology|IT services": 3,
+      "Equity|Sensitive|Energy|Oil & gas": 2,
+      "Equity|Sensitive|Industrials|Capital goods": 1,
+      "Equity|Defensive|Consumer staples|FMCG": 3,
+      "Equity|Defensive|Healthcare|Pharma": 2,
+      "Equity|Defensive|Utilities|Power utilities": 0,
+      "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index": 10,
+      "Equity|Multi-sector funds|Diversified equity funds|Flexi cap": 5,
+      "Equity|Multi-sector funds|Diversified equity funds|Mid cap": 1,
+      "Equity|Multi-sector funds|Diversified equity funds|Small cap": 0,
+      "Fixed income|Sovereign|Government securities": 12,
+      "Fixed income|Credit|Corporate bonds": 8,
+      "Fixed income|Credit|Bank deposits": 10,
+      "Fixed income|Retirement & small savings|Retirement funds": 10,
+      "Fixed income|Debt funds|Duration funds": 5,
+      "Real assets|Real estate|Direct property": 10,
+      "Real assets|Real estate|Listed real estate": 3,
+      "Real assets|Infrastructure|Listed infrastructure": 1,
+      "Real assets|Precious metals|Gold": 6,
+      "Alternatives|Pooled vehicles|AIF|Category III|360 ONE Cat III AIF": 1,
+      "Alternatives|Pooled vehicles|AIF|Category I|Infra Fund Cat I AIF": 0,
+      "Alternatives|Pooled vehicles|AIF|Category II|Private Equity Cat II AIF": 0,
+      "Alternatives|Pooled vehicles|PMS|Equity PMS|Quality Equity PMS": 1,
+      "Alternatives|Private markets|Private credit|Direct lending|Private credit note 2029": 2,
+      "Alternatives|Other alternatives|Commodities|Silver & base metals|Silver ETF": 0.5,
+      "Alternatives|Other alternatives|Digital assets|Cryptocurrency|Bitcoin (exchange wallet)": 0,
+      "Alternatives|Other alternatives|Collectibles|Art & antiques|Art and collectibles": 0.5
+    },
+    "Moderate": {
+      "Equity|Cyclical|Financials|Private banks": 5,
+      "Equity|Cyclical|Financials|PSU banks": 0,
+      "Equity|Cyclical|Financials|NBFC & others": 2,
+      "Equity|Cyclical|Consumer discretionary|Autos": 0,
+      "Equity|Cyclical|Materials|Metals & mining": 0,
+      "Equity|Sensitive|Information technology|IT services": 4,
+      "Equity|Sensitive|Energy|Oil & gas": 4,
+      "Equity|Sensitive|Industrials|Capital goods": 3,
+      "Equity|Defensive|Consumer staples|FMCG": 3,
+      "Equity|Defensive|Healthcare|Pharma": 3,
+      "Equity|Defensive|Utilities|Power utilities": 0,
+      "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index": 11,
+      "Equity|Multi-sector funds|Diversified equity funds|Flexi cap": 8,
+      "Equity|Multi-sector funds|Diversified equity funds|Mid cap": 4,
+      "Equity|Multi-sector funds|Diversified equity funds|Small cap": 3,
+      "Fixed income|Sovereign|Government securities": 5,
+      "Fixed income|Credit|Corporate bonds": 4,
+      "Fixed income|Credit|Bank deposits": 5,
+      "Fixed income|Retirement & small savings|Retirement funds": 8,
+      "Fixed income|Debt funds|Duration funds": 3,
+      "Real assets|Real estate|Direct property": 7,
+      "Real assets|Real estate|Listed real estate": 2,
+      "Real assets|Infrastructure|Listed infrastructure": 1,
+      "Real assets|Precious metals|Gold": 5,
+      "Alternatives|Pooled vehicles|AIF|Category III|360 ONE Cat III AIF": 2,
+      "Alternatives|Pooled vehicles|AIF|Category I|Infra Fund Cat I AIF": 1,
+      "Alternatives|Pooled vehicles|AIF|Category II|Private Equity Cat II AIF": 1.5,
+      "Alternatives|Pooled vehicles|PMS|Equity PMS|Quality Equity PMS": 2.5,
+      "Alternatives|Private markets|Private credit|Direct lending|Private credit note 2029": 1.5,
+      "Alternatives|Other alternatives|Commodities|Silver & base metals|Silver ETF": 0.5,
+      "Alternatives|Other alternatives|Digital assets|Cryptocurrency|Bitcoin (exchange wallet)": 0.5,
+      "Alternatives|Other alternatives|Collectibles|Art & antiques|Art and collectibles": 0.5
+    },
+    "Aggressive": {
+      "Equity|Cyclical|Financials|Private banks": 5,
+      "Equity|Cyclical|Financials|PSU banks": 0,
+      "Equity|Cyclical|Financials|NBFC & others": 3,
+      "Equity|Cyclical|Consumer discretionary|Autos": 0,
+      "Equity|Cyclical|Materials|Metals & mining": 0,
+      "Equity|Sensitive|Information technology|IT services": 5,
+      "Equity|Sensitive|Energy|Oil & gas": 4,
+      "Equity|Sensitive|Industrials|Capital goods": 5,
+      "Equity|Defensive|Consumer staples|FMCG": 3,
+      "Equity|Defensive|Healthcare|Pharma": 4,
+      "Equity|Defensive|Utilities|Power utilities": 0,
+      "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index": 9,
+      "Equity|Multi-sector funds|Diversified equity funds|Flexi cap": 12,
+      "Equity|Multi-sector funds|Diversified equity funds|Mid cap": 8,
+      "Equity|Multi-sector funds|Diversified equity funds|Small cap": 7,
+      "Fixed income|Sovereign|Government securities": 2,
+      "Fixed income|Credit|Corporate bonds": 2,
+      "Fixed income|Credit|Bank deposits": 2,
+      "Fixed income|Retirement & small savings|Retirement funds": 5,
+      "Fixed income|Debt funds|Duration funds": 1,
+      "Real assets|Real estate|Direct property": 4,
+      "Real assets|Real estate|Listed real estate": 2,
+      "Real assets|Infrastructure|Listed infrastructure": 1,
+      "Real assets|Precious metals|Gold": 3,
+      "Alternatives|Pooled vehicles|AIF|Category III|360 ONE Cat III AIF": 3,
+      "Alternatives|Pooled vehicles|AIF|Category I|Infra Fund Cat I AIF": 1.5,
+      "Alternatives|Pooled vehicles|AIF|Category II|Private Equity Cat II AIF": 2.5,
+      "Alternatives|Pooled vehicles|PMS|Equity PMS|Quality Equity PMS": 3,
+      "Alternatives|Private markets|Private credit|Direct lending|Private credit note 2029": 1.5,
+      "Alternatives|Other alternatives|Commodities|Silver & base metals|Silver ETF": 0.5,
+      "Alternatives|Other alternatives|Digital assets|Cryptocurrency|Bitcoin (exchange wallet)": 1,
+      "Alternatives|Other alternatives|Collectibles|Art & antiques|Art and collectibles": 0
+    },
+    "Growth": {
+      "Equity|Cyclical|Financials|Private banks": 3,
+      "Equity|Cyclical|Financials|PSU banks": 0,
+      "Equity|Cyclical|Financials|NBFC & others": 5,
+      "Equity|Cyclical|Consumer discretionary|Autos": 0,
+      "Equity|Cyclical|Materials|Metals & mining": 0,
+      "Equity|Sensitive|Information technology|IT services": 7,
+      "Equity|Sensitive|Energy|Oil & gas": 3,
+      "Equity|Sensitive|Industrials|Capital goods": 7,
+      "Equity|Defensive|Consumer staples|FMCG": 2,
+      "Equity|Defensive|Healthcare|Pharma": 4,
+      "Equity|Defensive|Utilities|Power utilities": 0,
+      "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index": 6,
+      "Equity|Multi-sector funds|Diversified equity funds|Flexi cap": 15,
+      "Equity|Multi-sector funds|Diversified equity funds|Mid cap": 11,
+      "Equity|Multi-sector funds|Diversified equity funds|Small cap": 9,
+      "Fixed income|Sovereign|Government securities": 1,
+      "Fixed income|Credit|Corporate bonds": 1,
+      "Fixed income|Credit|Bank deposits": 1,
+      "Fixed income|Retirement & small savings|Retirement funds": 4,
+      "Fixed income|Debt funds|Duration funds": 1,
+      "Real assets|Real estate|Direct property": 3,
+      "Real assets|Real estate|Listed real estate": 1,
+      "Real assets|Infrastructure|Listed infrastructure": 0.5,
+      "Real assets|Precious metals|Gold": 1.5,
+      "Alternatives|Pooled vehicles|AIF|Category III|360 ONE Cat III AIF": 2,
+      "Alternatives|Pooled vehicles|AIF|Category I|Infra Fund Cat I AIF": 2,
+      "Alternatives|Pooled vehicles|AIF|Category II|Private Equity Cat II AIF": 3,
+      "Alternatives|Pooled vehicles|PMS|Equity PMS|Quality Equity PMS": 3,
+      "Alternatives|Private markets|Private credit|Direct lending|Private credit note 2029": 1,
+      "Alternatives|Other alternatives|Commodities|Silver & base metals|Silver ETF": 0.5,
+      "Alternatives|Other alternatives|Digital assets|Cryptocurrency|Bitcoin (exchange wallet)": 1.5,
+      "Alternatives|Other alternatives|Collectibles|Art & antiques|Art and collectibles": 1
+    },
+    "Dividend reinvestment": {
+      "Equity|Cyclical|Financials|Private banks": 5,
+      "Equity|Cyclical|Financials|PSU banks": 0,
+      "Equity|Cyclical|Financials|NBFC & others": 0,
+      "Equity|Cyclical|Consumer discretionary|Autos": 0,
+      "Equity|Cyclical|Materials|Metals & mining": 0,
+      "Equity|Sensitive|Information technology|IT services": 6,
+      "Equity|Sensitive|Energy|Oil & gas": 3,
+      "Equity|Sensitive|Industrials|Capital goods": 3,
+      "Equity|Defensive|Consumer staples|FMCG": 6,
+      "Equity|Defensive|Healthcare|Pharma": 2,
+      "Equity|Defensive|Utilities|Power utilities": 0,
+      "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index": 15,
+      "Equity|Multi-sector funds|Diversified equity funds|Flexi cap": 4,
+      "Equity|Multi-sector funds|Diversified equity funds|Mid cap": 1,
+      "Equity|Multi-sector funds|Diversified equity funds|Small cap": 0,
+      "Fixed income|Sovereign|Government securities": 3,
+      "Fixed income|Credit|Corporate bonds": 7,
+      "Fixed income|Credit|Bank deposits": 5,
+      "Fixed income|Retirement & small savings|Retirement funds": 4,
+      "Fixed income|Debt funds|Duration funds": 6,
+      "Real assets|Real estate|Direct property": 6,
+      "Real assets|Real estate|Listed real estate": 6,
+      "Real assets|Infrastructure|Listed infrastructure": 4,
+      "Real assets|Precious metals|Gold": 4,
+      "Alternatives|Pooled vehicles|AIF|Category III|360 ONE Cat III AIF": 2,
+      "Alternatives|Pooled vehicles|AIF|Category I|Infra Fund Cat I AIF": 1,
+      "Alternatives|Pooled vehicles|AIF|Category II|Private Equity Cat II AIF": 0,
+      "Alternatives|Pooled vehicles|PMS|Equity PMS|Quality Equity PMS": 3,
+      "Alternatives|Private markets|Private credit|Direct lending|Private credit note 2029": 4,
+      "Alternatives|Other alternatives|Commodities|Silver & base metals|Silver ETF": 0,
+      "Alternatives|Other alternatives|Digital assets|Cryptocurrency|Bitcoin (exchange wallet)": 0,
+      "Alternatives|Other alternatives|Collectibles|Art & antiques|Art and collectibles": 0
+    },
+    "Inflation hedge": {
+      "Equity|Cyclical|Financials|Private banks": 3,
+      "Equity|Cyclical|Financials|PSU banks": 0,
+      "Equity|Cyclical|Financials|NBFC & others": 0,
+      "Equity|Cyclical|Consumer discretionary|Autos": 0,
+      "Equity|Cyclical|Materials|Metals & mining": 0,
+      "Equity|Sensitive|Information technology|IT services": 2,
+      "Equity|Sensitive|Energy|Oil & gas": 5,
+      "Equity|Sensitive|Industrials|Capital goods": 4,
+      "Equity|Defensive|Consumer staples|FMCG": 3,
+      "Equity|Defensive|Healthcare|Pharma": 2,
+      "Equity|Defensive|Utilities|Power utilities": 0,
+      "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index": 8,
+      "Equity|Multi-sector funds|Diversified equity funds|Flexi cap": 6,
+      "Equity|Multi-sector funds|Diversified equity funds|Mid cap": 2,
+      "Equity|Multi-sector funds|Diversified equity funds|Small cap": 0,
+      "Fixed income|Sovereign|Government securities": 6,
+      "Fixed income|Credit|Corporate bonds": 2,
+      "Fixed income|Credit|Bank deposits": 4,
+      "Fixed income|Retirement & small savings|Retirement funds": 6,
+      "Fixed income|Debt funds|Duration funds": 2,
+      "Real assets|Real estate|Direct property": 14,
+      "Real assets|Real estate|Listed real estate": 6,
+      "Real assets|Infrastructure|Listed infrastructure": 5,
+      "Real assets|Precious metals|Gold": 10,
+      "Alternatives|Pooled vehicles|AIF|Category III|360 ONE Cat III AIF": 0,
+      "Alternatives|Pooled vehicles|AIF|Category I|Infra Fund Cat I AIF": 2,
+      "Alternatives|Pooled vehicles|AIF|Category II|Private Equity Cat II AIF": 0,
+      "Alternatives|Pooled vehicles|PMS|Equity PMS|Quality Equity PMS": 0,
+      "Alternatives|Private markets|Private credit|Direct lending|Private credit note 2029": 2,
+      "Alternatives|Other alternatives|Commodities|Silver & base metals|Silver ETF": 4,
+      "Alternatives|Other alternatives|Digital assets|Cryptocurrency|Bitcoin (exchange wallet)": 1,
+      "Alternatives|Other alternatives|Collectibles|Art & antiques|Art and collectibles": 1
+    },
+    "Alternatives-led": {
+      "Equity|Cyclical|Financials|Private banks": 4,
+      "Equity|Cyclical|Financials|PSU banks": 0,
+      "Equity|Cyclical|Financials|NBFC & others": 2,
+      "Equity|Cyclical|Consumer discretionary|Autos": 0,
+      "Equity|Cyclical|Materials|Metals & mining": 0,
+      "Equity|Sensitive|Information technology|IT services": 4,
+      "Equity|Sensitive|Energy|Oil & gas": 2,
+      "Equity|Sensitive|Industrials|Capital goods": 2,
+      "Equity|Defensive|Consumer staples|FMCG": 1,
+      "Equity|Defensive|Healthcare|Pharma": 1,
+      "Equity|Defensive|Utilities|Power utilities": 0,
+      "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index": 6,
+      "Equity|Multi-sector funds|Diversified equity funds|Flexi cap": 8,
+      "Equity|Multi-sector funds|Diversified equity funds|Mid cap": 3,
+      "Equity|Multi-sector funds|Diversified equity funds|Small cap": 2,
+      "Fixed income|Sovereign|Government securities": 3,
+      "Fixed income|Credit|Corporate bonds": 3,
+      "Fixed income|Credit|Bank deposits": 3,
+      "Fixed income|Retirement & small savings|Retirement funds": 5,
+      "Fixed income|Debt funds|Duration funds": 1,
+      "Real assets|Real estate|Direct property": 7,
+      "Real assets|Real estate|Listed real estate": 3,
+      "Real assets|Infrastructure|Listed infrastructure": 2,
+      "Real assets|Precious metals|Gold": 3,
+      "Alternatives|Pooled vehicles|AIF|Category III|360 ONE Cat III AIF": 6,
+      "Alternatives|Pooled vehicles|AIF|Category I|Infra Fund Cat I AIF": 4,
+      "Alternatives|Pooled vehicles|AIF|Category II|Private Equity Cat II AIF": 7,
+      "Alternatives|Pooled vehicles|PMS|Equity PMS|Quality Equity PMS": 8,
+      "Alternatives|Private markets|Private credit|Direct lending|Private credit note 2029": 5,
+      "Alternatives|Other alternatives|Commodities|Silver & base metals|Silver ETF": 1,
+      "Alternatives|Other alternatives|Digital assets|Cryptocurrency|Bitcoin (exchange wallet)": 2,
+      "Alternatives|Other alternatives|Collectibles|Art & antiques|Art and collectibles": 2
+    }
   },
   "households": [
     {
       "id": "h1",
       "name": "Mehta Family",
       "riskProfile": "Moderate",
-      "originalThresholdPP": null
+      "originalThresholdPP": null,
+      "modelName": "Moderate"
     },
     {
       "id": "h2",
       "name": "Iyer Household",
       "riskProfile": "Conservative",
-      "originalThresholdPP": 3
+      "originalThresholdPP": 3,
+      "modelName": "Conservative"
     },
     {
       "id": "h3",
       "name": "Kapoor Family",
       "riskProfile": "Aggressive",
-      "originalThresholdPP": null
+      "originalThresholdPP": null,
+      "modelName": "Aggressive"
     },
     {
       "id": "h4",
       "name": "Shah & Sons",
       "riskProfile": "Moderate",
-      "originalThresholdPP": null
+      "originalThresholdPP": null,
+      "modelName": "Dividend reinvestment"
     },
     {
       "id": "h5",
       "name": "Nair Household",
       "riskProfile": "Conservative",
-      "originalThresholdPP": null
+      "originalThresholdPP": null,
+      "modelName": "Conservative"
     },
     {
       "id": "h6",
       "name": "Rao Family",
       "riskProfile": "Aggressive",
-      "originalThresholdPP": 7
+      "originalThresholdPP": 7,
+      "modelName": "Growth"
     }
   ],
   "accounts": [
@@ -555,7 +1293,8 @@
           "valueLakh": 60,
           "costBasisLakh": 38
         }
-      ]
+      ],
+      "modelName": "Moderate"
     },
     {
       "id": "a2",
@@ -665,7 +1404,8 @@
           "valueLakh": 8.805719069712413,
           "costBasisLakh": 5.576955410817861
         }
-      ]
+      ],
+      "modelName": "Moderate"
     },
     {
       "id": "a3",
@@ -775,7 +1515,8 @@
           "valueLakh": 17.75834465062096,
           "costBasisLakh": 11.246951612059942
         }
-      ]
+      ],
+      "modelName": "Conservative"
     },
     {
       "id": "a4",
@@ -885,7 +1626,8 @@
           "valueLakh": 13.201542998582998,
           "costBasisLakh": 8.360977232435898
         }
-      ]
+      ],
+      "modelName": "Conservative"
     },
     {
       "id": "a5",
@@ -995,7 +1737,8 @@
           "valueLakh": 3.402054640117845,
           "costBasisLakh": 2.154634605407969
         }
-      ]
+      ],
+      "modelName": "Conservative"
     },
     {
       "id": "a6",
@@ -1105,7 +1848,8 @@
           "valueLakh": 10.783528798362306,
           "costBasisLakh": 6.829568238962794
         }
-      ]
+      ],
+      "modelName": "Aggressive"
     },
     {
       "id": "a7",
@@ -1215,7 +1959,8 @@
           "valueLakh": 2.7967208267076713,
           "costBasisLakh": 1.7712565235815252
         }
-      ]
+      ],
+      "modelName": "Aggressive"
     },
     {
       "id": "a8",
@@ -1325,7 +2070,8 @@
           "valueLakh": 11.940874016311977,
           "costBasisLakh": 7.562553543664252
         }
-      ]
+      ],
+      "modelName": "Dividend reinvestment"
     },
     {
       "id": "a9",
@@ -1435,7 +2181,8 @@
           "valueLakh": 6.245972661654617,
           "costBasisLakh": 3.955782685714591
         }
-      ]
+      ],
+      "modelName": "Dividend reinvestment"
     },
     {
       "id": "a10",
@@ -1545,7 +2292,8 @@
           "valueLakh": 9.1998776282308,
           "costBasisLakh": 5.826589164546173
         }
-      ]
+      ],
+      "modelName": "Conservative"
     },
     {
       "id": "a11",
@@ -1655,7 +2403,8 @@
           "valueLakh": 5.62484430429218,
           "costBasisLakh": 3.562401392718381
         }
-      ]
+      ],
+      "modelName": "Growth"
     },
     {
       "id": "a12",
@@ -1765,7 +2514,8 @@
           "valueLakh": 3.1188344567242954,
           "costBasisLakh": 1.9752618225920537
         }
-      ]
+      ],
+      "modelName": "Growth"
     }
   ],
   "securities": [
@@ -4552,6 +5302,1140 @@
       "A",
       "BBB & below",
       "Unrated"
+    ],
+    "models": {
+      "Conservative": {
+        "name": "Conservative",
+        "kind": "Risk-based",
+        "riskProfile": "Conservative",
+        "abbreviation": "Cons",
+        "description": "Capital preservation first: mostly debt and real assets, with a small equity core.",
+        "assetClassPercent": {
+          "Equity": 30,
+          "Fixed income": 45,
+          "Alternatives": 5,
+          "Real assets": 20
+        },
+        "impliedHoldingPercent": {
+          "HDFC Bank": 3,
+          "Infosys": 3,
+          "Reliance Industries": 2,
+          "Larsen & Toubro": 1,
+          "Hindustan Unilever": 3,
+          "Sun Pharma": 2,
+          "UTI Nifty 50 Index": 6.666666666666666,
+          "Nippon Nifty BeES": 3.333333333333333,
+          "Parag Parikh Flexi Cap": 5,
+          "Motilal Midcap 150 ETF": 1,
+          "GOI 7.18% 2033": 12,
+          "HDFC Ltd NCD 8.1%": 8,
+          "SBI FD (Mar 2028)": 7,
+          "HDFC Bank FD (Jun 2027)": 3,
+          "EPF account": 10,
+          "HDFC Short Term Debt Fund": 5,
+          "Flat, Baner Pune": 10,
+          "Embassy REIT": 3,
+          "IRB InvIT": 1,
+          "Sovereign Gold Bond 2028": 3.8181818181818183,
+          "Physical gold (jewellery, bars)": 2.1818181818181817,
+          "360 ONE Cat III AIF": 1,
+          "Quality Equity PMS": 1,
+          "Private credit note 2029": 2,
+          "Silver ETF": 0.5,
+          "Art and collectibles": 0.5
+        }
+      },
+      "Moderate": {
+        "name": "Moderate",
+        "kind": "Risk-based",
+        "riskProfile": "Moderate",
+        "abbreviation": "Mod",
+        "description": "Balanced growth and income across all four asset classes.",
+        "assetClassPercent": {
+          "Equity": 50,
+          "Fixed income": 25,
+          "Alternatives": 10,
+          "Real assets": 15
+        },
+        "impliedHoldingPercent": {
+          "HDFC Bank": 5,
+          "Bajaj Finance": 2,
+          "Infosys": 4,
+          "Reliance Industries": 4,
+          "Larsen & Toubro": 3,
+          "Hindustan Unilever": 3,
+          "Sun Pharma": 3,
+          "UTI Nifty 50 Index": 7.333333333333333,
+          "Nippon Nifty BeES": 3.6666666666666665,
+          "Parag Parikh Flexi Cap": 8,
+          "Motilal Midcap 150 ETF": 4,
+          "Nippon India Small Cap": 3,
+          "GOI 7.18% 2033": 5,
+          "HDFC Ltd NCD 8.1%": 4,
+          "SBI FD (Mar 2028)": 3.5,
+          "HDFC Bank FD (Jun 2027)": 1.5,
+          "EPF account": 8,
+          "HDFC Short Term Debt Fund": 3,
+          "Flat, Baner Pune": 7,
+          "Embassy REIT": 2,
+          "IRB InvIT": 1,
+          "Sovereign Gold Bond 2028": 3.1818181818181817,
+          "Physical gold (jewellery, bars)": 1.8181818181818183,
+          "360 ONE Cat III AIF": 2,
+          "Infra Fund Cat I AIF": 1,
+          "Private Equity Cat II AIF": 1.5,
+          "Quality Equity PMS": 2.5,
+          "Private credit note 2029": 1.5,
+          "Silver ETF": 0.5,
+          "Bitcoin (exchange wallet)": 0.5,
+          "Art and collectibles": 0.5
+        }
+      },
+      "Aggressive": {
+        "name": "Aggressive",
+        "kind": "Risk-based",
+        "riskProfile": "Aggressive",
+        "abbreviation": "Aggr",
+        "description": "Long-term growth with a high equity share and some alternatives.",
+        "assetClassPercent": {
+          "Equity": 65,
+          "Fixed income": 12,
+          "Alternatives": 13,
+          "Real assets": 10
+        },
+        "impliedHoldingPercent": {
+          "HDFC Bank": 5,
+          "Bajaj Finance": 3,
+          "Infosys": 5,
+          "Reliance Industries": 4,
+          "Larsen & Toubro": 5,
+          "Hindustan Unilever": 3,
+          "Sun Pharma": 4,
+          "UTI Nifty 50 Index": 6,
+          "Nippon Nifty BeES": 3,
+          "Parag Parikh Flexi Cap": 12,
+          "Motilal Midcap 150 ETF": 8,
+          "Nippon India Small Cap": 7,
+          "GOI 7.18% 2033": 2,
+          "HDFC Ltd NCD 8.1%": 2,
+          "SBI FD (Mar 2028)": 1.4,
+          "HDFC Bank FD (Jun 2027)": 0.6,
+          "EPF account": 5,
+          "HDFC Short Term Debt Fund": 1,
+          "Flat, Baner Pune": 4,
+          "Embassy REIT": 2,
+          "IRB InvIT": 1,
+          "Sovereign Gold Bond 2028": 1.9090909090909092,
+          "Physical gold (jewellery, bars)": 1.0909090909090908,
+          "360 ONE Cat III AIF": 3,
+          "Infra Fund Cat I AIF": 1.5,
+          "Private Equity Cat II AIF": 2.5,
+          "Quality Equity PMS": 3,
+          "Private credit note 2029": 1.5,
+          "Silver ETF": 0.5,
+          "Bitcoin (exchange wallet)": 1
+        }
+      },
+      "Growth": {
+        "name": "Growth",
+        "kind": "Strategy",
+        "riskProfile": "Aggressive",
+        "abbreviation": "Growth",
+        "description": "Equity-led and tilted to flexi, mid and small cap and to compounding businesses. Dividends are reinvested. Suits long horizons.",
+        "assetClassPercent": {
+          "Equity": 72,
+          "Fixed income": 8,
+          "Alternatives": 14,
+          "Real assets": 6
+        },
+        "impliedHoldingPercent": {
+          "HDFC Bank": 3,
+          "Bajaj Finance": 5,
+          "Infosys": 7,
+          "Reliance Industries": 3,
+          "Larsen & Toubro": 7,
+          "Hindustan Unilever": 2,
+          "Sun Pharma": 4,
+          "UTI Nifty 50 Index": 4,
+          "Nippon Nifty BeES": 2,
+          "Parag Parikh Flexi Cap": 15,
+          "Motilal Midcap 150 ETF": 11,
+          "Nippon India Small Cap": 9,
+          "GOI 7.18% 2033": 1,
+          "HDFC Ltd NCD 8.1%": 1,
+          "SBI FD (Mar 2028)": 0.7,
+          "HDFC Bank FD (Jun 2027)": 0.3,
+          "EPF account": 4,
+          "HDFC Short Term Debt Fund": 1,
+          "Flat, Baner Pune": 3,
+          "Embassy REIT": 1,
+          "IRB InvIT": 0.5,
+          "Sovereign Gold Bond 2028": 0.9545454545454546,
+          "Physical gold (jewellery, bars)": 0.5454545454545454,
+          "360 ONE Cat III AIF": 2,
+          "Infra Fund Cat I AIF": 2,
+          "Private Equity Cat II AIF": 3,
+          "Quality Equity PMS": 3,
+          "Private credit note 2029": 1,
+          "Silver ETF": 0.5,
+          "Bitcoin (exchange wallet)": 1.5,
+          "Art and collectibles": 1
+        }
+      },
+      "Dividend reinvestment": {
+        "name": "Dividend reinvestment",
+        "kind": "Strategy",
+        "riskProfile": "Moderate",
+        "abbreviation": "Div",
+        "description": "Dividend-paying large caps, REIT and InvIT distributions and credit income, all reinvested to compound.",
+        "assetClassPercent": {
+          "Equity": 45,
+          "Fixed income": 25,
+          "Alternatives": 10,
+          "Real assets": 20
+        },
+        "impliedHoldingPercent": {
+          "HDFC Bank": 5,
+          "Infosys": 6,
+          "Reliance Industries": 3,
+          "Larsen & Toubro": 3,
+          "Hindustan Unilever": 6,
+          "Sun Pharma": 2,
+          "UTI Nifty 50 Index": 10,
+          "Nippon Nifty BeES": 5,
+          "Parag Parikh Flexi Cap": 4,
+          "Motilal Midcap 150 ETF": 1,
+          "GOI 7.18% 2033": 3,
+          "HDFC Ltd NCD 8.1%": 7,
+          "SBI FD (Mar 2028)": 3.5,
+          "HDFC Bank FD (Jun 2027)": 1.5,
+          "EPF account": 4,
+          "HDFC Short Term Debt Fund": 6,
+          "Flat, Baner Pune": 6,
+          "Embassy REIT": 6,
+          "IRB InvIT": 4,
+          "Sovereign Gold Bond 2028": 2.5454545454545454,
+          "Physical gold (jewellery, bars)": 1.4545454545454546,
+          "360 ONE Cat III AIF": 2,
+          "Infra Fund Cat I AIF": 1,
+          "Quality Equity PMS": 3,
+          "Private credit note 2029": 4
+        }
+      },
+      "Inflation hedge": {
+        "name": "Inflation hedge",
+        "kind": "Strategy",
+        "riskProfile": "Moderate",
+        "abbreviation": "Infl",
+        "description": "Real assets, gold and commodities alongside energy and infrastructure equity, to protect purchasing power.",
+        "assetClassPercent": {
+          "Equity": 35,
+          "Fixed income": 20,
+          "Alternatives": 10,
+          "Real assets": 35
+        },
+        "impliedHoldingPercent": {
+          "HDFC Bank": 3,
+          "Infosys": 2,
+          "Reliance Industries": 5,
+          "Larsen & Toubro": 4,
+          "Hindustan Unilever": 3,
+          "Sun Pharma": 2,
+          "UTI Nifty 50 Index": 5.333333333333333,
+          "Nippon Nifty BeES": 2.6666666666666665,
+          "Parag Parikh Flexi Cap": 6,
+          "Motilal Midcap 150 ETF": 2,
+          "GOI 7.18% 2033": 6,
+          "HDFC Ltd NCD 8.1%": 2,
+          "SBI FD (Mar 2028)": 2.8,
+          "HDFC Bank FD (Jun 2027)": 1.2,
+          "EPF account": 6,
+          "HDFC Short Term Debt Fund": 2,
+          "Flat, Baner Pune": 14,
+          "Embassy REIT": 6,
+          "IRB InvIT": 5,
+          "Sovereign Gold Bond 2028": 6.363636363636363,
+          "Physical gold (jewellery, bars)": 3.6363636363636367,
+          "Infra Fund Cat I AIF": 2,
+          "Private credit note 2029": 2,
+          "Silver ETF": 4,
+          "Bitcoin (exchange wallet)": 1,
+          "Art and collectibles": 1
+        }
+      },
+      "Alternatives-led": {
+        "name": "Alternatives-led",
+        "kind": "Strategy",
+        "riskProfile": "Aggressive",
+        "abbreviation": "Alts",
+        "description": "A large share in AIFs, PMS and private credit for diversification. Needs a long horizon and a liquidity buffer.",
+        "assetClassPercent": {
+          "Equity": 35,
+          "Fixed income": 15,
+          "Alternatives": 35,
+          "Real assets": 15
+        },
+        "impliedHoldingPercent": {
+          "HDFC Bank": 4,
+          "Bajaj Finance": 2,
+          "Infosys": 4,
+          "Reliance Industries": 2,
+          "Larsen & Toubro": 2,
+          "Hindustan Unilever": 1,
+          "Sun Pharma": 1,
+          "UTI Nifty 50 Index": 4,
+          "Nippon Nifty BeES": 2,
+          "Parag Parikh Flexi Cap": 8,
+          "Motilal Midcap 150 ETF": 3,
+          "Nippon India Small Cap": 2,
+          "GOI 7.18% 2033": 3,
+          "HDFC Ltd NCD 8.1%": 3,
+          "SBI FD (Mar 2028)": 2.0999999999999996,
+          "HDFC Bank FD (Jun 2027)": 0.8999999999999999,
+          "EPF account": 5,
+          "HDFC Short Term Debt Fund": 1,
+          "Flat, Baner Pune": 7,
+          "Embassy REIT": 3,
+          "IRB InvIT": 2,
+          "Sovereign Gold Bond 2028": 1.9090909090909092,
+          "Physical gold (jewellery, bars)": 1.0909090909090908,
+          "360 ONE Cat III AIF": 6,
+          "Infra Fund Cat I AIF": 4,
+          "Private Equity Cat II AIF": 7,
+          "Quality Equity PMS": 8,
+          "Private credit note 2029": 5,
+          "Silver ETF": 1,
+          "Bitcoin (exchange wallet)": 2,
+          "Art and collectibles": 2
+        }
+      }
+    },
+    "modelDepthByClass": {
+      "Equity": 3,
+      "Fixed income": 2,
+      "Alternatives": 4,
+      "Real assets": 2
+    },
+    "defaultBandsByLevel": [
+      null,
+      6,
+      4,
+      3,
+      2
+    ],
+    "levelNames": [
+      "Asset class",
+      "Super sector",
+      "Sector",
+      "Sub-sector",
+      "Security"
+    ],
+    "nodes": [
+      {
+        "key": "Equity",
+        "parent": null,
+        "level": 0,
+        "label": "Equity",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Fixed income",
+        "parent": null,
+        "level": 0,
+        "label": "Fixed income",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Alternatives",
+        "parent": null,
+        "level": 0,
+        "label": "Alternatives",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Real assets",
+        "parent": null,
+        "level": 0,
+        "label": "Real assets",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Equity|Cyclical",
+        "parent": "Equity",
+        "level": 1,
+        "label": "Cyclical",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Cyclical|Financials",
+        "parent": "Equity|Cyclical",
+        "level": 2,
+        "label": "Financials",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Cyclical|Financials|Private banks",
+        "parent": "Equity|Cyclical|Financials",
+        "level": 3,
+        "label": "Private banks",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Cyclical|Financials|PSU banks",
+        "parent": "Equity|Cyclical|Financials",
+        "level": 3,
+        "label": "PSU banks",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Cyclical|Financials|NBFC & others",
+        "parent": "Equity|Cyclical|Financials",
+        "level": 3,
+        "label": "NBFC & others",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Cyclical|Consumer discretionary",
+        "parent": "Equity|Cyclical",
+        "level": 2,
+        "label": "Consumer discretionary",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Cyclical|Consumer discretionary|Autos",
+        "parent": "Equity|Cyclical|Consumer discretionary",
+        "level": 3,
+        "label": "Autos",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Cyclical|Materials",
+        "parent": "Equity|Cyclical",
+        "level": 2,
+        "label": "Materials",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Cyclical|Materials|Metals & mining",
+        "parent": "Equity|Cyclical|Materials",
+        "level": 3,
+        "label": "Metals & mining",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Sensitive",
+        "parent": "Equity",
+        "level": 1,
+        "label": "Sensitive",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Sensitive|Information technology",
+        "parent": "Equity|Sensitive",
+        "level": 2,
+        "label": "Information technology",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Sensitive|Information technology|IT services",
+        "parent": "Equity|Sensitive|Information technology",
+        "level": 3,
+        "label": "IT services",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Sensitive|Energy",
+        "parent": "Equity|Sensitive",
+        "level": 2,
+        "label": "Energy",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Sensitive|Energy|Oil & gas",
+        "parent": "Equity|Sensitive|Energy",
+        "level": 3,
+        "label": "Oil & gas",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Sensitive|Industrials",
+        "parent": "Equity|Sensitive",
+        "level": 2,
+        "label": "Industrials",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Sensitive|Industrials|Capital goods",
+        "parent": "Equity|Sensitive|Industrials",
+        "level": 3,
+        "label": "Capital goods",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Defensive",
+        "parent": "Equity",
+        "level": 1,
+        "label": "Defensive",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Defensive|Consumer staples",
+        "parent": "Equity|Defensive",
+        "level": 2,
+        "label": "Consumer staples",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Defensive|Consumer staples|FMCG",
+        "parent": "Equity|Defensive|Consumer staples",
+        "level": 3,
+        "label": "FMCG",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Defensive|Healthcare",
+        "parent": "Equity|Defensive",
+        "level": 2,
+        "label": "Healthcare",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Defensive|Healthcare|Pharma",
+        "parent": "Equity|Defensive|Healthcare",
+        "level": 3,
+        "label": "Pharma",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Defensive|Utilities",
+        "parent": "Equity|Defensive",
+        "level": 2,
+        "label": "Utilities",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Defensive|Utilities|Power utilities",
+        "parent": "Equity|Defensive|Utilities",
+        "level": 3,
+        "label": "Power utilities",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Multi-sector funds",
+        "parent": "Equity",
+        "level": 1,
+        "label": "Multi-sector funds",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Multi-sector funds|Diversified equity funds",
+        "parent": "Equity|Multi-sector funds",
+        "level": 2,
+        "label": "Diversified equity funds",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index",
+        "parent": "Equity|Multi-sector funds|Diversified equity funds",
+        "level": 3,
+        "label": "Large-cap & index",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Multi-sector funds|Diversified equity funds|Flexi cap",
+        "parent": "Equity|Multi-sector funds|Diversified equity funds",
+        "level": 3,
+        "label": "Flexi cap",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Multi-sector funds|Diversified equity funds|Mid cap",
+        "parent": "Equity|Multi-sector funds|Diversified equity funds",
+        "level": 3,
+        "label": "Mid cap",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Multi-sector funds|Diversified equity funds|Small cap",
+        "parent": "Equity|Multi-sector funds|Diversified equity funds",
+        "level": 3,
+        "label": "Small cap",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Fixed income|Sovereign",
+        "parent": "Fixed income",
+        "level": 1,
+        "label": "Sovereign",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Sovereign|Government securities",
+        "parent": "Fixed income|Sovereign",
+        "level": 2,
+        "label": "Government securities",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Sovereign|Government securities|Central government",
+        "parent": "Fixed income|Sovereign|Government securities",
+        "level": 3,
+        "label": "Central government",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Sovereign|Government securities|State development loans",
+        "parent": "Fixed income|Sovereign|Government securities",
+        "level": 3,
+        "label": "State development loans",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Credit",
+        "parent": "Fixed income",
+        "level": 1,
+        "label": "Credit",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Credit|Corporate bonds",
+        "parent": "Fixed income|Credit",
+        "level": 2,
+        "label": "Corporate bonds",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Credit|Corporate bonds|AAA rated",
+        "parent": "Fixed income|Credit|Corporate bonds",
+        "level": 3,
+        "label": "AAA rated",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Credit|Corporate bonds|AA and below",
+        "parent": "Fixed income|Credit|Corporate bonds",
+        "level": 3,
+        "label": "AA and below",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Credit|Bank deposits",
+        "parent": "Fixed income|Credit",
+        "level": 2,
+        "label": "Bank deposits",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Credit|Bank deposits|Scheduled bank FDs",
+        "parent": "Fixed income|Credit|Bank deposits",
+        "level": 3,
+        "label": "Scheduled bank FDs",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Retirement & small savings",
+        "parent": "Fixed income",
+        "level": 1,
+        "label": "Retirement & small savings",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Retirement & small savings|Retirement funds",
+        "parent": "Fixed income|Retirement & small savings",
+        "level": 2,
+        "label": "Retirement funds",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Retirement & small savings|Retirement funds|EPF",
+        "parent": "Fixed income|Retirement & small savings|Retirement funds",
+        "level": 3,
+        "label": "EPF",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Retirement & small savings|Retirement funds|PPF and others",
+        "parent": "Fixed income|Retirement & small savings|Retirement funds",
+        "level": 3,
+        "label": "PPF and others",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Debt funds",
+        "parent": "Fixed income",
+        "level": 1,
+        "label": "Debt funds",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Debt funds|Duration funds",
+        "parent": "Fixed income|Debt funds",
+        "level": 2,
+        "label": "Duration funds",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Debt funds|Duration funds|Liquid & ultra-short",
+        "parent": "Fixed income|Debt funds|Duration funds",
+        "level": 3,
+        "label": "Liquid & ultra-short",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Debt funds|Duration funds|Short duration",
+        "parent": "Fixed income|Debt funds|Duration funds",
+        "level": 3,
+        "label": "Short duration",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Debt funds|Duration funds|Long duration",
+        "parent": "Fixed income|Debt funds|Duration funds",
+        "level": 3,
+        "label": "Long duration",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Alternatives|Pooled vehicles",
+        "parent": "Alternatives",
+        "level": 1,
+        "label": "Pooled vehicles",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Pooled vehicles|AIF",
+        "parent": "Alternatives|Pooled vehicles",
+        "level": 2,
+        "label": "AIF",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Pooled vehicles|AIF|Category I",
+        "parent": "Alternatives|Pooled vehicles|AIF",
+        "level": 3,
+        "label": "Category I",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Pooled vehicles|AIF|Category II",
+        "parent": "Alternatives|Pooled vehicles|AIF",
+        "level": 3,
+        "label": "Category II",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Pooled vehicles|AIF|Category III",
+        "parent": "Alternatives|Pooled vehicles|AIF",
+        "level": 3,
+        "label": "Category III",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Pooled vehicles|PMS",
+        "parent": "Alternatives|Pooled vehicles",
+        "level": 2,
+        "label": "PMS",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Pooled vehicles|PMS|Equity PMS",
+        "parent": "Alternatives|Pooled vehicles|PMS",
+        "level": 3,
+        "label": "Equity PMS",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Pooled vehicles|PMS|Multi-asset PMS",
+        "parent": "Alternatives|Pooled vehicles|PMS",
+        "level": 3,
+        "label": "Multi-asset PMS",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Private markets",
+        "parent": "Alternatives",
+        "level": 1,
+        "label": "Private markets",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Private markets|Private credit",
+        "parent": "Alternatives|Private markets",
+        "level": 2,
+        "label": "Private credit",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Private markets|Private credit|Direct lending",
+        "parent": "Alternatives|Private markets|Private credit",
+        "level": 3,
+        "label": "Direct lending",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Other alternatives",
+        "parent": "Alternatives",
+        "level": 1,
+        "label": "Other alternatives",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Other alternatives|Commodities",
+        "parent": "Alternatives|Other alternatives",
+        "level": 2,
+        "label": "Commodities",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Other alternatives|Commodities|Silver & base metals",
+        "parent": "Alternatives|Other alternatives|Commodities",
+        "level": 3,
+        "label": "Silver & base metals",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Other alternatives|Commodities|Agricultural",
+        "parent": "Alternatives|Other alternatives|Commodities",
+        "level": 3,
+        "label": "Agricultural",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Other alternatives|Digital assets",
+        "parent": "Alternatives|Other alternatives",
+        "level": 2,
+        "label": "Digital assets",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Other alternatives|Digital assets|Cryptocurrency",
+        "parent": "Alternatives|Other alternatives|Digital assets",
+        "level": 3,
+        "label": "Cryptocurrency",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Other alternatives|Collectibles",
+        "parent": "Alternatives|Other alternatives",
+        "level": 2,
+        "label": "Collectibles",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Other alternatives|Collectibles|Art & antiques",
+        "parent": "Alternatives|Other alternatives|Collectibles",
+        "level": 3,
+        "label": "Art & antiques",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Real assets|Real estate",
+        "parent": "Real assets",
+        "level": 1,
+        "label": "Real estate",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Real estate|Direct property",
+        "parent": "Real assets|Real estate",
+        "level": 2,
+        "label": "Direct property",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Real estate|Direct property|Residential",
+        "parent": "Real assets|Real estate|Direct property",
+        "level": 3,
+        "label": "Residential",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Real estate|Direct property|Commercial",
+        "parent": "Real assets|Real estate|Direct property",
+        "level": 3,
+        "label": "Commercial",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Real estate|Listed real estate",
+        "parent": "Real assets|Real estate",
+        "level": 2,
+        "label": "Listed real estate",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Real estate|Listed real estate|REITs",
+        "parent": "Real assets|Real estate|Listed real estate",
+        "level": 3,
+        "label": "REITs",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Infrastructure",
+        "parent": "Real assets",
+        "level": 1,
+        "label": "Infrastructure",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Infrastructure|Listed infrastructure",
+        "parent": "Real assets|Infrastructure",
+        "level": 2,
+        "label": "Listed infrastructure",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Infrastructure|Listed infrastructure|InvITs",
+        "parent": "Real assets|Infrastructure|Listed infrastructure",
+        "level": 3,
+        "label": "InvITs",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Precious metals",
+        "parent": "Real assets",
+        "level": 1,
+        "label": "Precious metals",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Precious metals|Gold",
+        "parent": "Real assets|Precious metals",
+        "level": 2,
+        "label": "Gold",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Precious metals|Gold|Gold bonds",
+        "parent": "Real assets|Precious metals|Gold",
+        "level": 3,
+        "label": "Gold bonds",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Precious metals|Gold|Physical gold",
+        "parent": "Real assets|Precious metals|Gold",
+        "level": 3,
+        "label": "Physical gold",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Equity|Multi-sector funds|Diversified equity funds|Flexi cap|Parag Parikh Flexi Cap",
+        "parent": "Equity|Multi-sector funds|Diversified equity funds|Flexi cap",
+        "level": 4,
+        "label": "Parag Parikh Flexi Cap",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Multi-sector funds|Diversified equity funds|Small cap|Nippon India Small Cap",
+        "parent": "Equity|Multi-sector funds|Diversified equity funds|Small cap",
+        "level": 4,
+        "label": "Nippon India Small Cap",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index|UTI Nifty 50 Index",
+        "parent": "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index",
+        "level": 4,
+        "label": "UTI Nifty 50 Index",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Cyclical|Financials|Private banks|HDFC Bank",
+        "parent": "Equity|Cyclical|Financials|Private banks",
+        "level": 4,
+        "label": "HDFC Bank",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Sensitive|Information technology|IT services|Infosys",
+        "parent": "Equity|Sensitive|Information technology|IT services",
+        "level": 4,
+        "label": "Infosys",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Sensitive|Energy|Oil & gas|Reliance Industries",
+        "parent": "Equity|Sensitive|Energy|Oil & gas",
+        "level": 4,
+        "label": "Reliance Industries",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index|Nippon Nifty BeES",
+        "parent": "Equity|Multi-sector funds|Diversified equity funds|Large-cap & index",
+        "level": 4,
+        "label": "Nippon Nifty BeES",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Multi-sector funds|Diversified equity funds|Mid cap|Motilal Midcap 150 ETF",
+        "parent": "Equity|Multi-sector funds|Diversified equity funds|Mid cap",
+        "level": 4,
+        "label": "Motilal Midcap 150 ETF",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Cyclical|Financials|NBFC & others|Bajaj Finance",
+        "parent": "Equity|Cyclical|Financials|NBFC & others",
+        "level": 4,
+        "label": "Bajaj Finance",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Defensive|Consumer staples|FMCG|Hindustan Unilever",
+        "parent": "Equity|Defensive|Consumer staples|FMCG",
+        "level": 4,
+        "label": "Hindustan Unilever",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Defensive|Healthcare|Pharma|Sun Pharma",
+        "parent": "Equity|Defensive|Healthcare|Pharma",
+        "level": 4,
+        "label": "Sun Pharma",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Equity|Sensitive|Industrials|Capital goods|Larsen & Toubro",
+        "parent": "Equity|Sensitive|Industrials|Capital goods",
+        "level": 4,
+        "label": "Larsen & Toubro",
+        "assetClass": "Equity"
+      },
+      {
+        "key": "Fixed income|Sovereign|Government securities|Central government|GOI 7.18% 2033",
+        "parent": "Fixed income|Sovereign|Government securities|Central government",
+        "level": 4,
+        "label": "GOI 7.18% 2033",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Credit|Corporate bonds|AAA rated|HDFC Ltd NCD 8.1%",
+        "parent": "Fixed income|Credit|Corporate bonds|AAA rated",
+        "level": 4,
+        "label": "HDFC Ltd NCD 8.1%",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Credit|Bank deposits|Scheduled bank FDs|SBI FD (Mar 2028)",
+        "parent": "Fixed income|Credit|Bank deposits|Scheduled bank FDs",
+        "level": 4,
+        "label": "SBI FD (Mar 2028)",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Credit|Bank deposits|Scheduled bank FDs|HDFC Bank FD (Jun 2027)",
+        "parent": "Fixed income|Credit|Bank deposits|Scheduled bank FDs",
+        "level": 4,
+        "label": "HDFC Bank FD (Jun 2027)",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Retirement & small savings|Retirement funds|EPF|EPF account",
+        "parent": "Fixed income|Retirement & small savings|Retirement funds|EPF",
+        "level": 4,
+        "label": "EPF account",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Fixed income|Debt funds|Duration funds|Short duration|HDFC Short Term Debt Fund",
+        "parent": "Fixed income|Debt funds|Duration funds|Short duration",
+        "level": 4,
+        "label": "HDFC Short Term Debt Fund",
+        "assetClass": "Fixed income"
+      },
+      {
+        "key": "Alternatives|Pooled vehicles|AIF|Category III|360 ONE Cat III AIF",
+        "parent": "Alternatives|Pooled vehicles|AIF|Category III",
+        "level": 4,
+        "label": "360 ONE Cat III AIF",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Pooled vehicles|AIF|Category I|Infra Fund Cat I AIF",
+        "parent": "Alternatives|Pooled vehicles|AIF|Category I",
+        "level": 4,
+        "label": "Infra Fund Cat I AIF",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Pooled vehicles|AIF|Category II|Private Equity Cat II AIF",
+        "parent": "Alternatives|Pooled vehicles|AIF|Category II",
+        "level": 4,
+        "label": "Private Equity Cat II AIF",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Pooled vehicles|PMS|Equity PMS|Quality Equity PMS",
+        "parent": "Alternatives|Pooled vehicles|PMS|Equity PMS",
+        "level": 4,
+        "label": "Quality Equity PMS",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Private markets|Private credit|Direct lending|Private credit note 2029",
+        "parent": "Alternatives|Private markets|Private credit|Direct lending",
+        "level": 4,
+        "label": "Private credit note 2029",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Other alternatives|Commodities|Silver & base metals|Silver ETF",
+        "parent": "Alternatives|Other alternatives|Commodities|Silver & base metals",
+        "level": 4,
+        "label": "Silver ETF",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Other alternatives|Digital assets|Cryptocurrency|Bitcoin (exchange wallet)",
+        "parent": "Alternatives|Other alternatives|Digital assets|Cryptocurrency",
+        "level": 4,
+        "label": "Bitcoin (exchange wallet)",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Alternatives|Other alternatives|Collectibles|Art & antiques|Art and collectibles",
+        "parent": "Alternatives|Other alternatives|Collectibles|Art & antiques",
+        "level": 4,
+        "label": "Art and collectibles",
+        "assetClass": "Alternatives"
+      },
+      {
+        "key": "Real assets|Real estate|Listed real estate|REITs|Embassy REIT",
+        "parent": "Real assets|Real estate|Listed real estate|REITs",
+        "level": 4,
+        "label": "Embassy REIT",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Infrastructure|Listed infrastructure|InvITs|IRB InvIT",
+        "parent": "Real assets|Infrastructure|Listed infrastructure|InvITs",
+        "level": 4,
+        "label": "IRB InvIT",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Precious metals|Gold|Gold bonds|Sovereign Gold Bond 2028",
+        "parent": "Real assets|Precious metals|Gold|Gold bonds",
+        "level": 4,
+        "label": "Sovereign Gold Bond 2028",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Precious metals|Gold|Physical gold|Physical gold (jewellery, bars)",
+        "parent": "Real assets|Precious metals|Gold|Physical gold",
+        "level": 4,
+        "label": "Physical gold (jewellery, bars)",
+        "assetClass": "Real assets"
+      },
+      {
+        "key": "Real assets|Real estate|Direct property|Residential|Flat, Baner Pune",
+        "parent": "Real assets|Real estate|Direct property|Residential",
+        "level": 4,
+        "label": "Flat, Baner Pune",
+        "assetClass": "Real assets"
+      }
     ]
   },
   "cashPlanning": {
