@@ -22,7 +22,8 @@ const subsectorsFor=(assetClass,superSector,sector)=>distinct(TAXONOMY.filter(t=
 
 let securityEdits={};
 try{securityEdits=JSON.parse(localStorage.getItem(SECURITY_KEY)||'{}')}catch{securityEdits={}}
-let securityPending={},securityFilters={search:'',assetClass:'',instrumentType:'',unclassifiedOnly:false},securityAddOpen=false;
+const NO_FILTERS={search:'',assetClass:'',superSector:'',sector:'',subsector:'',instrumentType:'',unclassifiedOnly:false};
+let securityPending={},securityFilters={...NO_FILTERS},securityAddOpen=false;
 let securityExpanded=new Set();
 const CLASSIFICATION_FIELDS=['assetClass','superSector','sector','subsector'];
 
@@ -117,15 +118,43 @@ const effectiveField=(s,field)=>securityPending[s.id]?.[field]??(field==='assetC
 const isUnclassified=s=>CLASSIFICATION_FIELDS.some(field=>!effectiveField(s,field));
 const pendingCount=()=>Object.values(securityPending).reduce((n,e)=>n+Object.keys(e).length,0);
 
+const securityFiltered=()=>Object.keys(NO_FILTERS).some(key=>securityFilters[key]!==NO_FILTERS[key]);
 function securityRows(){
  const q=securityFilters.search.toLowerCase();
  return originalData.securities.filter(s=>{
-  if(securityFilters.assetClass&&effectiveField(s,'assetClass')!==securityFilters.assetClass)return false;
+  for(const field of CLASSIFICATION_FIELDS)
+   if(securityFilters[field]&&effectiveField(s,field)!==securityFilters[field])return false;
   if(securityFilters.instrumentType&&instrumentType(s)!==securityFilters.instrumentType)return false;
   if(securityFilters.unclassifiedOnly&&!isUnclassified(s))return false;
   if(!q)return true;
   return (s.name+' '+(s.symbol||'')+' '+(s.superSector||'')+' '+(s.tags.sector||'')+' '+(s.tags.subsector||'')+' '+instrumentType(s)).toLowerCase().includes(q);
  });
+}
+
+// The filter row nests the same way the rows do: Super sector offers only what
+// belongs under the chosen asset class, and so on down. Each level offers what
+// the sample actually holds at that level, so a filter can never return nothing;
+// the row editors still read the declared taxonomy, because assigning a branch
+// the sample does not yet hold is the point of this page.
+function filterOptionsFor(field){
+ const above=CLASSIFICATION_FIELDS.slice(0,CLASSIFICATION_FIELDS.indexOf(field));
+ return distinct(originalData.securities
+  .filter(s=>above.every(level=>!securityFilters[level]||effectiveField(s,level)===securityFilters[level]))
+  .map(s=>effectiveField(s,field))).sort();
+}
+// Choosing a level clears the levels under it: a sub-sector held over from
+// another asset class would simply match nothing.
+function changeLevelFilter(field,value){
+ securityFilters[field]=value;
+ for(const below of CLASSIFICATION_FIELDS.slice(CLASSIFICATION_FIELDS.indexOf(field)+1))securityFilters[below]='';
+}
+const LEVEL_LABELS={assetClass:'Asset class',superSector:'Super sector',sector:'Sector',subsector:'Sub-sector'};
+function levelFilter(field){
+ const options=filterOptionsFor(field),value=securityFilters[field],label=LEVEL_LABELS[field];
+ // A value filtered on stays selectable even if a level above has since narrowed
+ // past it, so the control can always be cleared rather than becoming a dead end.
+ if(value&&!options.includes(value))options.unshift(value);
+ return `<th class="col-editable"><label><span class="sr-only">Filter by ${label.toLowerCase()}</span><select data-security-level-filter="${field}" class="config-header-filter" aria-label="Filter by ${label.toLowerCase()}"><option value="">All</option>${options.map(o=>`<option ${value===o?'selected':''}>${esc(o)}</option>`).join('')}</select></label></th>`;
 }
 
 // One builder for all four levels: each offers what the level above allows, and
@@ -193,8 +222,7 @@ function securityGrid(){
   <th><label class="config-header-search"><span class="sr-only">Filter instruments</span><input id="securitySearch" type="search" placeholder="Filter rows…" value="${esc(securityFilters.search)}" aria-label="Filter instruments by name, symbol, type or sector"></label></th>
   <th aria-label="No ISIN filter"></th><th aria-label="No symbol filter"></th><th aria-label="No rating filter"></th><th aria-label="No price filter"></th>
   ${showAssetType?`<th><label><span class="sr-only">Filter by asset type</span><select id="securityTypeFilter" class="config-header-filter" aria-label="Filter by asset type"><option value="">All</option>${typeOptions.map(t=>`<option ${securityFilters.instrumentType===t?'selected':''}>${esc(t)}</option>`).join('')}</select></label></th>`:''}
-  <th class="col-editable"><label><span class="sr-only">Filter by asset class</span><select id="securityClassFilter" class="config-header-filter" aria-label="Filter by asset class"><option value="">All</option>${ASSET_CLASSES.map(c=>`<option ${securityFilters.assetClass===c?'selected':''}>${esc(c)}</option>`).join('')}</select></label></th>
-  <th class="col-editable" aria-label="No super sector filter"></th><th class="col-editable" aria-label="No sector filter"></th><th class="col-editable" aria-label="No sub-sector filter"></th>
+  ${CLASSIFICATION_FIELDS.map(levelFilter).join('')}
   ${typeColumns.map(a=>`<th class="col-attribute" aria-label="No ${esc(a.label)} filter"></th>`).join('')}
  </tr></thead><tbody>${rows.map(s=>{
   // A rating the source never supplies is different from one that cannot apply:
@@ -244,7 +272,7 @@ securityMasterPage=function(){
   <div class="card"><small>Staged changes</small><strong>${pending}</strong><small>not applied yet</small></div>
   <div class="card"><small>Instrument types</small><strong>${new Set(originalData.securities.map(instrumentType)).size}</strong><small>each sets its own attributes</small></div>
  </div>
- <p class="list-caption config-legend"><span class="config-key"><b class="is-fixed">Fixed</b> from the instrument source</span><span class="config-key"><b class="is-editable">Editable</b> your classification</span><span class="config-key"><b class="is-absent">—</b> not supplied by the sample</span><span class="config-key"><b class="is-attr">›</b> open a row for its type's attributes</span><span class="config-count">Showing ${securityRows().length} of ${total}${securityFilters.search||securityFilters.assetClass||securityFilters.instrumentType||securityFilters.unclassifiedOnly?' · <button class="link-button" data-security-action="clear">Clear filters</button>':''}</span></p>
+ <p class="list-caption config-legend"><span class="config-key"><b class="is-fixed">Fixed</b> from the instrument source</span><span class="config-key"><b class="is-editable">Editable</b> your classification</span><span class="config-key"><b class="is-absent">—</b> not supplied by the sample</span><span class="config-key"><b class="is-attr">›</b> open a row for its type's attributes</span><span class="config-count">Showing ${securityRows().length} of ${total}${securityFiltered()?' · <button class="link-button" data-security-action="clear">Clear filters</button>':''}</span></p>
  ${securityAddPanel()}
  ${securityGrid()}
  <p class="note">Super sector, sector and sub-sector feed every exposure view immediately once applied. Asset class also decides whether an instrument is measured by the credit and duration view. Recorded holdings keep the asset class they were recorded under: reclassifying an instrument changes analysis from now on, it does not restate an approved snapshot.</p>
@@ -307,7 +335,7 @@ document.addEventListener('click',e=>{
  }
  const b=e.target.closest('button[data-security-action]');if(!b)return;
  const action=b.dataset.securityAction;
- if(action==='clear'){securityFilters={search:'',assetClass:'',instrumentType:'',unclassifiedOnly:false};securityMasterPage();return}
+ if(action==='clear'){securityFilters={...NO_FILTERS};securityMasterPage();return}
  if(action==='add'){securityAddOpen=true;securityMasterPage();$('securityAdd')?.focus();return}
  if(action==='add-close'){securityAddOpen=false;securityFilters.addSearch='';securityMasterPage();return}
  if(action==='discard'){securityPending={};securityMasterPage();notify('Staged changes discarded. Nothing was applied.');return}
@@ -323,7 +351,13 @@ document.addEventListener('click',e=>{
 });
 document.addEventListener('change',e=>{
  const t=e.target;
- if(t.id==='securityClassFilter'){securityFilters.assetClass=t.value;securityMasterPage();return}
+ const level=t.dataset.securityLevelFilter;
+ if(level){
+  changeLevelFilter(level,t.value);
+  securityMasterPage();
+  document.querySelector('[data-security-level-filter="'+level+'"]')?.focus();
+  return;
+ }
  if(t.id==='securityTypeFilter'){securityFilters.instrumentType=t.value;securityMasterPage();return}
  const id=t.dataset.security,field=t.dataset.field;
  if(!id||!field)return;

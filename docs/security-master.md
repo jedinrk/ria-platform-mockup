@@ -129,6 +129,19 @@ worth having. Spreadsheet-style filters sit directly beneath their column
 labels; the filtered Asset type column remains visible so the selection can be
 changed or cleared, and the instrument name is pinned while the grid scrolls.
 
+**All four classification levels filter from their own column header**, and they
+nest the way the rows do: Super sector offers only what belongs under the chosen
+asset class, Sector only what belongs under that super sector, and so on.
+Choosing a level clears the levels under it, because a sub-sector held over from
+another asset class would match nothing.
+
+The filter dropdowns differ from the row editors in one deliberate way. A row
+editor reads the **declared taxonomy**, so a branch the sample does not yet hold
+can still be assigned — that is the point of the page. A filter reads what the
+**sample actually holds**, so no option can return an empty grid. A value already
+being filtered on stays selectable even after a level above narrows past it,
+otherwise the control would become a dead end with no way to clear it.
+
 ### Three tiers of ownership
 
 Attributes are grouped by who can actually supply the value, because three
