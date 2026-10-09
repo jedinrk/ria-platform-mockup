@@ -43,7 +43,7 @@ test('A household row states its plan and an account row states its household pl
  const account=run('dashboardRow(dashboardRecords().find(r=>r.name==="Lakshmi Nair"))');
  assert.match(account,/data-label="Financial plan"/);
  // Nair has no continuing income, so the plan runs out early.
- assert.match(account,/Gap from year 5/);
+ assert.match(account,/Gap from year 6/);
  assert.match(account,/Nair Household plan/,'an account says whose plan it is showing');
 });
 
@@ -61,7 +61,7 @@ test('Editing a plan changes what the list says',()=>{
  const {run,raw}=overview();
  raw('clientView="households"');
  const before=run('dashboardRow(dashboardRecords().find(r=>r.name==="Nair Household"))');
- assert.match(before,/Gap from year 5/);
+ assert.match(before,/Gap from year 6/);
  raw('financialPlans.h5.monthlyIncomeLakh=4;financialPlans.h5.incomeContinuesYears=30;savePlans()');
  const after=run('dashboardRow(dashboardRecords().find(r=>r.name==="Nair Household"))');
  assert.match(after,/Funded/,'the cached summary is dropped when a plan is saved');

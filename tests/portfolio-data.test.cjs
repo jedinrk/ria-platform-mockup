@@ -13,16 +13,21 @@ function runtime(){
  vm.runInContext('const comparisonState={active:false}',ctx);
  return code=>JSON.parse(vm.runInContext('JSON.stringify('+code+')',ctx));
 }
-test('Original accounts, households, holdings and AUM are preserved',()=>{
+test('Every account holds the full instrument list, scaled to its own AUM',()=>{
  assert.equal(data.accounts.length,12);assert.equal(data.households.length,6);
- // The master carries 31 instruments; the sample portfolios still hold the original 19.
  assert.equal(data.securities.length,31);
- assert.equal(data.securities.filter(s=>data.accounts[0].holdings.some(h=>h.securityId===s.id)).length,19);
- assert.equal(data.accounts.reduce((s,a)=>s+a.aumLakh,0),1968);
- for(const a of data.accounts){assert.equal(a.holdings.length,19);assert.ok(Math.abs(a.holdings.reduce((s,h)=>s+h.valueLakh,0)-a.aumLakh)<1e-9)}
- const held=data.securities.filter(s=>data.accounts[0].holdings.some(h=>h.securityId===s.id));
- assert.deepEqual(data.accounts[0].holdings.map(h=>h.valueLakh),data.accounts[0].holdings.map(h=>held.find(s=>s.id===h.securityId).baseValueLakh));
+ for(const a of data.accounts){
+  assert.equal(a.holdings.length,31,a.name+' should hold every instrument');
+  const total=a.holdings.reduce((s,h)=>s+h.valueLakh,0);
+  if(a.generation.usesBase){
+   // The joint account carries the raw base vector rather than a model spread,
+   // so one portfolio is always visibly off its model.
+   assert.ok(Math.abs(total-338)<1e-9);
+  }else assert.ok(Math.abs(total-a.aumLakh)<1e-9,a.name);
+ }
+ assert.equal(Math.round(data.accounts.reduce((s,a)=>s+a.holdings.reduce((x,h)=>x+h.valueLakh,0),0)),2033);
  assert.equal(data.accounts[0].name,'Mehta Joint (demat + physical)');
+ assert.deepEqual(data.accounts[0].holdings.map(h=>h.valueLakh),data.securities.map(s=>s.baseValueLakh));
  assert.deepEqual(data.securities.filter(s=>s.lookThrough).map(s=>s.name),['Parag Parikh Flexi Cap','Nippon India Small Cap','UTI Nifty 50 Index','Nippon Nifty BeES','Motilal Midcap 150 ETF']);
 });
 
@@ -41,18 +46,18 @@ test('Every instrument carries the nine configuration-sheet columns',()=>{
  assert.ok(data.securities.filter(s=>s.ratingApplies).every(s=>s.crisilRating));
  assert.ok(data.securities.filter(s=>!s.ratingApplies).every(s=>s.crisilRating===null));
 });
-test('Recorded holdings survive a model change unchanged',()=>{
- // Holdings were materialized once from the original wireframe. Switching the
- // allocation hierarchy and the model set does not rewrite them: a portfolio
- // holds what it holds, and a model is what it is measured against.
- for(const a of data.accounts){
-  assert.equal(a.holdings.length,19,a.name+' should still hold the original nineteen');
-  for(const h of a.holdings)assert.ok(h.valueLakh>0&&Number.isFinite(h.valueLakh));
-  if(!a.generation.usesBase)assert.ok(Math.abs(a.holdings.reduce((s,h)=>s+h.valueLakh,0)-a.aumLakh)<1e-9);
+test('Holdings are a deterministic spread around the model each account follows',()=>{
+ const noise=(a,b)=>{const x=Math.sin(a*127.1+b*311.7)*43758.5453;return x-Math.floor(x)};
+ for(const a of data.accounts.filter(a=>!a.generation.usesBase)){
+  const implied=data.settings.models[a.modelName].impliedHoldingPercent;
+  const spread=a.generation.spread||0,seed=Number(a.id.slice(1));
+  const raw=data.securities.map((s,i)=>Math.max(.05,implied[s.name]||0)*Math.max(.05,1+spread*(noise(seed,i)*2-1)));
+  const scale=a.aumLakh/raw.reduce((x,y)=>x+y,0);
+  a.holdings.forEach((h,i)=>assert.ok(Math.abs(h.valueLakh-raw[i]*scale)<1e-9,a.name+' '+data.securities[i].name));
  }
- // The twelve instruments the security master added sit in the tree but unheld.
- const held=new Set(data.accounts.flatMap(a=>a.holdings.map(h=>h.securityId)));
- assert.equal(data.securities.filter(s=>!held.has(s.id)).length,12);
+ // The floor in the formula means even an instrument the model ignores is held
+ // a little, so nothing in the master is orphaned.
+ assert.ok(data.accounts.every(a=>a.holdings.every(h=>h.valueLakh>0)));
 });
 test('Seven models are published, each totalling 100% and naming its intended profile',()=>{
  const run=runtime();
@@ -91,8 +96,8 @@ test('Draft edits and new model publications cannot mutate approved snapshots',(
 test('Household totals count each account once, including the joint account',()=>{
  const run=runtime(),totals=run('dashboardRecords().map(x=>({name:x.name,total:x.total,members:x.members.length}))');
  assert.deepEqual(totals.map(x=>x.members),[2,3,2,2,1,2]);
- assert.ok(Math.abs(totals.reduce((s,x)=>s+x.total,0)-1968)<1e-9);
- assert.ok(Math.abs(totals[0].total-363)<1e-9);
+ assert.ok(Math.abs(totals.reduce((s,x)=>s+x.total,0)-2033)<1e-9);
+ assert.ok(Math.abs(totals[0].total-428)<1e-9);
 });
 
 test('Below the model level a row has no target, which is not a target of zero',()=>{
@@ -100,8 +105,7 @@ test('Below the model level a row has no target, which is not a target of zero',
  const rows=run('alignedPortfolioRows(approved(clientRecords[0]).plan)');
  // The classification tree, to each branch's own depth.
  assert.equal(rows.length,109);
- // Four equity names the security master added are not held by this account.
- assert.equal(rows.find(r=>r.names.length===1&&r.names[0]==='Equity').actual,120);
+ assert.equal(rows.find(r=>r.names.length===1&&r.names[0]==='Equity').actual,144);
 
  // Equity is modelled to sub-sector, so an individual holding below that level
  // is reported with what it holds and no target at all.
@@ -125,9 +129,9 @@ test('Below the model level a row has no target, which is not a target of zero',
 test('Scope changes remain draft-only and missing exclusion reasons block approval',()=>{
  const run=runtime();
  run('(clientRecords[0].draft=copy(approved(clientRecords[0]).plan),clientRecords[0].draft.assets.at(-1).included=false,true)');
- assert.equal(run('scopeValue(clientRecords[0].draft)'),213);
- assert.equal(run('recordedValue(clientRecords[0].draft)'),273);
- assert.equal(run('scopeValue(approved(clientRecords[0]).plan)'),273);
+ assert.equal(run('scopeValue(clientRecords[0].draft)'),278);
+ assert.equal(run('recordedValue(clientRecords[0].draft)'),338);
+ assert.equal(run('scopeValue(approved(clientRecords[0]).plan)'),338);
  assert.ok(run('targetIssues(clientRecords[0].draft)').some(i=>i.includes('reason')));
  run('(clientRecords[0].draft.assets.at(-1).reason="Example scope review",true)');
  assert.deepEqual(run('targetIssues(clientRecords[0].draft)'),[]);
@@ -145,7 +149,7 @@ test('Allocation view always uses approved scope, not the saved target draft',()
  const run=runtime();
  run('(activeClient=clientRecords[0].id,clientRecords[0].draft=copy(approved(clientRecords[0]).plan),clientRecords[0].draft.assets.at(-1).included=false,clientEditing=true,portfolioArea="allocation",renderClient(),true)');
  const html=run('$("app").innerHTML');
- assert.ok(html.includes('19 of 19 assets included'));
- assert.ok(html.includes('₹273 lakh'));
+ assert.ok(html.includes('31 of 31 assets included'));
+ assert.ok(html.includes('₹338 lakh'));
  assert.ok(html.includes('A target draft is saved'));
 });

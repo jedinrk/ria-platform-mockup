@@ -92,20 +92,44 @@ which reading 115 rows will not tell you.
 A tag group is offered only where the securities actually differ. A filter that
 cannot narrow anything is noise.
 
-## What this did to the sample
+## The sample holdings
 
-Switching the models left every household off its target, between 5.6 and 12.6
-percentage points at asset-class level, so all six read *Needs review*.
+Holdings are generated from the model each account follows, as the revised
+wireframe generates them:
 
-That is a real consequence rather than a defect: holdings were recorded against
-the previous models, and the firm has just adopted new ones. Regenerating the
-sample holdings around the new models would make the portfolios look tidier and
-the review queue emptier, but it would also hide the workflow this console
-exists to support. The holdings are left as recorded.
+```
+raw[i]  = max(0.05, impliedTarget[i]) * max(0.05, 1 + spread * (noise * 2 - 1))
+holding = raw[i] * accountAum / sum(raw)
+```
 
-If a demo needs portfolios sitting near their targets, regenerate them
-deliberately rather than quietly — and expect the twelve instruments currently
-held by nobody to become held, because every model in use allocates to all 31.
+so an account holds a deterministic spread around its own model, scaled to its
+AUM. `scripts/apply-holdings.cjs` rebuilds them; the noise is seeded from the
+account id, so the sample is reproducible rather than random.
+
+The floor of 0.05 means every instrument is held at least slightly, including
+ones the model allocates nothing to. Nothing in the master is orphaned.
+
+**The joint account is exempt.** It carries the raw base vector rather than a
+model spread, exactly as the wireframe has it, so there is always one portfolio
+visibly off its model to review.
+
+This was not always so. The holdings were materialized once against the first
+mockup's models and carried through every migration since, while the models
+moved on twice. A portfolio held one generation's weights and was measured
+against another's, so all six households read *needs review* for a reason that
+said more about our data than about the portfolio. Now:
+
+| Household | Model | Drift | State |
+|---|---|---|---|
+| Mehta Family | Moderate | 6.7 pp | Needs review — asset class and sub-class |
+| Kapoor Family | Aggressive | 3.8 pp | Needs review — sub-class only |
+| Nair Household | Conservative | 3.5 pp | Within threshold |
+| Shah & Sons | Dividend reinvestment | 2.0 pp | Within threshold |
+| Iyer Household | Conservative | 1.1 pp | Within threshold |
+| Rao Family | Growth | 0.6 pp | Within threshold |
+
+Total AUM is ₹2,033 lakh, up from ₹1,968, because the joint account now carries
+its full base vector.
 
 ## Storage
 
