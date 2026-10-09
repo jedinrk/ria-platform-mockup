@@ -1,0 +1,4 @@
+# Scratch output from throwaway preview builds. A published preview directory is
+# committed deliberately and by name; anything under tmp/ is not.
+tmp/
+.DS_Store

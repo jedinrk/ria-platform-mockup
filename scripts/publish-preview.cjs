@@ -42,7 +42,12 @@ const isRuntimeFile = file => {
 const files = git('ls-tree', '-r', '--name-only', ref).split('\n').filter(Boolean).filter(isRuntimeFile);
 if (!files.length) throw new Error('No runtime files found at ' + ref);
 
-const target = path.join(root, directory);
+// path.join would silently reinterpret an absolute path as repository-relative,
+// so a throwaway build aimed at /tmp would land inside the repository instead.
+const target = path.resolve(root, directory);
+if (!path.isAbsolute(directory) && (directory.startsWith('..') || !target.startsWith(root + path.sep))) {
+ throw new Error('Refusing to write outside the repository: ' + directory);
+}
 fs.rmSync(target, {recursive: true, force: true});
 for (const file of files) {
  const destination = path.join(target, file);
