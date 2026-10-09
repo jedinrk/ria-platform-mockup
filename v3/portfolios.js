@@ -26,7 +26,9 @@ function leaveModels(){if(editing){persist();dirty=false}editing=false}
 function clientNav(){leaveModels();activeClient=null;clientEditing=false;navState('portfolios');renderClients()}
 function modelNav(){leaveModels();clientEditing=false;syncClients();activeLens='ac';navState('models');list()}
 function newer(c){const p=approved(c).plan,m=models.find(m=>m.id===p.base.modelId);return m&&latest(m)?.number>p.base.version}
-function effective(plan){const result=copy(plan.base.data);for(const x of entries(result.allocations)){const o=plan.overrides[x.key];if(o?.target!==undefined)x.node.target=o.target}return result}
+// A portfolio's own adjustments on top of the model it follows: a target, a
+// band, or both. Everything downstream reads the result, not the two separately.
+function effective(plan){const result=copy(plan.base.data);for(const x of entries(result.allocations)){const o=plan.overrides[x.key];if(!o)continue;if(o.target!==undefined)x.node.target=o.target;if(o.band!==undefined)x.node.band=o.band}return result}
 function targetIssues(plan){const issues=validation(effective(plan));if(scopeValue(plan)<=0)issues.push('Include at least one asset with a positive value.');if(plan.assets.some(a=>!a.included&&!a.reason.trim()))issues.push('Give a reason for each excluded asset.');const keys=new Set(entries(plan.base.data.allocations).map(x=>x.key));if(Object.keys(plan.overrides).some(k=>!keys.has(k)))issues.push('Some customisations do not match the selected model. Keep the earlier model or resolve the allocations before approval.');return issues}
 // Drift and breaches are read off the one classification tree. A portfolio is
 // measured against the node targets its client target approved, with its own
