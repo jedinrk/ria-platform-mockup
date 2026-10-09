@@ -1,0 +1,664 @@
+{
+  "source": {
+    "sourceFile": "Portfolio Console – wireframes.html",
+    "sourceSha256": "aaf975dbc7ae7b3b7aaa7b584b2f79f1b32bf32b86fc56f8ccb43c610e2155a9",
+    "asOf": "2026-10-03",
+    "currency": "INR",
+    "valueUnit": "lakh",
+    "totalAumLakh": 1968,
+    "notes": [
+      "All values, rates and fund exposures are illustrative original wireframe data, not verified investment facts or current tax guidance.",
+      "Non-base holdings are materialized with the exact deterministic formula from the source, without rounding.",
+      "No source account ownership shares, risk-assessment dates, financial goals or source-statement evidence were supplied.",
+      "Original sample includes all 19 holdings in every account. No residence/jewellery exclusion or target redistribution has been added.",
+      "Independent exposure dimensions are preserved; joint geography/market-cap/sector exposures are not known."
+    ]
+  },
+  "securities": [
+    {
+      "name": "Parag Parikh Flexi Cap",
+      "assetClass": "Equity",
+      "tags": {
+        "sector": "Diversified equity",
+        "subsector": "Flexi cap",
+        "marketCap": "Large",
+        "geography": "India",
+        "themes": [
+          "Quality",
+          "Global diversification"
+        ],
+        "custom": "Core",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": {
+        "sector": [
+          {
+            "sector": "Financials",
+            "subsector": "Private banks",
+            "weight": 0.18
+          },
+          {
+            "sector": "Financials",
+            "subsector": "NBFC & others",
+            "weight": 0.06
+          },
+          {
+            "sector": "Information Technology",
+            "subsector": "IT services",
+            "weight": 0.07
+          },
+          {
+            "sector": "Information Technology",
+            "subsector": "Global technology",
+            "weight": 0.13
+          },
+          {
+            "sector": "Energy",
+            "subsector": "Oil & gas",
+            "weight": 0.06
+          },
+          {
+            "sector": "Consumer",
+            "subsector": "FMCG",
+            "weight": 0.08
+          },
+          {
+            "sector": "Healthcare",
+            "subsector": "Pharma",
+            "weight": 0.04
+          },
+          {
+            "sector": "Industrials & other",
+            "subsector": "Capital goods",
+            "weight": 0.1
+          },
+          {
+            "sector": "Other equity",
+            "subsector": "Diversified / other",
+            "weight": 0.28
+          }
+        ],
+        "marketCap": [
+          {
+            "bucket": "Large",
+            "weight": 0.72
+          },
+          {
+            "bucket": "Mid",
+            "weight": 0.18
+          },
+          {
+            "bucket": "Small",
+            "weight": 0.1
+          }
+        ],
+        "geography": [
+          {
+            "bucket": "India",
+            "weight": 0.65
+          },
+          {
+            "bucket": "Global",
+            "weight": 0.35
+          }
+        ]
+      }
+    },
+    {
+      "name": "Nippon India Small Cap",
+      "assetClass": "Equity",
+      "tags": {
+        "sector": "Diversified equity",
+        "subsector": "Small cap",
+        "marketCap": "Small",
+        "geography": "India",
+        "themes": [
+          "Small-cap growth"
+        ],
+        "custom": "Satellite",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": {
+        "sector": [
+          {
+            "sector": "Industrials & other",
+            "subsector": "Capital goods",
+            "weight": 0.28
+          },
+          {
+            "sector": "Financials",
+            "subsector": "NBFC & others",
+            "weight": 0.12
+          },
+          {
+            "sector": "Healthcare",
+            "subsector": "Pharma",
+            "weight": 0.1
+          },
+          {
+            "sector": "Consumer",
+            "subsector": "FMCG",
+            "weight": 0.08
+          },
+          {
+            "sector": "Information Technology",
+            "subsector": "IT services",
+            "weight": 0.07
+          },
+          {
+            "sector": "Other equity",
+            "subsector": "Diversified / other",
+            "weight": 0.35
+          }
+        ],
+        "marketCap": [
+          {
+            "bucket": "Small",
+            "weight": 0.85
+          },
+          {
+            "bucket": "Mid",
+            "weight": 0.12
+          },
+          {
+            "bucket": "Large",
+            "weight": 0.03
+          }
+        ],
+        "geography": [
+          {
+            "bucket": "India",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "UTI Nifty 50 Index",
+      "assetClass": "Equity",
+      "tags": {
+        "sector": "Diversified equity",
+        "subsector": "Index",
+        "marketCap": "Large",
+        "geography": "India",
+        "themes": [
+          "Broad market"
+        ],
+        "custom": "Core",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": {
+        "sector": [
+          {
+            "sector": "Financials",
+            "subsector": "Private banks",
+            "weight": 0.3
+          },
+          {
+            "sector": "Financials",
+            "subsector": "NBFC & others",
+            "weight": 0.08
+          },
+          {
+            "sector": "Information Technology",
+            "subsector": "IT services",
+            "weight": 0.13
+          },
+          {
+            "sector": "Energy",
+            "subsector": "Oil & gas",
+            "weight": 0.11
+          },
+          {
+            "sector": "Consumer",
+            "subsector": "FMCG",
+            "weight": 0.09
+          },
+          {
+            "sector": "Healthcare",
+            "subsector": "Pharma",
+            "weight": 0.04
+          },
+          {
+            "sector": "Industrials & other",
+            "subsector": "Capital goods",
+            "weight": 0.08
+          },
+          {
+            "sector": "Other equity",
+            "subsector": "Diversified / other",
+            "weight": 0.17
+          }
+        ],
+        "marketCap": [
+          {
+            "bucket": "Large",
+            "weight": 1
+          }
+        ],
+        "geography": [
+          {
+            "bucket": "India",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "HDFC Bank",
+      "assetClass": "Equity",
+      "tags": {
+        "sector": "Financials",
+        "subsector": "Private banks",
+        "marketCap": "Large",
+        "geography": "India",
+        "themes": [
+          "Quality",
+          "Dividend"
+        ],
+        "custom": "Core",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "Infosys",
+      "assetClass": "Equity",
+      "tags": {
+        "sector": "Information Technology",
+        "subsector": "IT services",
+        "marketCap": "Large",
+        "geography": "India",
+        "themes": [
+          "Digital India",
+          "Dividend"
+        ],
+        "custom": "Core",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "Reliance Industries",
+      "assetClass": "Equity",
+      "tags": {
+        "sector": "Energy",
+        "subsector": "Oil & gas",
+        "marketCap": "Large",
+        "geography": "India",
+        "themes": [
+          "Energy transition"
+        ],
+        "custom": "Satellite",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "Nippon Nifty BeES",
+      "assetClass": "Equity",
+      "tags": {
+        "sector": "Diversified equity",
+        "subsector": "Index",
+        "marketCap": "Large",
+        "geography": "India",
+        "themes": [
+          "Broad market"
+        ],
+        "custom": "Core",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": {
+        "sector": [
+          {
+            "sector": "Financials",
+            "subsector": "Private banks",
+            "weight": 0.3
+          },
+          {
+            "sector": "Financials",
+            "subsector": "NBFC & others",
+            "weight": 0.08
+          },
+          {
+            "sector": "Information Technology",
+            "subsector": "IT services",
+            "weight": 0.13
+          },
+          {
+            "sector": "Energy",
+            "subsector": "Oil & gas",
+            "weight": 0.11
+          },
+          {
+            "sector": "Consumer",
+            "subsector": "FMCG",
+            "weight": 0.09
+          },
+          {
+            "sector": "Healthcare",
+            "subsector": "Pharma",
+            "weight": 0.04
+          },
+          {
+            "sector": "Industrials & other",
+            "subsector": "Capital goods",
+            "weight": 0.08
+          },
+          {
+            "sector": "Other equity",
+            "subsector": "Diversified / other",
+            "weight": 0.17
+          }
+        ],
+        "marketCap": [
+          {
+            "bucket": "Large",
+            "weight": 1
+          }
+        ],
+        "geography": [
+          {
+            "bucket": "India",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "Motilal Midcap 150 ETF",
+      "assetClass": "Equity",
+      "tags": {
+        "sector": "Diversified equity",
+        "subsector": "Mid cap",
+        "marketCap": "Mid",
+        "geography": "India",
+        "themes": [
+          "Mid-cap growth"
+        ],
+        "custom": "Satellite",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": {
+        "sector": [
+          {
+            "sector": "Financials",
+            "subsector": "Private banks",
+            "weight": 0.08
+          },
+          {
+            "sector": "Financials",
+            "subsector": "NBFC & others",
+            "weight": 0.14
+          },
+          {
+            "sector": "Industrials & other",
+            "subsector": "Capital goods",
+            "weight": 0.22
+          },
+          {
+            "sector": "Healthcare",
+            "subsector": "Pharma",
+            "weight": 0.12
+          },
+          {
+            "sector": "Consumer",
+            "subsector": "FMCG",
+            "weight": 0.08
+          },
+          {
+            "sector": "Information Technology",
+            "subsector": "IT services",
+            "weight": 0.09
+          },
+          {
+            "sector": "Energy",
+            "subsector": "Oil & gas",
+            "weight": 0.05
+          },
+          {
+            "sector": "Other equity",
+            "subsector": "Diversified / other",
+            "weight": 0.22
+          }
+        ],
+        "marketCap": [
+          {
+            "bucket": "Mid",
+            "weight": 0.85
+          },
+          {
+            "bucket": "Small",
+            "weight": 0.08
+          },
+          {
+            "bucket": "Large",
+            "weight": 0.07
+          }
+        ],
+        "geography": [
+          {
+            "bucket": "India",
+            "weight": 1
+          }
+        ]
+      }
+    },
+    {
+      "name": "GOI 7.18% 2033",
+      "assetClass": "Debt",
+      "tags": {
+        "sector": "Fixed income",
+        "subsector": "Government securities",
+        "marketCap": "Non-equity",
+        "geography": "India",
+        "themes": [
+          "Capital preservation"
+        ],
+        "custom": "Core",
+        "creditQuality": "Sovereign",
+        "duration": "Long",
+        "isDebt": true
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "HDFC Ltd NCD 8.1%",
+      "assetClass": "Debt",
+      "tags": {
+        "sector": "Fixed income",
+        "subsector": "Corporate bonds",
+        "marketCap": "Non-equity",
+        "geography": "India",
+        "themes": [
+          "Income"
+        ],
+        "custom": "Core",
+        "creditQuality": "AAA",
+        "duration": "Medium",
+        "isDebt": true
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "SBI FD (Mar 2028)",
+      "assetClass": "Debt",
+      "tags": {
+        "sector": "Fixed income",
+        "subsector": "Bank deposits",
+        "marketCap": "Non-equity",
+        "geography": "India",
+        "themes": [
+          "Capital preservation"
+        ],
+        "custom": "Core",
+        "creditQuality": "AAA",
+        "duration": "Short",
+        "isDebt": true
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "HDFC Bank FD (Jun 2027)",
+      "assetClass": "Debt",
+      "tags": {
+        "sector": "Fixed income",
+        "subsector": "Bank deposits",
+        "marketCap": "Non-equity",
+        "geography": "India",
+        "themes": [
+          "Capital preservation"
+        ],
+        "custom": "Core",
+        "creditQuality": "AAA",
+        "duration": "Short",
+        "isDebt": true
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "EPF account",
+      "assetClass": "Debt",
+      "tags": {
+        "sector": "Fixed income",
+        "subsector": "Retirement funds",
+        "marketCap": "Non-equity",
+        "geography": "India",
+        "themes": [
+          "Retirement"
+        ],
+        "custom": "Core",
+        "creditQuality": "Sovereign",
+        "duration": "Medium",
+        "isDebt": true
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "360 ONE Cat III AIF",
+      "assetClass": "Alternatives",
+      "tags": {
+        "sector": "Alternatives",
+        "subsector": "Long-short (Cat III)",
+        "marketCap": "Non-equity",
+        "geography": "India",
+        "themes": [
+          "Absolute return"
+        ],
+        "custom": "Satellite",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "Embassy REIT",
+      "assetClass": "Alternatives",
+      "tags": {
+        "sector": "Real estate",
+        "subsector": "REIT & InvIT",
+        "marketCap": "Non-equity",
+        "geography": "India",
+        "themes": [
+          "Income",
+          "Real assets"
+        ],
+        "custom": "Satellite",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "IRB InvIT",
+      "assetClass": "Alternatives",
+      "tags": {
+        "sector": "Real estate",
+        "subsector": "REIT & InvIT",
+        "marketCap": "Non-equity",
+        "geography": "India",
+        "themes": [
+          "Income",
+          "Infrastructure"
+        ],
+        "custom": "Satellite",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "Sovereign Gold Bond 2028",
+      "assetClass": "Real assets",
+      "tags": {
+        "sector": "Gold",
+        "subsector": "Gold bonds & physical",
+        "marketCap": "Non-equity",
+        "geography": "India",
+        "themes": [
+          "Inflation hedge"
+        ],
+        "custom": "Core",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "Physical gold (jewellery, bars)",
+      "assetClass": "Real assets",
+      "tags": {
+        "sector": "Gold",
+        "subsector": "Gold bonds & physical",
+        "marketCap": "Non-equity",
+        "geography": "India",
+        "themes": [
+          "Inflation hedge"
+        ],
+        "custom": "Core",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": null
+    },
+    {
+      "name": "Flat, Baner Pune",
+      "assetClass": "Real assets",
+      "tags": {
+        "sector": "Real estate",
+        "subsector": "Direct property",
+        "marketCap": "Non-equity",
+        "geography": "India",
+        "themes": [
+          "Real assets"
+        ],
+        "custom": "Core",
+        "creditQuality": null,
+        "duration": null,
+        "isDebt": false
+      },
+      "lookThrough": null
+    }
+  ]
+}

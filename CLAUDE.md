@@ -22,7 +22,11 @@ If a change does not clearly fall into one of those, it belongs on the v3 branch
 | | Purpose |
 |---|---|
 | `main` | the live site, plus the generated `v3/` preview |
-| `naveenravindran92/revised-mockup-v3` | the v3 development line, and the source the preview is built from |
+| `revised-mockup-v3` | the v3 development line, and the source the preview is built from |
+
+The branch is deliberately not called `v3`: `main` contains a directory of that
+name, and git then refuses commands like `git log v3` and `git diff v3` as
+ambiguous between a revision and a path.
 | short-lived branches off the v3 line | individual pieces of v3 work, merged back into it |
 
 The v3 branch is **not** redundant with the published preview. The preview is a
@@ -34,7 +38,7 @@ that.
 ## Refreshing the preview
 
 ```
-node scripts/publish-preview.cjs origin/naveenravindran92/revised-mockup-v3 v3
+node scripts/publish-preview.cjs origin/revised-mockup-v3 v3
 ```
 
 Then open a small PR to `main` containing only the `v3/` change. The directory

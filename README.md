@@ -30,7 +30,7 @@ what is live:
 
 ```
 node scripts/publish-preview.cjs <git-ref> [directory]
-node scripts/publish-preview.cjs naveenravindran92/revised-mockup-v3 v3
+node scripts/publish-preview.cjs revised-mockup-v3 v3
 ```
 
 The directory is rebuilt from scratch each time, so re-running the script after
