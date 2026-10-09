@@ -190,6 +190,9 @@ test('Security master separates source-fixed fields from the firm classification
  const grid=run('securityGrid()');
  for(const header of ['Name','ISIN','Symbol','Crisil rating','Current price','Asset type','Asset class','Super sector','Sector','Sub-sector'])
   assert.ok(grid.includes(header),'missing column: '+header);
+ assert.ok(grid.includes('class="config-filter-row"'),'filters sit inside the table header');
+ for(const id of ['securitySearch','securityTypeFilter','securityClassFilter','securityUnclassified'])
+  assert.ok(grid.includes('id="'+id+'"'),'missing header filter: '+id);
  assert.ok(grid.includes('config-fixed'),'source fields are marked read-only');
  for(const field of ['assetClass','superSector','sector','subsector'])
   assert.ok(grid.includes('data-field="'+field+'"'),'missing editable field: '+field);

@@ -177,14 +177,25 @@ function securityGrid(){
  const typeColumns=securityFilters.instrumentType
   ?((originalData.settings.instrumentTypes||[]).find(t=>t.name===securityFilters.instrumentType)?.attributes||[])
   :[];
- const showAssetType=!securityFilters.instrumentType;
- const columnCount=(showAssetType?10:9)+typeColumns.length;
+ // A filtered column stays visible, as it would in a spreadsheet. Apart from
+ // preserving context, this keeps the type filter available so it can be
+ // changed or cleared after its type-specific attribute columns appear.
+ const showAssetType=true;
+ const columnCount=10+typeColumns.length;
+ const typeOptions=[...new Set(originalData.securities.map(instrumentType))].sort();
  return `<div class="card tablewrap" style="padding:0"><table class="config-grid${typeColumns.length?' has-attributes':''}"><caption class="sr-only">Firm-wide instrument classification</caption>
  <thead><tr>
   <th scope="col">Name</th><th scope="col">ISIN</th><th scope="col">Symbol</th>
   <th scope="col">Crisil rating</th><th scope="col">Current price</th>${showAssetType?'<th scope="col">Asset type</th>':''}
   <th scope="col" class="col-editable">Asset class</th><th scope="col" class="col-editable">Super sector</th><th scope="col" class="col-editable">Sector</th><th scope="col" class="col-editable">Sub-sector</th>
   ${typeColumns.map(a=>`<th scope="col" class="col-attribute">${esc(a.label)}${a.unit?`<small>${esc(a.unit)}</small>`:''}</th>`).join('')}
+ </tr><tr class="config-filter-row">
+  <th><label class="config-header-search"><span class="sr-only">Filter instruments</span><input id="securitySearch" type="search" placeholder="Filter rows…" value="${esc(securityFilters.search)}" aria-label="Filter instruments by name, symbol, type or sector"></label><label class="config-header-check"><input id="securityUnclassified" type="checkbox" ${securityFilters.unclassifiedOnly?'checked':''}> Needs classification only</label></th>
+  <th aria-label="No ISIN filter"></th><th aria-label="No symbol filter"></th><th aria-label="No rating filter"></th><th aria-label="No price filter"></th>
+  ${showAssetType?`<th><label><span class="sr-only">Filter by asset type</span><select id="securityTypeFilter" class="config-header-filter" aria-label="Filter by asset type"><option value="">All</option>${typeOptions.map(t=>`<option ${securityFilters.instrumentType===t?'selected':''}>${esc(t)}</option>`).join('')}</select></label></th>`:''}
+  <th class="col-editable"><label><span class="sr-only">Filter by asset class</span><select id="securityClassFilter" class="config-header-filter" aria-label="Filter by asset class"><option value="">All</option>${ASSET_CLASSES.map(c=>`<option ${securityFilters.assetClass===c?'selected':''}>${esc(c)}</option>`).join('')}</select></label></th>
+  <th class="col-editable" aria-label="No super sector filter"></th><th class="col-editable" aria-label="No sector filter"></th><th class="col-editable" aria-label="No sub-sector filter"></th>
+  ${typeColumns.map(a=>`<th class="col-attribute" aria-label="No ${esc(a.label)} filter"></th>`).join('')}
  </tr></thead><tbody>${rows.map(s=>{
   // A rating the source never supplies is different from one that cannot apply:
   // the instrument type decides which of the two this is.
@@ -233,14 +244,7 @@ securityMasterPage=function(){
   <div class="card"><small>Staged changes</small><strong>${pending}</strong><small>not applied yet</small></div>
   <div class="card"><small>Instrument types</small><strong>${new Set(originalData.securities.map(instrumentType)).size}</strong><small>each sets its own attributes</small></div>
  </div>
- <section class="card overview-card"><div class="overview-controls">
-  <label class="search-field">Search instruments<input id="securitySearch" type="search" placeholder="Name, symbol, type or sector" value="${esc(securityFilters.search)}"></label>
-  <label class="search-field">Asset class<select id="securityClassFilter"><option value="">All asset classes</option>${ASSET_CLASSES.map(c=>`<option ${securityFilters.assetClass===c?'selected':''}>${esc(c)}</option>`).join('')}</select></label>
-  <label class="search-field">Instrument type<select id="securityTypeFilter"><option value="">All instrument types</option>${[...new Set(originalData.securities.map(instrumentType))].sort().map(t=>`<option ${securityFilters.instrumentType===t?'selected':''}>${esc(t)}</option>`).join('')}</select></label>
-  <label class="check-filter"><input id="securityUnclassified" type="checkbox" ${securityFilters.unclassifiedOnly?'checked':''}> Needs classification only</label>
- </div>
- <p class="list-caption config-legend"><span class="config-key"><b class="is-fixed">Fixed</b> from the instrument source</span><span class="config-key"><b class="is-editable">Editable</b> your classification</span><span class="config-key"><b class="is-absent">—</b> not supplied by the sample</span><span class="config-key"><b class="is-attr">›</b> open a row for its type's attributes</span><span class="config-count">Showing ${securityRows().length} of ${total}</span></p>
- </section>
+ <p class="list-caption config-legend"><span class="config-key"><b class="is-fixed">Fixed</b> from the instrument source</span><span class="config-key"><b class="is-editable">Editable</b> your classification</span><span class="config-key"><b class="is-absent">—</b> not supplied by the sample</span><span class="config-key"><b class="is-attr">›</b> open a row for its type's attributes</span><span class="config-count">Showing ${securityRows().length} of ${total}${securityFilters.search||securityFilters.assetClass||securityFilters.instrumentType||securityFilters.unclassifiedOnly?' · <button class="link-button" data-security-action="clear">Clear filters</button>':''}</span></p>
  ${securityAddPanel()}
  ${securityGrid()}
  <p class="note">Super sector, sector and sub-sector feed every exposure view immediately once applied. Asset class also decides whether an instrument is measured by the credit and duration view. Recorded holdings keep the asset class they were recorded under: reclassifying an instrument changes analysis from now on, it does not restate an approved snapshot.</p>

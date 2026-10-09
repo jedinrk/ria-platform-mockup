@@ -201,6 +201,14 @@ dialog .actions{position:sticky;bottom:-28px;background:white;padding:14px 0 4px
 .config-grid tbody th,.config-grid tbody td{padding-top:11px;padding-bottom:11px}
 .config-grid thead th{white-space:nowrap;background:#f8faf7}
 .config-grid thead th.col-editable{background:#eef5f0;color:var(--green)}
+.config-grid thead tr:first-child th{padding-top:10px;padding-bottom:7px;border-bottom:0}
+.config-grid thead .config-filter-row th{padding-top:0;padding-bottom:9px;vertical-align:top;border-bottom:1px solid var(--line)}
+.config-header-search{display:block;min-width:210px}
+.config-header-search input,.config-header-filter{box-sizing:border-box;width:100%;height:31px;border:1px solid #ccd8d0;border-radius:6px;background:white;color:var(--ink);font:inherit;font-size:12px}
+.config-header-search input{padding:6px 8px}
+.config-header-filter{min-width:128px;padding:5px 25px 5px 7px}
+.config-header-check{display:flex;align-items:center;gap:6px;margin-top:6px;color:var(--mut);font-size:11px;font-weight:500;white-space:normal}
+.config-header-check input{margin:0}
 .config-grid td{vertical-align:middle}
 .config-grid td.config-fixed{color:var(--mut);font-size:13px;background:#fbfcfa}
 .config-grid tr.is-unclassified th[scope=row]{box-shadow:inset 3px 0 #b07d27}
@@ -215,6 +223,7 @@ dialog .actions{position:sticky;bottom:-28px;background:white;padding:14px 0 4px
 .config-key b.is-editable{background:#e3efe7;color:#246442}
 .config-key b.is-absent{background:transparent;color:#9aa6a0;font-size:13px;padding:0 2px}
 .config-count{margin-left:auto}
+.config-count .link-button{border:0;background:transparent;color:var(--green);padding:0;font:inherit;text-decoration:underline;text-underline-offset:2px}
 .config-add .search-field input{width:320px;max-width:100%}
 .config-suggestions{list-style:none;margin:14px 0 0;padding:0;border:1px solid var(--line);border-radius:9px;overflow:hidden}
 .config-suggestions li{display:flex;align-items:center;gap:12px;padding:11px 14px;border-bottom:1px solid #eef1ec;font-size:14px}
@@ -259,4 +268,5 @@ tr.config-detail>td{background:#f7faf7;padding:0;border-bottom:1px solid var(--l
    instrument name stays put to keep each row identifiable. */
 .config-grid th[scope=row]{position:sticky;left:0;z-index:1;background:white}
 .config-grid thead th:first-child{position:sticky;left:0;z-index:2}
+.config-grid thead .config-filter-row th:first-child{z-index:3}
 .config-grid tr.config-detail>td{z-index:0}
