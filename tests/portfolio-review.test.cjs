@@ -10,29 +10,25 @@ function preview(){
 }
 test('Review summary names the largest gap, and reports a clear portfolio as clear',()=>{
  const run=preview();
- // Adopting the revised models left every household off its target, so the
- // summary states which asset class is furthest out.
- assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h1")).title'),/Real assets.*12.6 pp above/);
- assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h6")).title'),/Alternatives.*10 pp below/);
- for(const id of ['h1','h2','h3','h4','h5','h6'])
-  assert.equal(run(`reviewSummary(dashboardRecords().find(r=>r.id==="${id}")).tone`),'attention');
- // Widen the threshold past its drift and the firm's sub-class bands past every
- // breach, and the same household reads as clear: the state is derived from the
- // numbers, not hard-coded. A household uses the firm bands, not an account's.
- const clear=run(`(()=>{reviewRules.overrides.h2=40;
-  originalData.settings.defaultBandsByLevel=[null,90,90,90,90];
-  return reviewSummary(dashboardRecords().find(r=>r.id==="h2")).tone})()`);
- assert.equal(clear,'clear');
+ assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h1")).title'),/Real assets.*6.7 pp above/);
+ assert.equal(run('reviewSummary(dashboardRecords().find(r=>r.id==="h1")).tone'),'attention');
+ // Most households sit within their thresholds and bands once holdings follow
+ // the model they are measured against.
+ for(const id of ['h2','h4','h5','h6'])
+  assert.equal(run(`reviewSummary(dashboardRecords().find(r=>r.id==="${id}")).tone`),'clear',id);
+ assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h2")).title'),/within/);
+ // Kapoor is inside its asset-class threshold but breaches sub-class bands.
+ assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h3")).title'),/exposure/);
 });
 test('Sub-class flag preview caps the list and keeps every flag reachable',()=>{
  const run=preview();
- const total=run('dashboardRecords().find(r=>r.id==="h4").exposureFlags.length');
+ const total=run('(clientView="accounts",dashboardRecords().find(r=>r.id==="a6").exposureFlags.length)');
  assert.ok(total>4,'the sample needs more than four flags for this to mean anything');
- const limited=run('reviewExposures(dashboardRecords().find(r=>r.id==="h4"))');
+ const limited=run('reviewExposures(dashboardRecords().find(r=>r.id==="a6"))');
  assert.match(limited,new RegExp('Showing 4 of '+total+' flags'));
  assert.match(limited,new RegExp('Show all '+total+' flags'));
  assert.equal((limited.match(/class="review-bucket"/g)||[]).length,4);
- const full=run('(rowReviewShowAll.add("h4"),reviewExposures(dashboardRecords().find(r=>r.id==="h4")))');
+ const full=run('(rowReviewShowAll.add("a6"),reviewExposures(dashboardRecords().find(r=>r.id==="a6")))');
  assert.equal((full.match(/class="review-bucket"/g)||[]).length,total);
 });
 test('Household accounts and individual account context use different layouts',()=>{

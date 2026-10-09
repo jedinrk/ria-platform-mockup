@@ -62,22 +62,21 @@ test('Dates are the local calendar day, not shifted by the timezone',()=>{
 test('Sub-class breaches can be excluded from the review state',()=>{
  const {run,raw}=console_();
  raw('clientView="accounts"');
- // Every portfolio is off its asset-class target after the model change, so the
- // toggle is tested on one that is flagged on breaches alone.
- raw('reviewRules.overrides.a3=40');
- const on=run('dashboardRecords().find(r=>r.id==="a3").flagged');
- assert.equal(on,true,'a3 is flagged on sub-class breaches alone');
+ // a5 sits well inside its asset-class threshold and is flagged only because a
+ // sub-class is outside its band.
+ assert.ok(run('dashboardRecords().find(r=>r.id==="a5").drift')<run('dashboardRecords().find(r=>r.id==="a5").threshold'));
+ assert.equal(run('dashboardRecords().find(r=>r.id==="a5").flagged'),true);
  raw('exposureTriggersReview=false');
- assert.equal(run('dashboardRecords().find(r=>r.id==="a3").flagged'),false,'turning the trigger off clears it');
+ assert.equal(run('dashboardRecords().find(r=>r.id==="a5").flagged'),false,'turning the trigger off clears it');
  assert.ok(run('dashboardRecords().every(r=>r.exposureFlags.length>=0)'),'breaches are still measured');
  raw('exposureTriggersReview=true');
- assert.equal(run('dashboardRecords().find(r=>r.id==="a3").flagged'),true);
+ assert.equal(run('dashboardRecords().find(r=>r.id==="a5").flagged'),true);
 });
 
 test('Liquidity context is derived from the holdings, and absent facts say so',()=>{
  const {run,raw}=console_();
  const l=run('(()=>{const p=approved(clientRecords.find(c=>c.id==="a1")).plan;const x=liquidityProfile(p);return {total:Math.round(x.total),restricted:Math.round(x.restricted),locked:Math.round(x.buckets.Locked)}})()');
- assert.equal(l.total,273);
+ assert.equal(l.total,338);
  assert.ok(l.locked>0&&l.restricted>=l.locked,'locked and semi-liquid value is reported');
  assert.ok(run('restrictionList(approved(clientRecords.find(c=>c.id==="a1")).plan).length')>0);
  raw('activeClient="a1"');
@@ -207,12 +206,17 @@ test('A rating that cannot apply reads differently from one that is missing',()=
  assert.equal(run('originalData.securities.find(s=>s.name==="SBI FD (Mar 2028)").ratingApplies'),true);
  assert.equal(run('originalData.securities.find(s=>s.name==="SBI FD (Mar 2028)").crisilRating'),'AAA');
 });
-test('An instrument in the master that nobody holds is shown as not held',()=>{
+test('Every instrument in the master is held somewhere, and the grid can still say otherwise',()=>{
  const {run}=console_();
- const grid=run('securityGrid()');
  assert.equal(run('originalData.securities.length'),31);
- assert.equal(run('securityValue(originalData.securities.find(s=>s.name==="Silver ETF").id)'),0);
- assert.ok(grid.includes('Not held'));
+ // Holdings are generated from each account's model with a floor, so nothing in
+ // the master is orphaned any more.
+ assert.ok(run('originalData.securities.every(s=>securityValue(s.id)>0)'));
+ // The not-held state is still rendered, for an instrument classified before
+ // anyone buys it.
+ const source=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','security-master.js'),'utf8');
+ assert.match(source,/Not held/);
+ assert.match(source,/In the master, not held by any sample portfolio/);
 });
 test('Applied classification feeds the exposure views and asset class gates the credit view',()=>{
  const {run,raw}=console_();

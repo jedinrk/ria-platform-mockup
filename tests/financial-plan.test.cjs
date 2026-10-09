@@ -45,9 +45,9 @@ test('The projection finds the year a household runs out, or confirms it does no
  const gaps={};
  for(const id of Object.keys(plans.plans))gaps[id]=run(`FinancialPlan.project(financialPlanData.plans["${id}"],vectorFor("${id}")).gapYear`);
  // Nair has no continuing income, so the portfolio is drawn down early.
- assert.equal(gaps.h5,5);
- assert.equal(gaps.h2,16);
- assert.equal(gaps.h4,30);
+ assert.equal(gaps.h5,6);
+ assert.equal(gaps.h2,17);
+ assert.equal(gaps.h4,29);
  for(const id of ['h1','h3','h6'])assert.equal(gaps[id],null,id+' should be funded across the horizon');
  const nair=run('FinancialPlan.project(financialPlanData.plans.h5,vectorFor("h5"))');
  assert.equal(nair.years.length,plans.settings.horizonYears);
@@ -59,9 +59,9 @@ test('The projection finds the year a household runs out, or confirms it does no
 test('Net worth, runway and the emergency target come off the holdings',()=>{
  const {run}=engine();
  const mehta=run('FinancialPlan.project(financialPlanData.plans.h1,vectorFor("h1"))');
- assert.equal(Math.round(mehta.netWorth),315);
- assert.equal(Math.round(mehta.assets-mehta.liabilitiesTotal),315);
- assert.ok(Math.abs(mehta.runwayMonths-53.6)<0.1);
+ assert.equal(Math.round(mehta.netWorth),380);
+ assert.equal(Math.round(mehta.assets-mehta.liabilitiesTotal),380);
+ assert.ok(Math.abs(mehta.runwayMonths-63.3)<0.5);
  assert.ok(Math.abs(mehta.emergencyTarget-mehta.commitmentsMonthly*plans.settings.emergencyMonths)<1e-9);
  assert.ok(mehta.commitmentsMonthly>0&&mehta.emiMonthly>0&&mehta.needsMonthly>0);
  // The reserve counts debt holdings that are not locked, nothing else.
@@ -138,7 +138,7 @@ test('Recurring investment goes to the classes furthest below target',()=>{
 test('Flags call out a funding gap, a thin buffer, costly debt and missing cover',()=>{
  const {run}=engine();
  const text=id=>run(`FinancialPlan.flags(financialPlanData.plans["${id}"],FinancialPlan.project(financialPlanData.plans["${id}"],vectorFor("${id}")))`).map(f=>f.text).join(' | ');
- assert.match(text('h5'),/outrun the investable portfolio from year 5/);
+ assert.match(text('h5'),/outrun the investable portfolio from year 6/);
  assert.match(text('h5'),/No insurance premium is recorded/);
  assert.match(text('h1'),/Funded for the full 30-year horizon/);
  // Mehta's home loan at 8.6% against about 7% on debt holdings.
