@@ -10,7 +10,7 @@ Financial planning is delivered on tabs 1 and 4: a household balance sheet with 
 
 Individual Planning is delivered on tabs 3 and 4: gap summary, constrained rebalance scenarios, projected impact, illustrative tax estimates, cash raising/investment, staged deployment and event history. Approval records a recommendation; it does not execute a trade or change recorded holdings.
 
-Models has a searchable library, focused editor, publication history and a scalable comparison workspace. Intended profile is a view within Model comparison rather than a duplicate page. Routine views use model names; revisions and historical bands remain in History. Publishing a model never silently changes an approved client target.
+Models has seven published models: three by risk profile and four by strategy, each naming the profile it is intended for. Targets and tolerance bands sit on the classification tree — Asset class › Super sector › Sector › Sub-sector › Security — down to a depth set per asset class, with the children of a node always adding up to it. A Tags column lists the attributes of the securities beneath each branch and filters the tree. Review flags now come from breaches of those bands rather than from six independent exposure lenses. It also has a searchable library, focused editor, publication history and a scalable comparison workspace. Intended profile is a view within Model comparison rather than a duplicate page. Routine views use model names; revisions and historical bands remain in History. Publishing a model never silently changes an approved client target.
 
 Audit log is a single chronological feed of model publications and client-target approvals, with object, action, actor, status and date filters and before/after detail.
 

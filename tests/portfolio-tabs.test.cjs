@@ -21,7 +21,7 @@ function workspace(){
   location:{hash:''},setTimeout,clearTimeout,console,CSS:{escape:x=>x},
  });
  ctx.globalThis=ctx;
- for(const file of ['financial-plan.js','models.js','portfolio-views.js','portfolios.js','comparison-data.js',
+ for(const file of ['taxonomy.js','financial-plan.js','models.js','portfolio-views.js','portfolios.js','comparison-data.js',
   'portfolio-workspace.js','comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js',
   'console-extensions.js','planning.js','security-master.js','financial-workspace.js','portfolios-overview.js'])
   vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),ctx);

@@ -1,15 +1,23 @@
 'use strict';
-const $=id=>document.getElementById(id),copy=x=>JSON.parse(JSON.stringify(x)),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=x=>Number(x).toFixed(1).replace(/\.0$/,''),KEY='portfolio-model-design-v3';
+const $=id=>document.getElementById(id),copy=x=>JSON.parse(JSON.stringify(x)),esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),fmt=x=>Number(x).toFixed(1).replace(/\.0$/,''),KEY='portfolio-model-design-v4';
 const colours=['#246c53','#87a796','#d3b574','#8a97b4','#aa8674'];
 const CATALOG=originalData.assetHierarchy;
 const MODEL_TARGETS=originalData.modelTargets;
-function node(name,target,band=5){return{id:crypto.randomUUID(),name,target,band,children:[]}}
-function catalogTree(profile,zero=false){let i=0;function walk(items,depth=0){return items.map(x=>{const n=node(x.n,0,[5,3,2][depth]);n.children=x.c?walk(x.c,depth+1):[];n.target=x.c?n.children.reduce((s,c)=>s+c.target,0):(zero?0:MODEL_TARGETS[profile][i++]);return n})}return walk(CATALOG)}
-function seed(){return [['Conservative','Capital preservation with limited growth exposure',12],['Moderate','Balance between growth and stability',24],['Aggressive','Greater growth exposure over a longer horizon',8]].map(([name,description,count],i)=>{const d={name,description,allocations:catalogTree(name)};return{id:'full-model-'+i,versions:[{number:1,date:'04 Oct 2026',reason:'Full allocation hierarchy from the original wireframe',data:copy(d)}],draft:null,clients:Array.from({length:count},(_,j)=>({name:['Ananya Shah','Rohan Mehta','Priya Nair','Arjun Iyer'][j%4]+' · '+String(j+1).padStart(2,'0'),version:1}))}})}
-const SEEDED_MODEL_NAMES=new Set(['Conservative','Moderate','Aggressive']);
+// A model carries the classification tree down to each asset class's target
+// depth. Node keys are the identity, so a stored model survives a reload and a
+// reclassification moves a target with the security it belongs to.
+function catalogTree(profile,zero=false){return TAX.modelTree(profile,zero)}
+// Seven models: three by risk profile, four by strategy. Each names the risk
+// profile it is intended for, so choosing a model and assessing a client's risk
+// stay separate decisions.
+function seed(){return Object.values(originalData.settings.models).map((m,i)=>{
+ const d={name:m.name,description:m.description,kind:m.kind,riskProfile:m.riskProfile,abbreviation:m.abbreviation,allocations:catalogTree(m.name)};
+ return{id:'full-model-'+i,kind:m.kind,riskProfile:m.riskProfile,versions:[{number:1,date:'10 Oct 2026',reason:'Model allocation from the revised wireframe',data:copy(d)}],draft:null,clients:[]};
+})}
+const SEEDED_MODEL_NAMES=new Set(Object.keys(originalData.settings.models));
 const modelName=m=>m.versions?.at(-1)?.data?.name||m.draft?.name||'';
 function removeSeedDuplicates(items){return items.filter(m=>!(m.earlierPrototype&&SEEDED_MODEL_NAMES.has(modelName(m))))}
-let models;try{models=JSON.parse(localStorage.getItem(KEY));if(!models){const previous=JSON.parse(localStorage.getItem('portfolio-model-design-v2')||localStorage.getItem('portfolio-model-design-v1')||'[]');models=seed().concat(previous.map(m=>({...m,earlierPrototype:true})));}const cleaned=removeSeedDuplicates(models);if(cleaned.length!==models.length){models=cleaned;}localStorage.setItem(KEY,JSON.stringify(models));$('storage').textContent='Saved in this browser'}catch{models=seed();$('storage').textContent='Session only: browser storage unavailable'}
+let models;try{models=JSON.parse(localStorage.getItem(KEY));if(!models){const previous=JSON.parse(localStorage.getItem('portfolio-model-design-v3')||localStorage.getItem('portfolio-model-design-v2')||'[]');models=seed().concat(previous.map(m=>({...m,earlierPrototype:true})));}const cleaned=removeSeedDuplicates(models);if(cleaned.length!==models.length){models=cleaned;}localStorage.setItem(KEY,JSON.stringify(models));$('storage').textContent='Saved in this browser'}catch{models=seed();$('storage').textContent='Session only: browser storage unavailable'}
 let selected=null,editing=false,expanded=new Set(),dirty=false,toastTimer;
 let list,render,rows,changes,review,clients;
 const current=()=>models.find(m=>m.id===selected),latest=m=>m.versions.at(-1),data=()=>editing?current().draft:latest(current()).data;
@@ -27,7 +35,17 @@ function saveAndList(){if(editing)persist();dirty=false;list()}
 function show(content){$('modal').innerHTML=content;$('modal').showModal()}
 const closeModal=()=> $('modal').close();
 function rescale(ns,total){let old=ns.reduce((s,n)=>s+n.target,0),used=0;ns.forEach((n,i)=>{n.target=i===ns.length-1?Math.round((total-used)*100)/100:Math.round((old?n.target/old:1/ns.length)*total*100)/100;used+=n.target;if(n.children.length)rescale(n.children,n.target)})}
-function changeTarget(id,value){const n=findNode(id),v=Number(value);if(!Number.isFinite(v)||v<0||v>100){notify('Enter a target between 0 and 100%.');render();return}if(n.children.length&&n.target!==v){const preview=copy(n.children);rescale(preview,v);show(`<div class="eyebrow">Allocation change</div><h2>${esc(n.name)}: ${fmt(n.target)}% → ${fmt(v)}%</h2><p>Choose how to update the breakdown. Other asset-class targets will stay unchanged.</p><div class="tablewrap"><table><thead><tr><th>Category</th><th>Current</th><th>Proportional preview</th></tr></thead><tbody>${preview.map((x,i)=>`<tr><td>${esc(x.name)}</td><td>${fmt(n.children[i].target)}%</td><td>${fmt(x.target)}%</td></tr>`).join('')}</tbody></table></div><div class="actions"><button onclick="closeModal();render()">Cancel</button><button onclick="applyTarget('${id}',${v},false)">Adjust manually</button><button class="primary" onclick="applyTarget('${id}',${v},true)">Distribute proportionally</button></div>`)}else{n.target=v;dirty=true;render()}}
+// Editing a node rescales what is under it and moves its siblings, so the level
+// above never changes and the model stays at 100%. That removes the old choice
+// between distributing proportionally and adjusting by hand: there is now one
+// correct answer, and it is applied.
+function changeTarget(id,value){const v=Number(value);
+ if(!Number.isFinite(v)||v<0||v>100){notify('Enter a target between 0 and 100%.');render();return}
+ if(!TAX.editModelTree(data().allocations,id,v))return;
+ expanded.add(id);dirty=true;render();}
+function changeBand(id,value){const v=Number(value),n=findNode(id);
+ if(!n||!Number.isFinite(v)||v<0.5||v>100){notify('Enter a band of at least 0.5 pp.');render();return}
+ n.band=v;dirty=true;render();}
 function applyTarget(id,v,scale){const n=findNode(id);n.target=v;if(scale)rescale(n.children,v);expanded.add(id);dirty=true;closeModal();render()}
 function removeNode(id){show(`<h2>Remove ${esc(findNode(id).name)}?</h2><p>You will need to bring the remaining targets back to 100% before publishing.</p><div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="data().allocations=data().allocations.filter(n=>n.id!=='${id}');dirty=true;closeModal();render()">Remove from draft</button></div>`)}
 function addAllocation(){const options=CATALOG.filter(x=>!data().allocations.some(n=>n.name===x.n));show(`<h2>Add asset class</h2>${options.length?`<label class="field">Category<select id="category">${options.map(x=>'<option>'+esc(x.n)+'</option>').join('')}</select></label><p class="muted">Includes its complete sample hierarchy at 0%. Set targets before publishing.</p><div class="actions"><button onclick="closeModal()">Cancel</button><button class="primary" onclick="data().allocations.push(catalogTree('Moderate',true).find(n=>n.name===$('category').value));dirty=true;closeModal();render()">Add allocation</button></div>`:'<p>All four asset classes are already present.</p><button onclick="closeModal()">Close</button>'}`)}
