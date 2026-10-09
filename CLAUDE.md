@@ -1,66 +1,45 @@
 # Working rules for this repository
 
-## The one rule that matters
-
-**The root of `main` is the live site. It stays on the current release until the
-revised-mockup work is approved.**
+## The site
 
 `https://jedinrk.github.io/ria-platform-mockup/` is served from `main` at `/`.
-Anything merged to the root of `main` is published immediately, to whoever is
-looking at it. Until the v3 work is signed off, **do not merge it to the root**,
-and do not change root-level files as a side effect of v3 work.
+**Anything merged to `main` is published immediately, to whoever is looking at
+it.** There is no staging step in front of it, so a change that is not ready to
+be seen does not belong on `main`.
 
-Only two kinds of change belong on `main` while v3 is in flight:
+Work happens on short-lived branches off `main` and merges back by PR.
 
-1. a refreshed `v3/` preview directory,
-2. a fix to the current release that is wanted live now.
+The revised-mockup (v3) line was merged into `main` in PR #15 and is now the
+live release; its branch and its `/v3/` preview directory have both been
+retired. `v3/index.html` survives only as a stub pointing at the root, because
+the preview URL was shared while the work was in flight.
 
-If a change does not clearly fall into one of those, it belongs on the v3 branch.
+## If a preview is needed again
 
-## Where the work lives
+`scripts/publish-preview.cjs` is kept for exactly that. It copies a branch's
+runtime files into a subdirectory of the site, so work in progress can be shown
+without touching what is live at the root:
 
-| | Purpose |
-|---|---|
-| `main` | the live site, plus the generated `v3/` preview |
-| `revised-mockup-v3` | the v3 development line, and the source the preview is built from |
+```
+node scripts/publish-preview.cjs origin/<branch> <directory>
+```
 
-The branch is deliberately not called `v3`: `main` contains a directory of that
-name, and git then refuses commands like `git log v3` and `git diff v3` as
+Two things it does are not cosmetic, and anything replacing it must do them too:
+
+- **A `PREVIEW BUILD` marker** in the prototype bar, so nobody mistakes the copy
+  for the live site.
+- **A namespaced `localStorage` facade.** GitHub Pages serves every directory
+  from one origin and `localStorage` is scoped per origin, not per path. Without
+  the facade, approving a client target on a preview would change what the live
+  site shows. Verify isolation in a browser before trusting it: write on one
+  copy, confirm the other cannot see it, and confirm the reverse.
+
+**Never edit inside a generated preview directory.** Change the branch and
+re-run the script; the directory is rebuilt from scratch so it cannot drift.
+
+Do not name a preview branch the same as its directory. `main` once held a
+directory called `v3`, and git then refused `git log v3` and `git diff v3` as
 ambiguous between a revision and a path.
-| short-lived branches off the v3 line | individual pieces of v3 work, merged back into it |
-
-The v3 branch is **not** redundant with the published preview. The preview is a
-copy of the runtime files only — no tests, no docs, no build scripts. The branch
-is where the test suite, the documentation and the data-build scripts live, and
-it is what eventually merges to the root. Losing it would mean losing all of
-that.
-
-## Refreshing the preview
-
-```
-node scripts/publish-preview.cjs origin/revised-mockup-v3 v3
-```
-
-Then open a small PR to `main` containing only the `v3/` change. The directory
-is rebuilt from scratch, so it cannot drift from the branch.
-
-**Never edit inside `v3/`.** It is generated. Change the branch, re-run the
-script. `v3/PREVIEW.txt` records which commit the copy came from.
-
-The script makes two deliberate edits to the copy: a `PREVIEW BUILD` marker in
-the prototype bar, and a namespaced `localStorage` facade. The second is not
-cosmetic — GitHub Pages serves the preview and the live site from one origin,
-`localStorage` is scoped per origin rather than per path, and both versions use
-the same keys. Without the facade, approving a client target on the preview
-would change what the live site shows.
-
-## When v3 is approved
-
-1. Merge the v3 branch into `main`. The root site becomes v3 on merge.
-2. Remove the `v3/` directory in a follow-up PR; it has done its job.
-3. Delete the v3 branch.
-
-Do none of this before sign-off.
 
 ## Verification expected of any change
 
@@ -68,13 +47,17 @@ Do none of this before sign-off.
 - The app is exercised in a real browser, not only in the test harness. Several
   defects here were invisible to the unit tests and only appeared on a click
   through: a lens key that no longer resolved, a tab that routed to an area
-  which had been removed. Walk the pages a change touches at a desktop width and
-  at 390px.
+  which had been removed, a filter control that stretched the column next to it.
+  Walk the pages a change touches at a desktop width and at 390px.
 - Serve over HTTP. The app fetches its JSON, so `file://` will not work.
 
 ```
 python3 -m http.server 8777 --bind 127.0.0.1
 ```
+
+- After publishing, confirm GitHub Pages itself rather than the repository.
+  What is merged and what is being served are different questions, and the
+  answer has differed before.
 
 ## House style
 
@@ -86,7 +69,7 @@ python3 -m http.server 8777 --bind 127.0.0.1
 - Say what is missing rather than inventing it. ISIN and current price are blank
   because no source supplies them, and a fabricated ISIN is worse than an empty
   one.
-- When a change is deferred or deliberately not taken from the source mockup,
+- When a change is deferred or deliberately not taken from a source mockup,
   record the decision and the reason in `docs/`, so the next person does not
   have to rediscover it.
 
