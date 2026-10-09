@@ -258,11 +258,13 @@ function needsEditor(plan){
 }
 
 // ---- Wiring ----------------------------------------------------------------
-// A new first tab, and the cash tab renamed for what it now also holds. Exposure
-// drift stays separate until it folds into Allocation in the next phase.
+// Five tabs: the revised mockup's four, plus the client-target surface it does
+// not have because it approves nothing. Exposure drift is gone as a tab — it was
+// never a view of its own, only a second way into Allocation's exposure mode —
+// and target history now sits beside the approval it belongs to.
 portfolioTabs=function(){return `<nav class="portfolio-tabs portfolio-tabs-five" aria-label="Portfolio work areas">${[
- ['balance','1 Assets & liabilities'],['allocation','2 Drill-down allocation'],['planning','3 Gap summary & trades'],
- ['cash','4 Cash & planning'],['exposure','5 Exposure drift'],['target','6 Client target limits'],['history','History']
+ ['balance','1 Assets & liabilities'],['allocation','2 Allocation & drift'],['planning','3 Gap summary & trades'],
+ ['cash','4 Cash & planning'],['target','5 Client target']
 ].map(([key,label])=>`<button data-portfolio-area="${key}" aria-current="${portfolioArea===key?'page':'false'}">${label}${key==='target'&&client().draft?' <span class="draft-dot" aria-label="Draft exists"></span>':''}</button>`).join('')}</nav>`};
 
 const renderClientBeforeFinancial=renderClient;

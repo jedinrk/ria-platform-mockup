@@ -219,9 +219,9 @@ renderClient=function(){
  renderClientBeforeContext();
  const old=[...document.querySelectorAll('main > .note.warning')].find(n=>/Model changes available/.test(n.textContent));
  if(old)old.remove();
- // Exposure drift is a lens workspace in its own right, not a footnote to
- // Allocation: open the full bucket explorer and name it (plan 8.2).
- if(portfolioArea!=='exposure')return;
+ // Choosing a distribution inside Allocation is a deliberate move into the
+ // bucket explorer, so open it rather than leaving it collapsed.
+ if(portfolioArea!=='allocation'||activeLens==='ac')return;
  const details=document.querySelector('.all-exposures');
  if(!details)return;
  details.open=true;

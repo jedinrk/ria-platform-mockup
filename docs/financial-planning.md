@@ -80,9 +80,9 @@ places a trade.
 
 ## Tabs
 
-The workspace now opens on Assets & liabilities, and Cash events is renamed Cash
-& planning for what it also holds. That makes seven tabs for the moment; the
-next phase folds Exposure drift into Allocation, which brings it back to six.
+The workspace opens on Assets & liabilities, and Cash events is renamed Cash &
+planning for what it also holds. Exposure drift and the separate History tab
+have since been folded away, leaving five.
 
 ## On the Portfolios overview
 

@@ -149,6 +149,7 @@ targetPlanContent=function(p){
     ${targetModelSection(p)}
     ${targetAllocationSection(p)}
     ${targetLensLimits(p)}
+    <section class="card target-history-card"><div class="target-section-heading"><div><span class="section-step">History</span><h2>Approved target revisions</h2><p>Every approved snapshot, with the model it referenced and the reason given. The first is an illustrative workflow record, not a real adviser decision.</p></div></div>${historyMarkup(client())}</section>
     <p class="target-method-note">Approval creates a new effective-target snapshot for this portfolio. It does not change the model, current holdings, another portfolio, or generate trades.</p>
   </div>`;
 };
@@ -193,16 +194,16 @@ document.addEventListener('click',event=>{
 // content, so keep them in step instead of letting the tab silently win.
 document.addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b||!activeClient)return;
-  if(b.dataset.lens==='ac'&&portfolioArea==='exposure')portfolioArea='allocation';
-  if(b.dataset.workspace==='exposures'&&portfolioArea==='allocation')portfolioArea='exposure';
+  if(b.dataset.workspace==='exposures')portfolioArea='allocation';
 },true);
 
 const targetPlanBaseRenderClient=renderClient;
 renderClient=function(){
   const requestedArea=portfolioArea;
   if(requestedArea==='cash')portfolioArea='planning';
-  if(requestedArea==='exposure'){portfolioArea='allocation';if(activeLens==='ac')activeLens='sec'}
-  if(requestedArea==='allocation')activeLens='ac';
+  // Allocation opens on the asset-class view unless the adviser has already
+  // switched it to an exposure distribution.
+  if(requestedArea==='allocation'&&!['sec','mc','geo','th','cr','tree'].includes(activeLens))activeLens='ac';
   targetPlanBaseRenderClient();
   portfolioArea=requestedArea;
   document.querySelectorAll('[data-portfolio-area]').forEach(button=>button.setAttribute('aria-current',button.dataset.portfolioArea===requestedArea?'page':'false'));

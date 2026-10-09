@@ -2,7 +2,7 @@
 var originalData, financialPlanData;
 (async function boot(){
   try {
-    const release='20261009-portfolios-overview';
+    const release='20261009-portfolio-tabs';
     const response = await fetch('data/original-mockup.json?v='+release);
     if (!response.ok) throw new Error('Original data could not load');
     originalData = await response.json();
