@@ -23,7 +23,7 @@ function workspace(){
  ctx.globalThis=ctx;
  for(const file of ['taxonomy.js','financial-plan.js','models.js','portfolio-views.js','portfolios.js','comparison-data.js',
   'portfolio-workspace.js','comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js',
-  'console-extensions.js','planning.js','security-master.js','financial-workspace.js','portfolios-overview.js'])
+  'console-extensions.js','planning.js','security-master.js','financial-workspace.js','portfolios-overview.js','household-detail.js'])
   vm.runInContext(fs.readFileSync(path.join(root,file),'utf8'),ctx);
  vm.runInContext('activeClient=clientRecords[0].id',ctx);
  return {run:code=>JSON.parse(vm.runInContext('JSON.stringify('+code+')',ctx)),raw:code=>vm.runInContext(code,ctx)};

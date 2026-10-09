@@ -37,12 +37,23 @@ const tile=(label,value,tone)=>`<div><small>${label}</small><strong${tone?` clas
 let balanceExpanded=new Set(),monthExpanded=new Set(),categoryExpanded=new Set(),liabilityExpanded=new Set();
 let coverChoice='6',coverCustom=20;
 
+// Whose plan this is, and why the reader is looking at it. On the household
+// page there is nothing to explain; on an account there is.
 function planContext(record){
  const accounts=householdAccounts(record.householdId).length;
+ const household=esc(householdNameOf(record.householdId));
+ if(record.kind==='Household')
+  return `Household plan for <strong>${household}</strong>. Income, liabilities and needs are held here and use all ${accounts} account${accounts===1?'':'s'} together.`;
  return accounts===1
-  ?`Household plan for <strong>${esc(householdNameOf(record.householdId))}</strong>.`
-  :`Showing the household plan for <strong>${esc(householdNameOf(record.householdId))}</strong>, because income, liabilities and needs are held at household level. <strong>${esc(record.name)}</strong> is one of ${accounts} accounts in it, and an edit here applies to the whole household.`;
+  ?`Household plan for <strong>${household}</strong>.`
+  :`Showing the household plan for <strong>${household}</strong>, because income, liabilities and needs are held at household level. <strong>${esc(record.name)}</strong> is one of ${accounts} accounts in it, and an edit here applies to the whole household.`;
 }
+
+// The financial plan belongs to the household, so these screens are reachable
+// from the household page as well as from an account inside it.
+const planRecord=()=>activeClient?client()
+ :(typeof reviewHouseholdId!=='undefined'&&reviewHouseholdId?{...reviewRecord(reviewHouseholdId),householdId:reviewHouseholdId}:null);
+const planRerender=()=>{if(typeof renderReviewSurface==='function')renderReviewSurface();else renderClient()};
 
 // ---- Assets & liabilities --------------------------------------------------
 function balanceArea(record){
@@ -161,7 +172,11 @@ function balanceYearly(plan){
 }
 
 // ---- Cash & planning: the plan behind the cash events -----------------------
-function planningArea(record){
+// Named for what it is rather than for its tab. `planningArea` is already a
+// global: planning.js declares one for the gap summary and trade
+// recommendations, and this file loads after it, so sharing the name meant this
+// function silently replaced that one and tab 3 rendered the financial plan.
+function financialPlanArea(record){
  const plan=planOf(record),vector=householdVector(record.householdId);
  const calc=FinancialPlan.project(plan,vector);
  const flags=FinancialPlan.flags(plan,calc);
@@ -288,26 +303,27 @@ renderClient=function(){
   return;
  }
  if(requested==='cash'&&!$('app').querySelector('.plan-inputs')){
-  $('app').insertAdjacentHTML('beforeend',planningArea(record));
+  $('app').insertAdjacentHTML('beforeend',financialPlanArea(record));
  }
 };
 
-const financialPlanRerender=()=>{savePlans();renderClient()};
+const financialPlanRerender=()=>{savePlans();planRerender()};
 document.addEventListener('click',e=>{
  const button=e.target.closest('button');
- if(!button||!activeClient)return;
- const plan=planOf(client());
- const toggle=(set,key)=>{set.has(key)?set.delete(key):set.add(key);renderClient()};
+ const record=planRecord();
+ if(!button||!record)return;
+ const plan=planOf(record);
+ const toggle=(set,key)=>{set.has(key)?set.delete(key):set.add(key);planRerender()};
  if(button.dataset.balanceNode!==undefined)return toggle(balanceExpanded,button.dataset.balanceNode);
  if(button.dataset.month!==undefined)return toggle(monthExpanded,Number(button.dataset.month));
  if(button.dataset.category!==undefined)return toggle(categoryExpanded,button.dataset.category);
  if(button.dataset.liability!==undefined)return toggle(liabilityExpanded,Number(button.dataset.liability));
  if(button.dataset.balance==='expand'){
   balanceExpanded=new Set(originalData.assetHierarchy.flatMap(c=>[c.n,...c.c.map(t=>c.n+' / '+t.n)]));
-  renderClient();return;
+  planRerender();return;
  }
- if(button.dataset.balance==='collapse'){balanceExpanded=new Set();renderClient();return}
- if(button.dataset.cover){coverChoice=button.dataset.cover;renderClient();return}
+ if(button.dataset.balance==='collapse'){balanceExpanded=new Set();planRerender();return}
+ if(button.dataset.cover){coverChoice=button.dataset.cover;planRerender();return}
  if(button.dataset.planAdd==='liability'){
   plan.liabilities.push({name:'New liability',type:'Personal loan',outstandingLakh:0,ratePercent:10,emiLakh:0,monthsLeft:12});
   financialPlanRerender();return;
@@ -323,7 +339,7 @@ document.addEventListener('click',e=>{
  if(button.dataset.planRaise){
   // Carry the amount into the cash workflow instead of making the adviser
   // read it off one card and retype it into another.
-  portfolioArea='cash';renderClient();
+  portfolioArea='cash';planRerender();
   const amount=$('cashAmount')||document.querySelector('[data-cash-field="amount"]');
   if(amount){amount.value=button.dataset.planRaise;amount.dispatchEvent(new Event('change',{bubbles:true}));amount.scrollIntoView({behavior:'smooth',block:'center'});amount.focus()}
   else notify('Enter '+lakh(Number(button.dataset.planRaise))+' as the amount to raise.');
@@ -332,9 +348,10 @@ document.addEventListener('click',e=>{
 
 document.addEventListener('change',e=>{
  const target=e.target;
- if(!activeClient)return;
- if(target.id==='coverCustom'){coverCustom=Math.max(0.5,Number(target.value)||20);renderClient();return}
- const plan=planOf(client());
+ const record=planRecord();
+ if(!record)return;
+ if(target.id==='coverCustom'){coverCustom=Math.max(0.5,Number(target.value)||20);planRerender();return}
+ const plan=planOf(record);
  if(target.dataset.planField){
   const key=target.dataset.planField;
   const blank=target.value==='';

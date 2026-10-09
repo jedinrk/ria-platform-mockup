@@ -2,14 +2,14 @@
 var originalData, financialPlanData;
 (async function boot(){
   try {
-    const release='20261011-security-level-filters';
+    const release='20261011-household-detail';
     const response = await fetch('data/original-mockup.json?v='+release);
     if (!response.ok) throw new Error('Original data could not load');
     originalData = await response.json();
     const planResponse = await fetch('data/financial-plans.json?v='+release);
     if (!planResponse.ok) throw new Error('Financial plans could not load');
     financialPlanData = await planResponse.json();
-    for (const path of ['taxonomy.js','financial-plan.js','models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js','comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js','console-extensions.js','planning.js','security-master.js','financial-workspace.js','portfolios-overview.js']) {
+    for (const path of ['taxonomy.js','financial-plan.js','models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js','comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js','console-extensions.js','planning.js','security-master.js','financial-workspace.js','portfolios-overview.js','household-detail.js']) {
       await new Promise((resolve,reject)=>{const script=document.createElement('script');script.src=path+'?v='+release;script.onload=resolve;script.onerror=reject;document.body.append(script)});
     }
     syncClients(); clientNav();

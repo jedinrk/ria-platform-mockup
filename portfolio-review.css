@@ -288,3 +288,19 @@ tr.config-detail>td{background:#f7faf7;padding:0;border-bottom:1px solid var(--l
 .allocation-review td.numeric small{display:block;font-size:10px;color:var(--mut)}
 .allocation-tools{align-items:center;flex-wrap:wrap;gap:8px}
 .allocation-tools .lens-override-count{margin-left:auto}
+
+/* The household detail page. Accounts are navigation, so they sit under the
+   heading as chips rather than competing with the five work areas. */
+.household-accounts-strip{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:0 0 18px}
+.household-accounts-strip .eyebrow{margin:0 4px 0 0}
+.household-account-chip{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:8px 13px;line-height:1.35}
+.household-account-chip strong{font-size:13px}
+.household-account-chip small{color:var(--mut);font-size:11px}
+.household-gap-tiles{margin:18px 0 22px}
+.household-gap-tiles>div>small:last-child{display:block;font-size:11px;color:var(--mut);margin-top:2px}
+.household-review-content .impact-table th[scope=row] small{display:block;font-weight:400;font-size:11px;color:var(--mut)}
+.household-review-content .impact-table tr.rowtop>th,.household-review-content .impact-table tr.rowtop>td{border-top:2px solid var(--line);background:#f7faf7}
+@media(max-width:700px){.household-accounts-strip{gap:6px}.household-account-chip{flex:1 1 100%}}
+/* The contingency cover choice is a segmented control of fixed-width buttons.
+   At 390px it ran past the card on the account page as well as this one. */
+@media(max-width:560px){.plan-inputs .segmented,.segmented{flex-wrap:wrap}.segmented>button{flex:1 1 auto}}

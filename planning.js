@@ -187,9 +187,15 @@ function scenarioOutcome(plan,scenario){
  const delta=new Map(live.map(t=>[t.name,t.amount]));
  const before=actualValues(plan);
  const after=before.map(x=>({...x,value:x.value+(delta.get(x.name)||0)}));
- const target=leafValues(effective(plan)),threshold=portfolioThreshold(activeClient);
- const metricsBefore=portfolioMetrics(before,target,threshold,plan.lensOverrides);
- const metricsAfter=portfolioMetrics(after,target,threshold,plan.lensOverrides);
+ // portfolioMetrics measures against node targets. leafValues returns a
+ // per-security array, which indexes as nothing, so every target read as 0 and
+ // the gap summary reported the whole portfolio as its own drift. The trades
+ // were never affected — they read the target off the allocation rows — but
+ // every before/after figure on the screen was.
+ const target=planTargets(plan),threshold=portfolioThreshold(activeClient);
+ const model=plan.base&&plan.base.data&&plan.base.data.name;
+ const metricsBefore=portfolioMetrics(before,target,threshold,plan.treeOverrides,model);
+ const metricsAfter=portfolioMetrics(after,target,threshold,plan.treeOverrides,model);
  const request=scenario.request?scenario.request.amount:0;
  const netCash=scenario.type==='raise'?sellTotal-buyTotal-tax.tax:scenario.type==='invest'?request-buyTotal:sellTotal-buyTotal;
  const net=scenario.request&&scenario.request.net==='net';
