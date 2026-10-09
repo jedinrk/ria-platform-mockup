@@ -20,7 +20,7 @@ function console_(){
   location:{hash:''},setTimeout,clearTimeout,console,CSS:{escape:x=>x},
  });
  ctx.globalThis=ctx;
- for(const f of ['models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js',
+ for(const f of ['taxonomy.js','models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js',
   'comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js','console-extensions.js','planning.js','security-master.js'])
   vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx);
  return {run:code=>JSON.parse(vm.runInContext('JSON.stringify('+code+')',ctx)),raw:code=>vm.runInContext(code,ctx)};
@@ -59,22 +59,24 @@ test('Dates are the local calendar day, not shifted by the timezone',()=>{
  assert.equal(run('isoOf("04 Oct 2026")'),'2026-10-04');
 });
 
-test('Exposure flags can be excluded from the review state',()=>{
+test('Sub-class breaches can be excluded from the review state',()=>{
  const {run,raw}=console_();
  raw('clientView="accounts"');
- const on=run('dashboardRecords().filter(r=>r.flagged).length');
+ // a5 sits well inside its asset-class threshold and is flagged only because a
+ // sub-class is outside its band.
+ assert.ok(run('dashboardRecords().find(r=>r.id==="a5").drift')<run('dashboardRecords().find(r=>r.id==="a5").threshold'));
+ assert.equal(run('dashboardRecords().find(r=>r.id==="a5").flagged'),true);
  raw('exposureTriggersReview=false');
- const off=run('dashboardRecords().filter(r=>r.flagged).length');
- assert.ok(off<on,'turning the trigger off clears exposure-only portfolios');
- assert.ok(run('dashboardRecords().every(r=>r.exposureFlags.length>=0)'),'flags are still measured');
+ assert.equal(run('dashboardRecords().find(r=>r.id==="a5").flagged'),false,'turning the trigger off clears it');
+ assert.ok(run('dashboardRecords().every(r=>r.exposureFlags.length>=0)'),'breaches are still measured');
  raw('exposureTriggersReview=true');
- assert.equal(run('dashboardRecords().filter(r=>r.flagged).length'),on);
+ assert.equal(run('dashboardRecords().find(r=>r.id==="a5").flagged'),true);
 });
 
 test('Liquidity context is derived from the holdings, and absent facts say so',()=>{
  const {run,raw}=console_();
  const l=run('(()=>{const p=approved(clientRecords.find(c=>c.id==="a1")).plan;const x=liquidityProfile(p);return {total:Math.round(x.total),restricted:Math.round(x.restricted),locked:Math.round(x.buckets.Locked)}})()');
- assert.equal(l.total,273);
+ assert.equal(l.total,338);
  assert.ok(l.locked>0&&l.restricted>=l.locked,'locked and semi-liquid value is reported');
  assert.ok(run('restrictionList(approved(clientRecords.find(c=>c.id==="a1")).plan).length')>0);
  raw('activeClient="a1"');
@@ -188,6 +190,16 @@ test('Security master separates source-fixed fields from the firm classification
  const grid=run('securityGrid()');
  for(const header of ['Name','ISIN','Symbol','Crisil rating','Current price','Asset type','Asset class','Super sector','Sector','Sub-sector'])
   assert.ok(grid.includes(header),'missing column: '+header);
+ assert.ok(grid.includes('class="config-filter-row"'),'filters sit inside the table header');
+ // Filters that narrow a column sit in that column's header. The
+ // needs-classification filter is not one of them: there is no such column, and
+ // crammed into the name cell it stretched the column that needs the room most.
+ for(const id of ['securitySearch','securityTypeFilter'])
+  assert.ok(grid.includes('id="'+id+'"'),'missing header filter: '+id);
+ // Every level of the classification filters from its own column header.
+ for(const field of ['assetClass','superSector','sector','subsector'])
+  assert.ok(grid.includes('data-security-level-filter="'+field+'"'),'missing level filter: '+field);
+ assert.ok(!grid.includes('securityUnclassified'),'the count filter is not in the header');
  assert.ok(grid.includes('config-fixed'),'source fields are marked read-only');
  for(const field of ['assetClass','superSector','sector','subsector'])
   assert.ok(grid.includes('data-field="'+field+'"'),'missing editable field: '+field);
@@ -196,6 +208,24 @@ test('Security master separates source-fixed fields from the firm classification
  assert.ok(grid.includes('HDFCBANK'));
  assert.ok(grid.includes('config-absent'),'unsupplied fields are marked');
 });
+test('The needs-classification count is the control that shows them',()=>{
+ const {run,raw}=console_();
+ const page=()=>run('(securityMasterPage(),$("app").innerHTML)');
+ const markup=page();
+ assert.match(markup,/id="securityUnclassified"[^>]*aria-pressed="false"/,'the count tile is the toggle');
+ assert.match(markup,/Need classification/);
+ // Nothing needs classifying in the sample, so the control says so rather than
+ // offering a filter that would empty the grid.
+ assert.match(markup,/id="securityUnclassified"[^>]*disabled/);
+ assert.match(markup,/Every instrument is classified/);
+ // Stage a change that strips a level, and it becomes usable.
+ raw('securityPending["security-4"]={sector:""}');
+ const staged=page();
+ assert.ok(!/id="securityUnclassified"[^>]*disabled/.test(staged),'with one unclassified it can be used');
+ raw('securityFilters.unclassifiedOnly=true');
+ assert.match(page(),/aria-pressed="true"/);
+});
+
 test('A rating that cannot apply reads differently from one that is missing',()=>{
  const {run}=console_();
  const grid=run('securityGrid()');
@@ -204,12 +234,17 @@ test('A rating that cannot apply reads differently from one that is missing',()=
  assert.equal(run('originalData.securities.find(s=>s.name==="SBI FD (Mar 2028)").ratingApplies'),true);
  assert.equal(run('originalData.securities.find(s=>s.name==="SBI FD (Mar 2028)").crisilRating'),'AAA');
 });
-test('An instrument in the master that nobody holds is shown as not held',()=>{
+test('Every instrument in the master is held somewhere, and the grid can still say otherwise',()=>{
  const {run}=console_();
- const grid=run('securityGrid()');
  assert.equal(run('originalData.securities.length'),31);
- assert.equal(run('securityValue(originalData.securities.find(s=>s.name==="Silver ETF").id)'),0);
- assert.ok(grid.includes('Not held'));
+ // Holdings are generated from each account's model with a floor, so nothing in
+ // the master is orphaned any more.
+ assert.ok(run('originalData.securities.every(s=>securityValue(s.id)>0)'));
+ // The not-held state is still rendered, for an instrument classified before
+ // anyone buys it.
+ const source=require('node:fs').readFileSync(require('node:path').join(__dirname,'..','security-master.js'),'utf8');
+ assert.match(source,/Not held/);
+ assert.match(source,/In the master, not held by any sample portfolio/);
 });
 test('Applied classification feeds the exposure views and asset class gates the credit view',()=>{
  const {run,raw}=console_();
@@ -245,4 +280,63 @@ test('Choosing a level clears a level below it that no longer belongs',()=>{
  assert.equal(run(`effectiveField(originalData.securities.find(s=>s.id===${JSON.stringify(bank)}),"superSector")`),'Sensitive');
  // Financials is not a Sensitive sector, so the staged grid must not keep it.
  assert.ok(!run('sectorsFor("Equity","Sensitive")').includes('Financials'));
+});
+
+test('Each classification level filters from its own column, nested like the rows',()=>{
+ const {run,raw}=console_();
+ const all=run('securityRows().length');
+ const optionsFor=field=>run('filterOptionsFor("'+field+'")');
+ // Unfiltered, a level offers everything the sample holds at that level.
+ assert.deepEqual(optionsFor('assetClass'),run('[...new Set(originalData.securities.map(s=>s.assetClass))].sort()'));
+ const deep=optionsFor('subsector').length;
+ raw('securityFilters.assetClass="Equity"');
+ const rows=run('securityRows().length');
+ assert.ok(rows>0&&rows<all);
+ assert.ok(run('securityRows().every(s=>s.assetClass==="Equity")'));
+ // The levels below now offer only what sits under Equity.
+ assert.ok(optionsFor('subsector').length<deep,'a narrowed level offers less');
+ assert.deepEqual(optionsFor('superSector'),
+  run('[...new Set(originalData.securities.filter(s=>s.assetClass==="Equity").map(s=>s.superSector))].sort()'));
+ // Every option offered returns at least one row, so a filter cannot empty the grid.
+ for(const option of optionsFor('sector')){
+  raw('securityFilters.sector='+JSON.stringify(option));
+  assert.ok(run('securityRows().length')>0,'empty result for sector '+option);
+ }
+});
+
+test('Choosing a level clears the levels under it',()=>{
+ const {run,raw}=console_();
+ raw('securityFilters.assetClass="Equity"');
+ const sector=run('filterOptionsFor("sector")')[0];
+ raw('securityFilters.sector='+JSON.stringify(sector));
+ const sub=run('filterOptionsFor("subsector")')[0];
+ raw('securityFilters.subsector='+JSON.stringify(sub));
+ assert.ok(run('securityRows().length')>0);
+ // Moving the asset class would otherwise leave a sub-sector that matches nothing.
+ raw('changeLevelFilter("assetClass","Fixed income")');
+ assert.deepEqual(run('[securityFilters.assetClass,securityFilters.superSector,securityFilters.sector,securityFilters.subsector]'),
+  ['Fixed income','','','']);
+ assert.ok(run('securityRows().length')>0,'the grid is never left empty by the cascade');
+});
+
+test('A level filtered on stays selectable once a level above narrows past it',()=>{
+ const {run,raw}=console_();
+ raw('securityFilters.sector="Financials"');
+ assert.ok(run('securityRows().length')>0);
+ // Set an asset class that holds no Financials. The sector control must still
+ // offer the stale value, or there would be no way to clear it.
+ raw('securityFilters.assetClass="Real assets"');
+ assert.ok(!run('filterOptionsFor("sector")').includes('Financials'),'it is not a real option any more');
+ assert.match(run('levelFilter("sector")'),/<option selected>Financials<\/option>/);
+});
+
+test('Clear filters resets every level',()=>{
+ const {run,raw}=console_();
+ const all=run('securityRows().length');
+ raw('securityFilters.assetClass="Equity";securityFilters.search="bank"');
+ assert.ok(run('securityFiltered()'));
+ assert.match(run('(securityMasterPage(),$("app").innerHTML)'),/data-security-action="clear"/);
+ raw('securityFilters={...NO_FILTERS}');
+ assert.equal(run('securityFiltered()'),false);
+ assert.equal(run('securityRows().length'),all);
 });

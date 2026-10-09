@@ -1,0 +1,56 @@
+/* Household financial planning: balance sheet, cash flow and the plan behind it. */
+.liquidity-bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:#edf1ec;margin:18px 0 10px}
+.liquidity-bar span{min-width:0}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--mut)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend .dot.dash{width:14px;height:3px;border-radius:0;background:var(--ink)}
+.plan-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:0 18px}
+.plan-inputs .field{margin:12px 0}
+.plan-flag{display:grid;grid-template-columns:104px minmax(0,1fr);gap:12px;align-items:start;padding:10px 0;border-bottom:1px solid #edf1ec}
+.plan-flag:last-child{border-bottom:0}
+.plan-flag .state-pill{justify-self:start}
+.plan-flag button{margin-left:8px;padding:5px 11px;font-size:13px}
+.mini-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:5px 26px;padding:5px 0 7px 30px;font-size:13px;color:var(--mut)}
+.mini-facts strong{color:var(--ink)}
+.share-bar{display:inline-block;width:62px;height:7px;border-radius:4px;background:#e8eee9;margin-right:8px;vertical-align:middle;overflow:hidden}
+.share-bar i{display:block;height:100%;background:var(--green)}
+/* The plan editors are dense tables of small fields; the needs table needs room
+   or its last column collapses a button to one letter per line. */
+.card table button{white-space:nowrap}
+.plan-editor table{min-width:1080px}
+.plan-editor-wide table{min-width:1240px}
+
+.card table input.target{width:84px}
+.card table input:not(.target){width:100%;min-width:130px;padding:7px;border:1px solid #ccd8d0;border-radius:7px;background:white;color:var(--ink);font:inherit}
+.card table select{padding:7px;border:1px solid #ccd8d0;border-radius:7px;background:white;color:var(--ink);font:inherit;max-width:175px}
+.card table td{vertical-align:middle}
+@media(max-width:800px){.mini-facts{grid-template-columns:1fr;padding-left:12px}.plan-flag{grid-template-columns:1fr;gap:5px}}
+
+/* Models: the classification tree, its bands and the tags on each branch. */
+.compare-row{display:grid;grid-template-columns:200px minmax(0,1fr) 120px;gap:14px;align-items:center;padding:7px 0;border-bottom:1px solid #edf1ec}
+.compare-row:last-of-type{border-bottom:0}
+.compare-row.is-active{font-weight:700}
+.compare-row small{display:block;font-weight:400;color:var(--mut);font-size:12px}
+.compare-stack{display:flex;height:13px;border-radius:7px;overflow:hidden;background:#edf1ec}
+.compare-stack span{min-width:0}
+.compare-row .numeric{text-align:right;font-variant-numeric:tabular-nums;color:var(--mut);font-size:13px}
+.depth-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px;margin-bottom:6px}
+.depth-grid small{display:block;color:var(--mut);font-size:12px}
+.depth-grid strong{font-size:15px}
+table.model-tree{min-width:1020px}
+table.model-tree td,table.model-tree th{padding:9px 12px;vertical-align:top}
+table.model-tree .target{width:84px}
+table.model-tree tr.rowtop>td:first-child{font-weight:700}
+td.tag-cell{max-width:400px;white-space:normal;line-height:1.9}
+td.tag-cell>small:first-child{display:block;margin-bottom:3px}
+.tag-pill{display:inline-flex;align-items:center;gap:3px;margin:0 7px 3px 0;border:1px solid var(--line);border-radius:11px;padding:1px 5px 1px 8px;font-size:11px;background:#fbfdfa;vertical-align:middle}
+.tag-pill small{color:var(--mut);margin-right:3px;font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+button.tag-value{background:none;border:0;padding:1px 6px;border-radius:9px;font:inherit;font-size:11px;color:var(--ink);cursor:pointer}
+button.tag-value:hover{background:#eaf0e9}
+button.tag-value.on{background:var(--green);color:white;font-weight:650}
+.tag-filter{padding:12px 16px}
+.tag-filter summary{cursor:pointer;font-weight:600}
+.tag-filter-body{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;margin-top:12px}
+.tag-filter-options{display:flex;flex-wrap:wrap;gap:4px 14px;margin-top:5px}
+.tag-filter-options label{display:inline-flex;align-items:center;gap:5px;font-size:13px}
+@media(max-width:800px){.compare-row{grid-template-columns:1fr;gap:4px}.compare-row .numeric{text-align:left}td.tag-cell{max-width:none}}

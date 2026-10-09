@@ -1,19 +1,21 @@
 'use strict';
-const CLIENT_KEY='portfolio-original-targets-v2';
+const CLIENT_KEY='portfolio-original-targets-v3';
 const money=v=>'₹'+fmt(v)+' lakh';
 const today=()=>new Date().toLocaleDateString('en-CA');
 function entries(tree,path=''){return tree.flatMap(n=>{const key=path?path+' / '+n.name:n.name;return [{key,node:n},...entries(n.children,key)]})}
 function scopeValue(plan){return plan.assets.filter(a=>a.included).reduce((s,a)=>s+a.value,0)}
 function baseRef(plan){return plan.base.name}
 function seedClients(){return originalData.accounts.map(account=>{
- const model=models.find(m=>m.id==='full-model-'+['Conservative','Moderate','Aggressive'].indexOf(account.riskProfile))||models.find(m=>latest(m)?.data.name===account.riskProfile);
- const source={name:account.riskProfile,description:'Original wireframe allocation',allocations:catalogTree(account.riskProfile)};
+ // A portfolio follows a named model. Its risk profile is the profile that model
+ // is intended for, not a separate setting on the portfolio.
+ const model=models.find(m=>latest(m)?.data.name===account.modelName);
+ const source={name:account.modelName,description:'Model allocation from the revised wireframe',allocations:catalogTree(account.modelName)};
  const assets=account.holdings.map(h=>{const s=originalData.securities.find(s=>s.id===h.securityId);return {id:account.id+'-'+s.id,securityId:s.id,name:s.name,category:s.assetClass,account:s.subcategory,value:h.valueLakh,costBasis:h.costBasisLakh,included:true,reason:'',liquidity:s.liquidity,sourceDate:originalData.metadata.asOf}});
- return {id:account.id,name:account.name,type:account.type,householdId:account.householdId,household:originalData.households.find(h=>h.id===account.householdId).name,risk:account.riskProfile,threshold:account.originalThresholdPP??originalData.settings.firmThresholdPP,history:[{number:1,approvedAt:'2026-10-03T00:00:00.000Z',effectiveDate:originalData.metadata.asOf,approver:originalData.audit.user,reason:'Initial illustrative target using the original mockup allocation and all original holdings. Approval is a demonstration record.',plan:{base:{modelId:model?.id||null,version:1,name:source.name,data:source},overrides:{},assets}}],draft:null};
+ return {id:account.id,name:account.name,type:account.type,householdId:account.householdId,household:originalData.households.find(h=>h.id===account.householdId).name,risk:account.riskProfile,modelName:account.modelName,threshold:account.originalThresholdPP??originalData.settings.firmThresholdPP,history:[{number:1,approvedAt:'2026-10-03T00:00:00.000Z',effectiveDate:originalData.metadata.asOf,approver:originalData.audit.user,reason:'Initial illustrative target using the original mockup allocation and all original holdings. Approval is a demonstration record.',plan:{base:{modelId:model?.id||null,version:1,name:source.name,data:source},overrides:{},assets}}],draft:null};
 })}
 let clientRecords,clientStorageOK=true;
 try{const saved=localStorage.getItem(CLIENT_KEY);clientRecords=saved?JSON.parse(saved):seedClients();if(!Array.isArray(clientRecords))throw new Error('Invalid records');if(!saved)localStorage.setItem(CLIENT_KEY,JSON.stringify(clientRecords))}catch{clientRecords=seedClients();clientStorageOK=false}
-let activeClient=null,clientEditing=false,clientExpanded=new Set(),clientView='households',clientSearch='',riskFilter='',flaggedOnly=false,sortField='drift',sortDirection=-1;
+let activeClient=null,clientEditing=false,clientExpanded=new Set(),clientView='households',clientSearch='',modelFilter='',flaggedOnly=false,sortField='drift',sortDirection=-1;
 const approved=c=>c.history.at(-1),client=()=>clientRecords.find(c=>c.id===activeClient),planNow=()=>clientEditing?client().draft:approved(client()).plan;
 const dashboardExpanded=new Set();
 const actualValues=p=>p.assets.filter(a=>a.included).map(a=>({name:a.name,value:a.value,category:a.category}));
@@ -24,30 +26,67 @@ function leaveModels(){if(editing){persist();dirty=false}editing=false}
 function clientNav(){leaveModels();activeClient=null;clientEditing=false;navState('portfolios');renderClients()}
 function modelNav(){leaveModels();clientEditing=false;syncClients();activeLens='ac';navState('models');list()}
 function newer(c){const p=approved(c).plan,m=models.find(m=>m.id===p.base.modelId);return m&&latest(m)?.number>p.base.version}
-function effective(plan){const result=copy(plan.base.data);for(const x of entries(result.allocations)){const o=plan.overrides[x.key];if(o?.target!==undefined)x.node.target=o.target}return result}
+// A portfolio's own adjustments on top of the model it follows: a target, a
+// band, or both. Everything downstream reads the result, not the two separately.
+function effective(plan){const result=copy(plan.base.data);for(const x of entries(result.allocations)){const o=plan.overrides[x.key];if(!o)continue;if(o.target!==undefined)x.node.target=o.target;if(o.band!==undefined)x.node.band=o.band}return result}
 function targetIssues(plan){const issues=validation(effective(plan));if(scopeValue(plan)<=0)issues.push('Include at least one asset with a positive value.');if(plan.assets.some(a=>!a.included&&!a.reason.trim()))issues.push('Give a reason for each excluded asset.');const keys=new Set(entries(plan.base.data.allocations).map(x=>x.key));if(Object.keys(plan.overrides).some(k=>!keys.has(k)))issues.push('Some customisations do not match the selected model. Keep the earlier model or resolve the allocations before approval.');return issues}
-const EXPOSURE_LENSES=['sec','mc','geo','th','cr','cu'];
-const lensBandDefault=lens=>originalData.settings.originalLensBands[lens]?.at(-1)||5;
-// An approved portfolio limit replaces the implied target and/or the sample band for one bucket.
-function effectiveLensLimit(limits,lens,bucket,impliedTarget){
- const o=limits?.[lens]?.[bucket]||{};
- return {target:o.target??impliedTarget,band:o.band??lensBandDefault(lens),impliedTarget,custom:o.target!==undefined||o.band!==undefined};
+// Drift and breaches are read off the one classification tree. A portfolio is
+// measured against the node targets its client target approved, with its own
+// adjustments on top, and only the most specific breach is reported: a sector
+// outside its band because one sub-sector is outside its band is one problem.
+const securityIndexByName=new Map(originalData.securities.map((s,i)=>[s.name,i]));
+function vectorOf(values){
+ const vector=originalData.securities.map(()=>0);
+ for(const holding of values){
+  const index=securityIndexByName.get(holding.name);
+  if(index!==undefined)vector[index]+=holding.value;
+ }
+ return vector;
 }
-function portfolioMetrics(actual,target,threshold,lensLimits){
- const total=actual.reduce((s,x)=>s+x.value,0),classes=originalData.assetHierarchy.map(c=>({name:c.n,actual:total?actual.filter(x=>x.category===c.n).reduce((s,x)=>s+x.value,0)/total*100:null,target:target.filter(x=>x.category===c.n).reduce((s,x)=>s+x.value,0)}));
+// Kept so the review tab can still slice the same holdings by sector, market cap
+// and the rest. These are read-only distributions, not something a target is set
+// against any more.
+const EXPOSURE_LENSES=['sec','mc','geo','th','cr'];
+const lensBandDefault=level=>originalData.settings.defaultBandsByLevel[typeof level==='number'?level:2]??2;
+
+function portfolioMetrics(actual,targetsByNode,threshold,overrides,modelName){
+ const vector=vectorOf(actual),total=vector.reduce((a,b)=>a+b,0);
+ const rows=TAX.rowsFor({
+  vector,modelName:modelName||'Moderate',threshold,
+  targets:targetsByNode&&Object.keys(targetsByNode).length?targetsByNode:undefined,
+  targetOverrides:overrides&&overrides.targets,
+  bandOverrides:overrides&&overrides.bands,
+ });
+ const classes=TAX.assetClassRows(rows).map(row=>({name:row.label,actual:total?row.current:null,target:row.target}));
  const drift=total?Math.max(...classes.map(x=>Math.abs(x.actual-x.target))):null;
- const exposureFlags=EXPOSURE_LENSES.flatMap(l=>exposureRows(actual,target,l).map(x=>{
-  const limit=effectiveLensLimit(lensLimits,l,x.name,x.target);
-  return {...x,lens:l,target:limit.target,impliedTarget:limit.impliedTarget,band:limit.band,limitSource:limit.custom?'portfolio':'default',drift:x.actual===null||limit.target===null?null:x.actual-limit.target};
- }).filter(x=>x.drift!==null&&Math.abs(x.drift)>x.band));
- return {total,classes,drift,threshold,exposureFlags,flagged:drift!==null&&(drift>threshold||exposureFlags.length>0)};
+ const exposureFlags=TAX.breaches(rows).filter(row=>row.level>0).map(row=>({
+  name:TAX.nodePath(row.key),key:row.key,level:row.level,
+  lens:'tree',levelName:TAX.levelName(row.level),
+  actual:row.current,target:row.target,impliedTarget:row.modelTarget,
+  band:row.band,drift:row.drift,amount:row.amountLakh,
+  limitSource:row.source==='Portfolio override'?'portfolio':'default',
+ }));
+ return {total,classes,drift,threshold,rows,exposureFlags,
+  flagged:drift!==null&&(drift>threshold||exposureFlags.length>0)};
 }
+
+// A household is its accounts combined, so its targets are theirs weighted by
+// what each holds under advice.
+function blendTargets(parts){
+ const total=parts.reduce((sum,p)=>sum+p.weight,0);
+ if(!total)return {};
+ const out={};
+ for(const part of parts)
+  for(const [key,value] of Object.entries(part.targets))out[key]=(out[key]||0)+value*part.weight/total;
+ return out;
+}
+const planTargets=plan=>TAX.targetsFromTree(effective(plan).allocations);
 function dashboardRecords(){
- const accounts=clientRecords.map(c=>{const p=approved(c).plan,actual=actualValues(p),target=leafValues(effective(p));return {id:c.id,name:c.name,risk:c.risk,model:baseRef(p),kind:c.type,members:[c],household:c.household,actual,target,lensLimits:p.lensOverrides,...portfolioMetrics(actual,target,c.threshold,p.lensOverrides)}});
+ const accounts=clientRecords.map(c=>{const p=approved(c).plan,actual=actualValues(p),target=leafValues(effective(p));return {id:c.id,name:c.name,risk:c.risk,modelName:c.modelName,model:baseRef(p),kind:c.type,members:[c],household:c.household,actual,target,targetsByNode:planTargets(p),treeOverrides:p.treeOverrides,...portfolioMetrics(actual,planTargets(p),c.threshold,p.treeOverrides,c.modelName)}});
  if(clientView==='accounts')return accounts;
- return originalData.households.map(h=>{const children=accounts.filter(a=>a.members[0].householdId===h.id),total=children.reduce((s,a)=>s+a.total,0),actual=children.flatMap(a=>a.actual),target=children.flatMap(a=>a.target.map(x=>({...x,value:total?x.value*a.total/total:0}))),names=[...new Set(children.map(a=>a.model))];return {id:h.id,name:h.name,risk:h.riskProfile,model:names.length===1?names[0]:'Mixed models',kind:'Household',members:children.flatMap(a=>a.members),household:h.name,actual,target,...portfolioMetrics(actual,target,h.originalThresholdPP??originalData.settings.firmThresholdPP)}});
+ return originalData.households.map(h=>{const children=accounts.filter(a=>a.members[0].householdId===h.id),total=children.reduce((s,a)=>s+a.total,0),actual=children.flatMap(a=>a.actual),target=children.flatMap(a=>a.target.map(x=>({...x,value:total?x.value*a.total/total:0}))),names=[...new Set(children.map(a=>a.model))];return {id:h.id,name:h.name,risk:h.riskProfile,modelName:h.modelName,model:names.length===1?names[0]:'Mixed models',kind:'Household',members:children.flatMap(a=>a.members),household:h.name,actual,target,targetsByNode:blendTargets(children.map(a=>({targets:a.targetsByNode,weight:a.total}))),...portfolioMetrics(actual,blendTargets(children.map(a=>({targets:a.targetsByNode,weight:a.total}))),h.originalThresholdPP??originalData.settings.firmThresholdPP,null,h.modelName)}});
 }
-function visibleRecords(){return dashboardRecords().filter(r=>(r.name+' '+r.household+' '+r.members.map(c=>c.name).join(' ')).toLowerCase().includes(clientSearch.toLowerCase())&&(!riskFilter||r.risk===riskFilter)&&(!flaggedOnly||r.flagged)).sort((a,b)=>sortDirection*(sortField==='name'?a.name.localeCompare(b.name):(a[sortField]??0)-(b[sortField]??0)))}
+function visibleRecords(){return dashboardRecords().filter(r=>(r.name+' '+r.household+' '+r.members.map(c=>c.name).join(' ')).toLowerCase().includes(clientSearch.toLowerCase())&&(!modelFilter||r.model===modelFilter)&&(!flaggedOnly||r.flagged)).sort((a,b)=>sortDirection*(sortField==='name'?a.name.localeCompare(b.name):(a[sortField]??0)-(b[sortField]??0)))}
 let renderClients;
 let householdPage;
 let openClient;
@@ -62,9 +101,9 @@ function reviewClient(){const p=planNow(),old=approved(client()).plan;if(targetI
 function approveClient(){const reason=$('targetReason').value.trim(),approver=$('targetApprover').value.trim();if(!reason||!approver){$('targetError').textContent='Enter a reason and approver.';return}if(targetIssues(planNow()).length)return;const c=client();c.history.push({number:approved(c).number+1,approvedAt:new Date().toISOString(),effectiveDate:today(),approver,reason,plan:copy(c.draft)});c.draft=null;saveClients();syncClients();clientEditing=false;closeModal();renderClient();notify('Client target approved. Other targets and actual holdings are unchanged.')}
 function historyMarkup(c){return [...c.history].reverse().map(h=>`<details class="history"><summary>Target revision ${h.number} · effective ${esc(h.effectiveDate)}</summary><p>${esc(h.reason)}</p><p><small>${esc(h.approver)} · ${esc(h.approvedAt)} · ${esc(h.plan.base.name)} model revision ${h.plan.base.version}</small></p><p>Included value: ${money(scopeValue(h.plan))}</p><div class="tablewrap"><table><thead><tr><th>Allocation</th><th>Target %</th></tr></thead><tbody>${entries(effective(h.plan).allocations).map(x=>`<tr><td>${esc(x.key)}</td><td>${fmt(x.node.target)}</td></tr>`).join('')}</tbody></table><table><thead><tr><th>Scope asset</th><th>Value</th><th>Inclusion / reason</th></tr></thead><tbody>${h.plan.assets.map(x=>`<tr><td>${esc(x.name)}</td><td>${money(x.value)}</td><td>${x.included?'Included':'Excluded: '+esc(x.reason)}</td></tr>`).join('')}</tbody></table></div></details>`).join('')}
 function clientHistory(){show(`<h2>Target history · ${esc(client().name)}</h2>${historyMarkup(client())}<div class="actions"><button onclick="closeModal()">Close</button></div>`)}
-function auditPage(){leaveModels();clientEditing=false;navState('history');$('footer').innerHTML='';let earlier=[];try{earlier=JSON.parse(localStorage.getItem('portfolio-original-targets-v1')||localStorage.getItem('portfolio-client-targets-v1')||'[]')}catch{}$('app').innerHTML=`<div class="eyebrow">Audit trail</div><h1>Audit log</h1><p class="muted">Model publications and client target approvals across every portfolio. Revision details are kept here.</p><h2>Models</h2>${models.map(m=>`<details class="card"><summary>${esc(latest(m)?.data.name||m.draft?.name)}</summary>${[...m.versions].reverse().map(v=>`<details class="history"><summary>Revision ${v.number} · ${esc(v.date)}</summary><p>${esc(v.reason)}</p><div class="tablewrap"><table><thead><tr><th>Allocation</th><th>Target %</th></tr></thead><tbody>${Object.entries(flatten(v.data)).map(([k,n])=>`<tr><td>${esc(k)}</td><td>${fmt(n.target)}</td></tr>`).join('')}</tbody></table></div></details>`).join('')}</details>`).join('')}<h2>Portfolio targets</h2>${clientRecords.map(c=>`<details class="card"><summary>${esc(c.name)}</summary>${historyMarkup(c)}</details>`).join('')}${earlier.length?`<details class="card"><summary>Earlier prototype examples · ${earlier.length} records retained</summary><p>These invented examples have been replaced in the portfolio list by the original sample accounts. Saved drafts and approvals remain available here.</p>${earlier.map(c=>`<details class="history"><summary>${esc(c.name)}</summary>${historyMarkup(c)}${c.draft?`<details><summary>Saved draft</summary><div class="tablewrap"><table><tbody>${entries(effective(c.draft).allocations).map(x=>`<tr><td>${esc(x.key)}</td><td>${fmt(x.node.target)}%</td></tr>`).join('')}</tbody></table></div></details>`:''}</details>`).join('')}</details>`:''}`}
+function auditPage(){leaveModels();clientEditing=false;navState('history');$('footer').innerHTML='';let earlier=[];try{earlier=JSON.parse(localStorage.getItem('portfolio-original-targets-v2')||localStorage.getItem('portfolio-original-targets-v1')||'[]')}catch{}$('app').innerHTML=`<div class="eyebrow">Audit trail</div><h1>Audit log</h1><p class="muted">Model publications and client target approvals across every portfolio. Revision details are kept here.</p><h2>Models</h2>${models.map(m=>`<details class="card"><summary>${esc(latest(m)?.data.name||m.draft?.name)}</summary>${[...m.versions].reverse().map(v=>`<details class="history"><summary>Revision ${v.number} · ${esc(v.date)}</summary><p>${esc(v.reason)}</p><div class="tablewrap"><table><thead><tr><th>Allocation</th><th>Target %</th></tr></thead><tbody>${Object.entries(flatten(v.data)).map(([k,n])=>`<tr><td>${esc(k)}</td><td>${fmt(n.target)}</td></tr>`).join('')}</tbody></table></div></details>`).join('')}</details>`).join('')}<h2>Portfolio targets</h2>${clientRecords.map(c=>`<details class="card"><summary>${esc(c.name)}</summary>${historyMarkup(c)}</details>`).join('')}${earlier.length?`<details class="card"><summary>Earlier prototype examples · ${earlier.length} records retained</summary><p>These invented examples have been replaced in the portfolio list by the original sample accounts. Saved drafts and approvals remain available here.</p>${earlier.map(c=>`<details class="history"><summary>${esc(c.name)}</summary>${historyMarkup(c)}${c.draft?`<details><summary>Saved draft</summary><div class="tablewrap"><table><tbody>${entries(effective(c.draft).allocations).map(x=>`<tr><td>${esc(x.key)}</td><td>${fmt(x.node.target)}%</td></tr>`).join('')}</tbody></table></div></details>`:''}</details>`).join('')}</details>`:''}`}
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const a=b.dataset.action;if(b.dataset.client){closeModal();openClient(b.dataset.client);return}if(b.dataset.household){householdPage(b.dataset.household);return}if(b.dataset.sort){sortDirection=sortField===b.dataset.sort?-sortDirection:1;sortField=b.dataset.sort;renderClients();return}if(b.dataset.toggle!==undefined){const key=entries(planNow().base.data.allocations)[+b.dataset.toggle].key;clientExpanded.has(key)?clientExpanded.delete(key):clientExpanded.add(key);renderClient();return}if(b.dataset.useBase){const [mi,vi]=b.dataset.useBase.split(':').map(Number),m=models[mi],v=m.versions[vi];client().draft.base={modelId:m.id,version:v.number,name:v.data.name,data:copy(v.data)};saveClients();closeModal();renderClient();return}if(!a)return;({accounts:()=>{clientView='accounts';renderClients()},households:()=>{clientView='households';renderClients()},back:clientNav,edit:editClient,approved:()=>{clientEditing=false;renderClient()},expand:()=>{clientExpanded=new Set(entries(planNow().base.data.allocations).map(x=>x.key));renderClient()},collapse:()=>{clientExpanded.clear();renderClient()},base:reviewBase,review:reviewClient,approve:approveClient,history:clientHistory}[a]||(()=>{}))()});
-document.addEventListener('change',e=>{const t=e.target;if(t.id==='clientSearch'){clientSearch=t.value;renderClients();return}if(t.id==='riskFilter'){riskFilter=t.value;renderClients();return}if(t.id==='flaggedOnly'){flaggedOnly=t.checked;renderClients();return}if(!clientEditing)return;const p=planNow();if(t.dataset.adjust!==undefined){const key=entries(p.base.data.allocations)[+t.dataset.adjust].key;p.overrides[key]=p.overrides[key]||{};if(t.value==='')delete p.overrides[key].target;else p.overrides[key].target=Number(t.value);if(!Object.keys(p.overrides[key]).length)delete p.overrides[key]}else if(t.dataset.scope!==undefined){p.assets[+t.dataset.scope].included=t.checked}else if(t.dataset.reason!==undefined){p.assets[+t.dataset.reason].reason=t.value}else return;saveClients();renderClient()});
+document.addEventListener('change',e=>{const t=e.target;if(t.id==='clientSearch'){clientSearch=t.value;renderClients();return}if(t.id==='modelFilter'){modelFilter=t.value;renderClients();return}if(t.id==='flaggedOnly'){flaggedOnly=t.checked;renderClients();return}if(!clientEditing)return;const p=planNow();if(t.dataset.adjust!==undefined){const key=entries(p.base.data.allocations)[+t.dataset.adjust].key;p.overrides[key]=p.overrides[key]||{};if(t.value==='')delete p.overrides[key].target;else p.overrides[key].target=Number(t.value);if(!Object.keys(p.overrides[key]).length)delete p.overrides[key]}else if(t.dataset.scope!==undefined){p.assets[+t.dataset.scope].included=t.checked}else if(t.dataset.reason!==undefined){p.assets[+t.dataset.reason].reason=t.value}else return;saveClients();renderClient()});
 clients=function(){syncClients();const m=current();show(`<h2>Portfolios using ${esc(latest(m)?.data.name)}</h2><p>Approved targets remain fixed until reviewed.</p>${m.clients.map(c=>`<p><button data-client="${c.id}">${esc(c.name)} →</button></p>`).join('')||'<p>No portfolios assigned.</p>'}<div class="actions"><button onclick="closeModal()">Close</button></div>`)};
 // Navigation starts after all workspace scripts load.
 
