@@ -2,7 +2,7 @@
 var originalData, financialPlanData;
 (async function boot(){
   try {
-    const release='20261010-allocation-inline-edit';
+    const release='20261011-security-level-filters';
     const response = await fetch('data/original-mockup.json?v='+release);
     if (!response.ok) throw new Error('Original data could not load');
     originalData = await response.json();

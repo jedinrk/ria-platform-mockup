@@ -194,8 +194,11 @@ test('Security master separates source-fixed fields from the firm classification
  // Filters that narrow a column sit in that column's header. The
  // needs-classification filter is not one of them: there is no such column, and
  // crammed into the name cell it stretched the column that needs the room most.
- for(const id of ['securitySearch','securityTypeFilter','securityClassFilter'])
+ for(const id of ['securitySearch','securityTypeFilter'])
   assert.ok(grid.includes('id="'+id+'"'),'missing header filter: '+id);
+ // Every level of the classification filters from its own column header.
+ for(const field of ['assetClass','superSector','sector','subsector'])
+  assert.ok(grid.includes('data-security-level-filter="'+field+'"'),'missing level filter: '+field);
  assert.ok(!grid.includes('securityUnclassified'),'the count filter is not in the header');
  assert.ok(grid.includes('config-fixed'),'source fields are marked read-only');
  for(const field of ['assetClass','superSector','sector','subsector'])
@@ -277,4 +280,63 @@ test('Choosing a level clears a level below it that no longer belongs',()=>{
  assert.equal(run(`effectiveField(originalData.securities.find(s=>s.id===${JSON.stringify(bank)}),"superSector")`),'Sensitive');
  // Financials is not a Sensitive sector, so the staged grid must not keep it.
  assert.ok(!run('sectorsFor("Equity","Sensitive")').includes('Financials'));
+});
+
+test('Each classification level filters from its own column, nested like the rows',()=>{
+ const {run,raw}=console_();
+ const all=run('securityRows().length');
+ const optionsFor=field=>run('filterOptionsFor("'+field+'")');
+ // Unfiltered, a level offers everything the sample holds at that level.
+ assert.deepEqual(optionsFor('assetClass'),run('[...new Set(originalData.securities.map(s=>s.assetClass))].sort()'));
+ const deep=optionsFor('subsector').length;
+ raw('securityFilters.assetClass="Equity"');
+ const rows=run('securityRows().length');
+ assert.ok(rows>0&&rows<all);
+ assert.ok(run('securityRows().every(s=>s.assetClass==="Equity")'));
+ // The levels below now offer only what sits under Equity.
+ assert.ok(optionsFor('subsector').length<deep,'a narrowed level offers less');
+ assert.deepEqual(optionsFor('superSector'),
+  run('[...new Set(originalData.securities.filter(s=>s.assetClass==="Equity").map(s=>s.superSector))].sort()'));
+ // Every option offered returns at least one row, so a filter cannot empty the grid.
+ for(const option of optionsFor('sector')){
+  raw('securityFilters.sector='+JSON.stringify(option));
+  assert.ok(run('securityRows().length')>0,'empty result for sector '+option);
+ }
+});
+
+test('Choosing a level clears the levels under it',()=>{
+ const {run,raw}=console_();
+ raw('securityFilters.assetClass="Equity"');
+ const sector=run('filterOptionsFor("sector")')[0];
+ raw('securityFilters.sector='+JSON.stringify(sector));
+ const sub=run('filterOptionsFor("subsector")')[0];
+ raw('securityFilters.subsector='+JSON.stringify(sub));
+ assert.ok(run('securityRows().length')>0);
+ // Moving the asset class would otherwise leave a sub-sector that matches nothing.
+ raw('changeLevelFilter("assetClass","Fixed income")');
+ assert.deepEqual(run('[securityFilters.assetClass,securityFilters.superSector,securityFilters.sector,securityFilters.subsector]'),
+  ['Fixed income','','','']);
+ assert.ok(run('securityRows().length')>0,'the grid is never left empty by the cascade');
+});
+
+test('A level filtered on stays selectable once a level above narrows past it',()=>{
+ const {run,raw}=console_();
+ raw('securityFilters.sector="Financials"');
+ assert.ok(run('securityRows().length')>0);
+ // Set an asset class that holds no Financials. The sector control must still
+ // offer the stale value, or there would be no way to clear it.
+ raw('securityFilters.assetClass="Real assets"');
+ assert.ok(!run('filterOptionsFor("sector")').includes('Financials'),'it is not a real option any more');
+ assert.match(run('levelFilter("sector")'),/<option selected>Financials<\/option>/);
+});
+
+test('Clear filters resets every level',()=>{
+ const {run,raw}=console_();
+ const all=run('securityRows().length');
+ raw('securityFilters.assetClass="Equity";securityFilters.search="bank"');
+ assert.ok(run('securityFiltered()'));
+ assert.match(run('(securityMasterPage(),$("app").innerHTML)'),/data-security-action="clear"/);
+ raw('securityFilters={...NO_FILTERS}');
+ assert.equal(run('securityFiltered()'),false);
+ assert.equal(run('securityRows().length'),all);
 });
