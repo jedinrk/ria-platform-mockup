@@ -20,7 +20,7 @@ function console_(){
   location:{hash:''},setTimeout,clearTimeout,console,CSS:{escape:x=>x},
  });
  ctx.globalThis=ctx;
- for(const f of ['models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js',
+ for(const f of ['taxonomy.js','models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js',
   'comparison.js','portfolio-review.js','target-plan-preview.js','models-extensions.js','console-extensions.js','planning.js','security-master.js'])
   vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx);
  return {run:code=>JSON.parse(vm.runInContext('JSON.stringify('+code+')',ctx)),raw:code=>vm.runInContext(code,ctx)};
@@ -59,16 +59,19 @@ test('Dates are the local calendar day, not shifted by the timezone',()=>{
  assert.equal(run('isoOf("04 Oct 2026")'),'2026-10-04');
 });
 
-test('Exposure flags can be excluded from the review state',()=>{
+test('Sub-class breaches can be excluded from the review state',()=>{
  const {run,raw}=console_();
  raw('clientView="accounts"');
- const on=run('dashboardRecords().filter(r=>r.flagged).length');
+ // Every portfolio is off its asset-class target after the model change, so the
+ // toggle is tested on one that is flagged on breaches alone.
+ raw('reviewRules.overrides.a3=40');
+ const on=run('dashboardRecords().find(r=>r.id==="a3").flagged');
+ assert.equal(on,true,'a3 is flagged on sub-class breaches alone');
  raw('exposureTriggersReview=false');
- const off=run('dashboardRecords().filter(r=>r.flagged).length');
- assert.ok(off<on,'turning the trigger off clears exposure-only portfolios');
- assert.ok(run('dashboardRecords().every(r=>r.exposureFlags.length>=0)'),'flags are still measured');
+ assert.equal(run('dashboardRecords().find(r=>r.id==="a3").flagged'),false,'turning the trigger off clears it');
+ assert.ok(run('dashboardRecords().every(r=>r.exposureFlags.length>=0)'),'breaches are still measured');
  raw('exposureTriggersReview=true');
- assert.equal(run('dashboardRecords().filter(r=>r.flagged).length'),on);
+ assert.equal(run('dashboardRecords().find(r=>r.id==="a3").flagged'),true);
 });
 
 test('Liquidity context is derived from the holdings, and absent facts say so',()=>{

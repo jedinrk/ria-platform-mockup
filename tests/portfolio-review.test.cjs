@@ -5,23 +5,35 @@ const root=path.join(__dirname,'..');
 function preview(){
  const elements=new Map(),el=id=>{if(!elements.has(id))elements.set(id,{innerHTML:'',textContent:'',setAttribute(){},addEventListener(){},querySelector(){return null}});return elements.get(id)};
  const ctx=vm.createContext({originalData:JSON.parse(fs.readFileSync(path.join(root,'data/original-mockup.json'),'utf8')),crypto:require('node:crypto').webcrypto,document:{getElementById:el,addEventListener(){}},window:{addEventListener(){},scrollTo(){}},localStorage:{getItem(){return null},setItem(){}},setTimeout,clearTimeout});
- for(const f of ['models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js','portfolio-review.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx);
+ for(const f of ['taxonomy.js','models.js','portfolio-views.js','portfolios.js','comparison-data.js','portfolio-workspace.js','portfolio-review.js'])vm.runInContext(fs.readFileSync(path.join(root,f),'utf8'),ctx);
  return code=>JSON.parse(vm.runInContext('JSON.stringify('+code+')',ctx));
 }
-test('Review summary explains the largest gap and preserves neutral/exposure-only states',()=>{
+test('Review summary names the largest gap, and reports a clear portfolio as clear',()=>{
  const run=preview();
- assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h1")).title'),/Real assets.*7.6 pp above/);
- assert.equal(run('reviewSummary(dashboardRecords().find(r=>r.id==="h4")).tone'),'clear');
- assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h2")).title'),/within/);
- assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h3")).title'),/exposure/);
+ // Adopting the revised models left every household off its target, so the
+ // summary states which asset class is furthest out.
+ assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h1")).title'),/Real assets.*12.6 pp above/);
+ assert.match(run('reviewSummary(dashboardRecords().find(r=>r.id==="h6")).title'),/Alternatives.*10 pp below/);
+ for(const id of ['h1','h2','h3','h4','h5','h6'])
+  assert.equal(run(`reviewSummary(dashboardRecords().find(r=>r.id==="${id}")).tone`),'attention');
+ // Widen the threshold past its drift and the firm's sub-class bands past every
+ // breach, and the same household reads as clear: the state is derived from the
+ // numbers, not hard-coded. A household uses the firm bands, not an account's.
+ const clear=run(`(()=>{reviewRules.overrides.h2=40;
+  originalData.settings.defaultBandsByLevel=[null,90,90,90,90];
+  return reviewSummary(dashboardRecords().find(r=>r.id==="h2")).tone})()`);
+ assert.equal(clear,'clear');
 });
-test('Exposure preview shows four flags first and all flags remain accessible',()=>{
+test('Sub-class flag preview caps the list and keeps every flag reachable',()=>{
  const run=preview();
- const limited=run('reviewExposures(dashboardRecords().find(r=>r.id==="h1"))');
- assert.match(limited,/Showing 4 of 8 flags/);assert.match(limited,/Show all 8 flags/);
+ const total=run('dashboardRecords().find(r=>r.id==="h4").exposureFlags.length');
+ assert.ok(total>4,'the sample needs more than four flags for this to mean anything');
+ const limited=run('reviewExposures(dashboardRecords().find(r=>r.id==="h4"))');
+ assert.match(limited,new RegExp('Showing 4 of '+total+' flags'));
+ assert.match(limited,new RegExp('Show all '+total+' flags'));
  assert.equal((limited.match(/class="review-bucket"/g)||[]).length,4);
- const full=run('(rowReviewShowAll.add("h1"),reviewExposures(dashboardRecords().find(r=>r.id==="h1")))');
- assert.equal((full.match(/class="review-bucket"/g)||[]).length,8);
+ const full=run('(rowReviewShowAll.add("h4"),reviewExposures(dashboardRecords().find(r=>r.id==="h4")))');
+ assert.equal((full.match(/class="review-bucket"/g)||[]).length,total);
 });
 test('Household accounts and individual account context use different layouts',()=>{
  const run=preview();
@@ -51,21 +63,28 @@ test('Listing expansion is a concise disclosure, not the detailed tabbed workspa
  assert.match(expanded,/Ritu Mehta/);assert.match(expanded,/Review threshold 5 pp/);
 });
 
-test('An approved portfolio lens limit replaces the default band in review flags',()=>{
+test('An approved portfolio band replaces the model band in review flags',()=>{
  const run=preview();
- const before=run('(clientView="accounts",dashboardRecords().find(r=>r.id==="a1").exposureFlags.length)');
- const after=run(`(()=>{const c=clientRecords.find(x=>x.id==="a1");const p=approved(c).plan;
-  p.lensOverrides={sec:Object.fromEntries(dashboardRecords().find(r=>r.id==="a1").exposureFlags.filter(f=>f.lens==="sec").map(f=>[f.name,{band:50}]))};
-  return dashboardRecords().find(r=>r.id==="a1").exposureFlags.length})()`);
- assert.ok(before>after,'widening approved sector bands must clear those flags');
- const sourced=run('dashboardRecords().find(r=>r.id==="a1").exposureFlags.every(f=>["portfolio","default"].includes(f.limitSource))');
+ const before=run('(clientView="accounts",dashboardRecords().find(r=>r.id==="a6").exposureFlags.length)');
+ assert.ok(before>0);
+ const after=run(`(()=>{const p=approved(clientRecords.find(x=>x.id==="a6")).plan;
+  p.treeOverrides={bands:Object.fromEntries(dashboardRecords().find(r=>r.id==="a6").rows.filter(r=>r.level>0).map(r=>[r.key,90]))};
+  return dashboardRecords().find(r=>r.id==="a6").exposureFlags.length})()`);
+ assert.ok(before>after,'widening the approved bands must clear those flags');
+ const sourced=run('dashboardRecords().find(r=>r.id==="a6").exposureFlags.every(f=>["portfolio","default"].includes(f.limitSource))');
  assert.equal(sourced,true);
 });
 
-test('Review reason names the cause so a within-threshold bar can still say Needs review',()=>{
+test('Review reason names the cause, so a within-threshold bar can still need review',()=>{
  const run=preview();
- assert.equal(run('reviewReason(dashboardRecords().find(r=>r.id==="h6"))'),'Exposure only');
- assert.equal(run('reviewLabel(dashboardRecords().find(r=>r.id==="h2"))'),'Within threshold');
+ // Raise one household's threshold above its drift and it is flagged on
+ // sub-class breaches alone.
+ const reason=run('(reviewRules.overrides.h3=40,reviewReason(dashboardRecords().find(r=>r.id==="h3")))');
+ assert.equal(reason,'Exposure only');
+ assert.equal(run('reviewLabel(dashboardRecords().find(r=>r.id==="h3"))'),'Needs review');
+ // Widen the firm's sub-class bands too and it falls back to within threshold.
+ const label=run(`(originalData.settings.defaultBandsByLevel=[null,90,90,90,90],reviewLabel(dashboardRecords().find(r=>r.id==="h3")))`);
+ assert.equal(label,'Within threshold');
 });
 
 test('Detail lookup does not change the listing grouping or saved records',()=>{
