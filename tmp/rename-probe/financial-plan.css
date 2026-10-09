@@ -1,0 +1,27 @@
+/* Household financial planning: balance sheet, cash flow and the plan behind it. */
+.liquidity-bar{display:flex;height:14px;border-radius:7px;overflow:hidden;background:#edf1ec;margin:18px 0 10px}
+.liquidity-bar span{min-width:0}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:10px;font-size:13px;color:var(--mut)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend .dot.dash{width:14px;height:3px;border-radius:0;background:var(--ink)}
+.plan-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:0 18px}
+.plan-inputs .field{margin:12px 0}
+.plan-flag{display:grid;grid-template-columns:104px minmax(0,1fr);gap:12px;align-items:start;padding:10px 0;border-bottom:1px solid #edf1ec}
+.plan-flag:last-child{border-bottom:0}
+.plan-flag .state-pill{justify-self:start}
+.plan-flag button{margin-left:8px;padding:5px 11px;font-size:13px}
+.mini-facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:5px 26px;padding:5px 0 7px 30px;font-size:13px;color:var(--mut)}
+.mini-facts strong{color:var(--ink)}
+.share-bar{display:inline-block;width:62px;height:7px;border-radius:4px;background:#e8eee9;margin-right:8px;vertical-align:middle;overflow:hidden}
+.share-bar i{display:block;height:100%;background:var(--green)}
+/* The plan editors are dense tables of small fields; the needs table needs room
+   or its last column collapses a button to one letter per line. */
+.card table button{white-space:nowrap}
+.plan-editor table{min-width:1080px}
+.plan-editor-wide table{min-width:1240px}
+
+.card table input.target{width:84px}
+.card table input:not(.target){width:100%;min-width:130px;padding:7px;border:1px solid #ccd8d0;border-radius:7px;background:white;color:var(--ink);font:inherit}
+.card table select{padding:7px;border:1px solid #ccd8d0;border-radius:7px;background:white;color:var(--ink);font:inherit;max-width:175px}
+.card table td{vertical-align:middle}
+@media(max-width:800px){.mini-facts{grid-template-columns:1fr;padding-left:12px}.plan-flag{grid-template-columns:1fr;gap:5px}}

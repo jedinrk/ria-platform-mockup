@@ -22,6 +22,30 @@ Saved models use `portfolio-model-design-v3` and account targets `portfolio-orig
 
 Review-rule settings use `portfolio-review-rules-v1`. Blank portfolio thresholds inherit the firm default; explicit household and account overrides remain independent. Changing these rules only changes review flags and bar scales—it never changes models, targets or holdings.
 
+## Preview builds
+
+`https://jedinrk.github.io/ria-platform-mockup/` serves `main`. Work in progress
+is published alongside it in a subdirectory, so it can be shown without touching
+what is live:
+
+```
+node scripts/publish-preview.cjs <git-ref> [directory]
+node scripts/publish-preview.cjs revised-mockup-v3 v3
+```
+
+The directory is rebuilt from scratch each time, so re-running the script after
+the branch moves is the whole refresh procedure. Only the files the site needs
+are copied; tests, scripts and documentation are not. `v3/PREVIEW.txt` records
+which commit the copy came from.
+
+Two edits are made to the copy. A marker in the prototype bar, so nobody
+mistakes the preview for the live site. And a namespaced `localStorage` facade:
+GitHub Pages serves both from one origin and `localStorage` is scoped per origin
+rather than per path, so without it the two would share saved models, client
+targets and plans, and an edit in one would silently change the other.
+
+Do not edit inside a preview directory. Change the branch and re-run the script.
+
 ## Verification
 
 Run `node --test tests/*.test.cjs`. Serve the root with a local HTTP server; the JSON-backed app does not support direct file URLs.
