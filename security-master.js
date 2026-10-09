@@ -190,7 +190,7 @@ function securityGrid(){
   <th scope="col" class="col-editable">Asset class</th><th scope="col" class="col-editable">Super sector</th><th scope="col" class="col-editable">Sector</th><th scope="col" class="col-editable">Sub-sector</th>
   ${typeColumns.map(a=>`<th scope="col" class="col-attribute">${esc(a.label)}${a.unit?`<small>${esc(a.unit)}</small>`:''}</th>`).join('')}
  </tr><tr class="config-filter-row">
-  <th><label class="config-header-search"><span class="sr-only">Filter instruments</span><input id="securitySearch" type="search" placeholder="Filter rows…" value="${esc(securityFilters.search)}" aria-label="Filter instruments by name, symbol, type or sector"></label><label class="config-header-check"><input id="securityUnclassified" type="checkbox" ${securityFilters.unclassifiedOnly?'checked':''}> Needs classification only</label></th>
+  <th><label class="config-header-search"><span class="sr-only">Filter instruments</span><input id="securitySearch" type="search" placeholder="Filter rows…" value="${esc(securityFilters.search)}" aria-label="Filter instruments by name, symbol, type or sector"></label></th>
   <th aria-label="No ISIN filter"></th><th aria-label="No symbol filter"></th><th aria-label="No rating filter"></th><th aria-label="No price filter"></th>
   ${showAssetType?`<th><label><span class="sr-only">Filter by asset type</span><select id="securityTypeFilter" class="config-header-filter" aria-label="Filter by asset type"><option value="">All</option>${typeOptions.map(t=>`<option ${securityFilters.instrumentType===t?'selected':''}>${esc(t)}</option>`).join('')}</select></label></th>`:''}
   <th class="col-editable"><label><span class="sr-only">Filter by asset class</span><select id="securityClassFilter" class="config-header-filter" aria-label="Filter by asset class"><option value="">All</option>${ASSET_CLASSES.map(c=>`<option ${securityFilters.assetClass===c?'selected':''}>${esc(c)}</option>`).join('')}</select></label></th>
@@ -240,7 +240,7 @@ securityMasterPage=function(){
  <p class="muted">Classify each instrument once. Every model and portfolio reads its exposure from here. The four classification levels nest: each offers only what belongs under the level above it.</p>
  <div class="portfolio-metrics">
   <div class="card"><small>Instruments</small><strong>${total}</strong><small>in the firm master</small></div>
-  <div class="card"><small>Need classification</small><strong class="${unclassified?'drift-over':''}">${unclassified}</strong><small>missing a level of the classification</small></div>
+  <button class="card config-count-filter" id="securityUnclassified" aria-pressed="${securityFilters.unclassifiedOnly}" ${unclassified?'':'disabled'} title="${unclassified?'Show only these instruments':'Every instrument is classified'}"><small>Need classification</small><strong class="${unclassified?'drift-over':''}">${unclassified}</strong><small>${securityFilters.unclassifiedOnly?'showing only these \u00b7 select to clear':unclassified?'missing a level \u00b7 select to show only these':'missing a level of the classification'}</small></button>
   <div class="card"><small>Staged changes</small><strong>${pending}</strong><small>not applied yet</small></div>
   <div class="card"><small>Instrument types</small><strong>${new Set(originalData.securities.map(instrumentType)).size}</strong><small>each sets its own attributes</small></div>
  </div>
@@ -297,6 +297,14 @@ document.addEventListener('click',e=>{
   document.querySelector(`[data-security-attributes="${id}"]`)?.focus();
   return;
  }
+ // The count tile is the control for its own filter.
+ const countFilter=e.target.closest('#securityUnclassified');
+ if(countFilter&&!countFilter.disabled){
+  securityFilters.unclassifiedOnly=!securityFilters.unclassifiedOnly;
+  securityMasterPage();
+  document.getElementById('securityUnclassified')?.focus();
+  return;
+ }
  const b=e.target.closest('button[data-security-action]');if(!b)return;
  const action=b.dataset.securityAction;
  if(action==='clear'){securityFilters={search:'',assetClass:'',instrumentType:'',unclassifiedOnly:false};securityMasterPage();return}
@@ -317,7 +325,6 @@ document.addEventListener('change',e=>{
  const t=e.target;
  if(t.id==='securityClassFilter'){securityFilters.assetClass=t.value;securityMasterPage();return}
  if(t.id==='securityTypeFilter'){securityFilters.instrumentType=t.value;securityMasterPage();return}
- if(t.id==='securityUnclassified'){securityFilters.unclassifiedOnly=t.checked;securityMasterPage();return}
  const id=t.dataset.security,field=t.dataset.field;
  if(!id||!field)return;
  const s=originalData.securities.find(x=>x.id===id);

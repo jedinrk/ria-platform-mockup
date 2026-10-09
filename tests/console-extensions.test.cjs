@@ -191,8 +191,12 @@ test('Security master separates source-fixed fields from the firm classification
  for(const header of ['Name','ISIN','Symbol','Crisil rating','Current price','Asset type','Asset class','Super sector','Sector','Sub-sector'])
   assert.ok(grid.includes(header),'missing column: '+header);
  assert.ok(grid.includes('class="config-filter-row"'),'filters sit inside the table header');
- for(const id of ['securitySearch','securityTypeFilter','securityClassFilter','securityUnclassified'])
+ // Filters that narrow a column sit in that column's header. The
+ // needs-classification filter is not one of them: there is no such column, and
+ // crammed into the name cell it stretched the column that needs the room most.
+ for(const id of ['securitySearch','securityTypeFilter','securityClassFilter'])
   assert.ok(grid.includes('id="'+id+'"'),'missing header filter: '+id);
+ assert.ok(!grid.includes('securityUnclassified'),'the count filter is not in the header');
  assert.ok(grid.includes('config-fixed'),'source fields are marked read-only');
  for(const field of ['assetClass','superSector','sector','subsector'])
   assert.ok(grid.includes('data-field="'+field+'"'),'missing editable field: '+field);
@@ -201,6 +205,24 @@ test('Security master separates source-fixed fields from the firm classification
  assert.ok(grid.includes('HDFCBANK'));
  assert.ok(grid.includes('config-absent'),'unsupplied fields are marked');
 });
+test('The needs-classification count is the control that shows them',()=>{
+ const {run,raw}=console_();
+ const page=()=>run('(securityMasterPage(),$("app").innerHTML)');
+ const markup=page();
+ assert.match(markup,/id="securityUnclassified"[^>]*aria-pressed="false"/,'the count tile is the toggle');
+ assert.match(markup,/Need classification/);
+ // Nothing needs classifying in the sample, so the control says so rather than
+ // offering a filter that would empty the grid.
+ assert.match(markup,/id="securityUnclassified"[^>]*disabled/);
+ assert.match(markup,/Every instrument is classified/);
+ // Stage a change that strips a level, and it becomes usable.
+ raw('securityPending["security-4"]={sector:""}');
+ const staged=page();
+ assert.ok(!/id="securityUnclassified"[^>]*disabled/.test(staged),'with one unclassified it can be used');
+ raw('securityFilters.unclassifiedOnly=true');
+ assert.match(page(),/aria-pressed="true"/);
+});
+
 test('A rating that cannot apply reads differently from one that is missing',()=>{
  const {run}=console_();
  const grid=run('securityGrid()');
