@@ -66,13 +66,28 @@ function portfolioTabs(){return `<nav class="portfolio-tabs" aria-label="Portfol
 function scopeSummary(p){return `<div class="scope-summary"><div><small>Recorded assets</small><strong>${money(recordedValue(p))}</strong></div><div><small>Under advice${clientEditing?' · draft':''}</small><strong>${money(scopeValue(p))}</strong></div><p>${p.assets.filter(a=>a.included).length} of ${p.assets.length} assets included</p><button data-workspace="scope">${clientEditing?'Manage included assets':'View included assets'}</button></div>`}
 function allocationControls(){return `<div class="analysis-toolbar"><div class="segmented" role="group" aria-label="Allocation view"><button data-lens="ac" data-context="portfolio" aria-pressed="${activeLens==='ac'}">Asset allocation</button><button data-workspace="exposures" aria-pressed="${activeLens!=='ac'}">Exposure analysis</button></div>${activeLens!=='ac'?`<label>Lens <select id="portfolioLens">${lenses.filter(([key])=>!['ac'].includes(key)).map(([key,label])=>`<option value="${key}" ${key===activeLens?'selected':''}>${label}</option>`).join('')}</select></label>${['sec','mc','geo','tree'].includes(activeLens)?`<label>Funds and ETFs <select id="portfolioFundMode"><option value="look" ${fundMode==='look'?'selected':''}>Look-through</option><option value="tag" ${fundMode==='tag'?'selected':''}>Single tag</option></select></label>`:''}`:'<div class="flex"><button data-workspace="expand-all">Expand all</button><button data-workspace="collapse-all">Collapse all</button></div>'}</div>`}
 
+// The tree a portfolio is displayed against is the whole classification, to
+// whatever depth each branch runs. It used to be three levels everywhere; it no
+// longer is, so this mirrors the hierarchy rather than assuming a shape.
 function actualAllocationTree(p){
-  return originalData.assetHierarchy.map(c=>({name:c.n,target:0,children:c.c.map(group=>({name:group.n,target:0,children:group.c.map(s=>({name:s.n,target:0,children:[]}))}))}));
+  const mirror=node=>({name:node.n,key:node.key,target:0,children:(node.c||[]).map(mirror)});
+  return originalData.assetHierarchy.map(mirror);
 }
 function alignedPortfolioRows(p){
   const model=p.base.data,target=effective(p),tree=actualAllocationTree(p),values=new Map();
-  for(const c of tree)for(const group of c.children)for(const leaf of group.children){const value=p.assets.filter(a=>a.included&&a.name===leaf.name).reduce((sum,a)=>sum+a.value,0);values.set(JSON.stringify([c.name,group.name,leaf.name]),value)}
-  for(const c of tree){for(const group of c.children)values.set(JSON.stringify([c.name,group.name]),group.children.reduce((sum,n)=>sum+(values.get(JSON.stringify([c.name,group.name,n.name]))||0),0));values.set(JSON.stringify([c.name]),c.children.reduce((sum,n)=>sum+values.get(JSON.stringify([c.name,n.name])),0))}
+  const held=new Map();
+  for(const asset of p.assets)if(asset.included)held.set(asset.name,(held.get(asset.name)||0)+asset.value);
+  // The tree runs to a different depth in each branch, so totals are rolled up
+  // rather than read off a fixed three levels.
+  const roll=(node,path)=>{
+    const here=[...path,node.name];
+    const value=node.children.length
+      ?node.children.reduce((sum,child)=>sum+roll(child,here),0)
+      :(held.get(node.name)||0);
+    values.set(JSON.stringify(here),value);
+    return value;
+  };
+  for(const assetClass of tree)roll(assetClass,[]);
   return ComparisonData.aligned([model,target,{allocations:tree}]).map(row=>({...row,actual:values.get(row.key)||0}));
 }
 // Drift bands by depth, from the original mockup: portfolio threshold, then sub-class, then holding.
