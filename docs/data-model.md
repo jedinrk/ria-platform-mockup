@@ -5,12 +5,11 @@ the physical schema (Postgres DDL) follows once this is agreed.
 
 Sources: the mockup's data and the decisions recorded in `docs/`; the securities
 data dictionary `portfolio_data_dictionary.xlsx` (17 Oct 2026) for the instrument
-domain; the onboarding notes from the product owner (21 Oct 2026); the architect
-review `DataModel-Questions.xlsx` (Q1–Q16, 24–26 Oct 2026).
+domain; the onboarding notes from the product owner (21 Oct 2026); the review `DataModel-Questions.xlsx` (Q1–Q16, 24–26 Oct 2026).
 
 ## Change log
 
-### Revision 2 (26 Oct 2026) — after architect review
+### Revision 2
 
 - **Hierarchy** is now Firm › Household › Member › MemberAccount › HoldingEntity ›
   Holding / Liability (Q3). `Client` is renamed `Member`; `Account` and
