@@ -1,0 +1,347 @@
+openapi: 3.1.0
+info:
+  title: RIA platform — reference data
+  version: 1.0.0
+  description: >
+    Everything true about an instrument regardless of which firm holds it.
+    Shared across tenants and written by feeds. Features RD-01..RD-12.
+
+    Note: advisory-core and analytics read this data through declared database
+    views rather than through this API. A drift run touching 200 holdings
+    cannot afford 200 HTTP calls. This API serves search, administration and
+    anything outside a computation path.
+servers:
+  - url: https://api.example.com/v1
+security:
+  - bearerAuth: []
+tags: [{name: instruments}, {name: prices}, {name: types}, {name: tax}, {name: feeds}]
+
+paths:
+  /instruments:
+    get:
+      tags: [instruments]
+      summary: Search instruments
+      operationId: searchInstruments
+      parameters:
+        - { name: q, in: query, description: Name or identifier fragment., schema: { type: string } }
+        - { name: instrumentType, in: query, schema: { type: string } }
+        - { name: isin, in: query, schema: { type: string } }
+        - { name: scope, in: query, schema: { type: string, enum: [public, firm, household] } }
+        - { name: holdableOnly, in: query, schema: { type: boolean, default: true } }
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './common.yaml#/components/schemas/Page'
+                  - type: object
+                    properties:
+                      items: { type: array, items: { $ref: '#/components/schemas/Instrument' } }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+    post:
+      tags: [instruments]
+      summary: Create an instrument
+      description: >
+        Feature RD-12. Restricted to operations. A firm- or household-scoped
+        instrument carries the corresponding identifier; where scoped rows
+        physically live is architecture discussion point 11.
+      operationId: createInstrument
+      parameters: [{ $ref: './common.yaml#/components/parameters/idempotencyKey' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/InstrumentCreate' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Instrument' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+
+  /instruments/{instrumentId}:
+    parameters:
+      - { name: instrumentId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [instruments]
+      summary: Get an instrument with its type-specific attributes
+      operationId: getInstrument
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Instrument' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /instruments/{instrumentId}/identifiers:
+    parameters:
+      - { name: instrumentId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [instruments]
+      summary: Identifiers over time
+      description: Feature RD-03. ISIN, symbol and scheme code are attributes, never keys.
+      operationId: listInstrumentIdentifiers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/InstrumentIdentifier' } }
+
+  /instruments/{instrumentId}/prices:
+    parameters:
+      - { name: instrumentId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [prices]
+      summary: Price series
+      description: >
+        Feature RD-04. A series keyed by date and kind, never a latest-value
+        column. Omit from/to to get the most recent price only.
+      operationId: listPrices
+      parameters:
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+        - { name: kind, in: query, schema: { type: string, enum: [close, nav, spot, iNAV] } }
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Price' } }
+
+  /instruments/{instrumentId}/ratings:
+    parameters:
+      - { name: instrumentId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [instruments]
+      summary: Credit ratings over time
+      operationId: listRatings
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/InstrumentRating' } }
+
+  /instrument-types:
+    get:
+      tags: [types]
+      summary: The instrument type master
+      operationId: listInstrumentTypes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/InstrumentType' } }
+
+  /instrument-types/{code}/attributes:
+    parameters:
+      - { name: code, in: path, required: true, schema: { type: string } }
+    get:
+      tags: [types]
+      summary: Attribute definitions for a type
+      description: >
+        Feature RD-05. Defines the contract for Instrument.attributes, because
+        the same key means different things on different types. 'owner' drives
+        the grouped display on security-master row expansion (SM-10).
+      operationId: listInstrumentTypeAttributes
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/InstrumentTypeAttribute' } }
+
+  /issuers:
+    get:
+      tags: [instruments]
+      summary: List issuers
+      operationId: listIssuers
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Issuer' } }
+
+  /tax-rules:
+    get:
+      tags: [tax]
+      summary: Tax rules by jurisdiction and tax class
+      description: >
+        Feature RD-07. System-maintained reference. Estimates built on these
+        stay labelled estimates.
+      operationId: listTaxRules
+      parameters:
+        - { name: jurisdiction, in: query, schema: { type: string, default: IN } }
+        - { name: taxClass, in: query, schema: { type: string } }
+        - $ref: './common.yaml#/components/parameters/asOf'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/TaxRule' } }
+
+  /feed-runs:
+    get:
+      tags: [feeds]
+      summary: Feed run history
+      description: >
+        Feature RD-08/RD-10. The nightly drift job reads this to decide whether
+        prices are current or the run must be marked stale_prices.
+      operationId: listFeedRuns
+      parameters:
+        - { name: sourceId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - { name: status, in: query, schema: { type: string, enum: [running, succeeded, failed, partial] } }
+        - $ref: './common.yaml#/components/parameters/limit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/FeedRun' } }
+
+components:
+  securitySchemes:
+    bearerAuth: { $ref: './common.yaml#/components/securitySchemes/bearerAuth' }
+  schemas:
+    Instrument:
+      type: object
+      required: [id, instrumentTypeCode, name, scope, status]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        instrumentTypeCode: { type: string }
+        name: { type: string }
+        shortName: { type: [string, 'null'] }
+        issuerId: { type: [string, 'null'], format: uuid }
+        scope:
+          type: string
+          enum: [public, firm, household]
+          description: Public instruments are shared; firm and household rows are private.
+        firmId: { type: [string, 'null'], format: uuid }
+        householdId: { type: [string, 'null'], format: uuid }
+        currency: { $ref: './common.yaml#/components/schemas/Currency' }
+        isin:
+          type: [string, 'null']
+          description: Null where no source supplies one. Never fabricated (RD-09).
+        listingStatus: { type: [string, 'null'] }
+        inceptionDate: { type: [string, 'null'], format: date }
+        maturityDate: { type: [string, 'null'], format: date }
+        dataConfidence: { type: string, enum: [verified, sourced, adviser_stated, estimated] }
+        attributes:
+          type: object
+          description: Type-specific fields, validated against InstrumentTypeAttribute.
+          additionalProperties: true
+        status: { type: string, enum: [active, retired] }
+
+    InstrumentCreate:
+      type: object
+      required: [instrumentTypeCode, name, scope]
+      properties:
+        instrumentTypeCode: { type: string }
+        name: { type: string }
+        scope: { type: string, enum: [public, firm, household] }
+        householdId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        currency: { $ref: './common.yaml#/components/schemas/Currency' }
+        attributes: { type: object, additionalProperties: true }
+
+    InstrumentIdentifier:
+      type: object
+      properties:
+        scheme: { type: string, enum: [isin, symbol, scheme_code, rta_code, cusip, other] }
+        value: { type: string }
+        validFrom: { type: string, format: date }
+        validTo: { type: [string, 'null'], format: date }
+
+    InstrumentType:
+      type: object
+      required: [code, label]
+      properties:
+        code: { type: string }
+        label: { type: string }
+        defaultAssetClass: { type: [string, 'null'] }
+        isMarketable: { type: boolean }
+        hasPublicFeed: { type: boolean }
+        ratingApplies: { type: boolean }
+        isHoldable:
+          type: boolean
+          description: False for 'index', which exists as a benchmark only.
+        sortOrder: { type: integer }
+
+    InstrumentTypeAttribute:
+      type: object
+      required: [key, label, kind, owner]
+      properties:
+        key: { type: string }
+        label: { type: string }
+        kind: { type: string, enum: [string, number, percent, money, date, boolean, enum] }
+        unit: { type: [string, 'null'] }
+        options: { type: [array, 'null'], items: { type: string } }
+        sequence: { type: integer }
+        owner:
+          type: string
+          enum: [feed, firm, client]
+          description: Who owns this attribute. Drives the grouped display in SM-10.
+
+    Issuer:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        name: { type: string }
+        lei: { type: [string, 'null'] }
+
+    Price:
+      type: object
+      required: [priceDate, kind, value]
+      properties:
+        priceDate: { type: string, format: date }
+        kind: { type: string, enum: [close, nav, spot, iNAV] }
+        value: { $ref: './common.yaml#/components/schemas/Money' }
+        currency: { $ref: './common.yaml#/components/schemas/Currency' }
+        sourceId: { type: [string, 'null'], format: uuid }
+        loadedAt: { type: string, format: date-time }
+
+    InstrumentRating:
+      type: object
+      properties:
+        ratedOn: { type: string, format: date }
+        agency: { type: string }
+        rating: { type: string }
+
+    TaxRule:
+      type: object
+      properties:
+        jurisdiction: { type: string }
+        taxClass: { type: string }
+        longTermMonths: { type: integer }
+        shortTermRatePct: { $ref: './common.yaml#/components/schemas/Percent' }
+        longTermRatePct: { $ref: './common.yaml#/components/schemas/Percent' }
+        exemptionAmount: { $ref: './common.yaml#/components/schemas/Money' }
+        grandfatheringDate: { type: [string, 'null'], format: date }
+        validFrom: { type: string, format: date }
+        source: { type: string }
+
+    FeedRun:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        sourceId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        asOf: { type: string, format: date }
+        startedAt: { type: string, format: date-time }
+        finishedAt: { type: [string, 'null'], format: date-time }
+        status: { type: string, enum: [running, succeeded, failed, partial] }
+        recordsLoaded: { type: integer }

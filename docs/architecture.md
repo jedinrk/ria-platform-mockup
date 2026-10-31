@@ -11,7 +11,7 @@ repository, which is the functional specification; the platform decisions taken
 with the product owner (29–31 Oct 2026).
 
 Every decision here is open to challenge. The section **Discussion points for
-the architect** lists the ten that most need a second opinion, each with the
+the architect** lists the eleven that most need a second opinion, each with the
 context, the recommendation and what specifically to confirm. Those are the
 agenda for the review, not an appendix to it.
 
@@ -28,6 +28,10 @@ ID as the identity provider; **schema-per-tenant** multi-tenancy; a client-facin
 portal in v2 and not in this phase; a nightly drift job rather than a
 continuously scaled compute tier; Java 25 LTS with Spring Boot 4.x and virtual
 threads; a single region now with geo-redundant backup enabled at creation.
+
+Discussion point 11 was added after this revision was first written, when
+drawing `docs/erd.md` showed that `Instrument.scope` and schema-per-tenant
+conflict. It is the only open item that blocks a table outright.
 
 ## Scope
 
@@ -147,7 +151,7 @@ independently of the others.
 | Service | Owns | Why it is separate |
 |---|---|---|
 | **identity-and-firm** | `Firm`, `FirmPolicy`, `User`, `UserRole`, `AdviserPortfolioManager`, `HouseholdAdviser` | The authorization source of truth. Small, stable, read on every request by everything else. Tenant provisioning lives here. |
-| **reference-data** | `Instrument`, `InstrumentType`, `InstrumentIdentifier`, `Issuer`, `Price`, the typed extensions, `InstrumentRating`, `TaxRule`, `DataSource`, `FeedRun` | **No tenancy at all.** Feed-written, read-mostly, released on the cadence of data vendors rather than of product features. |
+| **reference-data** | `Instrument`, `InstrumentType`, `InstrumentTypeAttribute`, `InstrumentIdentifier`, `Issuer`, `Price`, the typed extensions, `InstrumentRating`, `TaxRule`, `DataSource`, `FeedRun` | **Almost no tenancy.** Feed-written, read-mostly, released on the cadence of data vendors rather than of product features. The exception is `Instrument.scope`, which admits firm- and household-scoped rows — see discussion point 11. |
 | **advisory-core** | Households → members → member accounts → holding entities → holdings, transactions, liabilities, cash balances; taxonomy and classification; models; targets; approvals; financial plans; recommendations; `ImportEffect` | The transactional and approval heart. One consistency boundary because every write here participates in approval, audit or supersession. |
 | **analytics** | `ComputationRun`, `DriftRun`, `DriftRow`, `ExposureFlag`, `PlanProjection`, `RebalanceScenario`, `SuggestedTrade` | Everything a `ComputationRun` produced and can rebuild. CPU-bound, scales independently, and is deletable without data loss. |
 | **ingestion** | `Document`, `Import`, `ImportMatch`, `BankTransaction`, `TransactionCategory`, `RecurringPattern`, the parsers | Bursty, long-running, and the only service that handles raw PII documents. A distinct security posture and a distinct scaling profile. |
@@ -717,7 +721,7 @@ alongside the DR runbook.
 
 ## Discussion points for the architect
 
-The ten items below are the agenda for architecture review. Each states what was
+The eleven items below are the agenda for architecture review. Each states what was
 assumed in order to make progress and what specifically needs confirming.
 
 ### 1. Identity provider: is Entra External ID the right fit?
@@ -924,6 +928,33 @@ the option of consolidating onto a shared schema later without a data migration.
 tenancy convention and this document stop contradicting each other, whichever
 way discussion point 2 lands.
 
+### 11. Where do scoped instruments live under schema-per-tenant?
+
+**Context.** Surfaced while drawing `docs/erd.md` area 5, and new since this
+document's first draft. The data model decided **one `Instrument` table with a
+scope column**, so `Instrument` carries `scope` with nullable `firm_id` and
+`household_id` and a client's flat sits beside HDFC Bank in the same table.
+This architecture decided **a schema per tenant with a shared `reference`
+schema**. Both are sound alone; together they do not hold, because a table in
+the shared schema cannot also be partitioned per tenant.
+
+**Options.** Split the table between `reference` and tenant schemas, losing
+"one table" and the foreign key from `Holding`; or keep one table in
+`reference` with row-level security on scoped rows only; or carry no
+client-specific instruments in phase 1, which removes behaviour the prototype
+already demonstrates.
+
+**Recommendation.** One table in `reference` with row-level security confined to
+scoped rows. It preserves the data model's decision and every foreign key in
+`docs/erd.md` section 13, and limits the RLS mechanism to one small table. The
+isolation concern is milder than it looks: a scoped instrument row carries a
+name and a type, not holdings, values or personal data.
+
+**To confirm.** Which option — and note that this is the only open item that
+blocks a table outright. The `Instrument` DDL cannot be written without it.
+`ROADMAP.md` already lists "deciding where client-specific assets live" as
+unresolved, so this is a known gap now given a concrete shape.
+
 ## Open items
 
 Distinct from the discussion points above: these are unresolved but not blocking,
@@ -952,7 +983,7 @@ and will be settled as the work proceeds.
 
 ## Next
 
-1. Architect review against the ten discussion points.
+1. Architect review against the eleven discussion points.
 2. Reconcile `docs/data-model.md` with whatever discussion points 2, 7 and 10
    decide.
 3. Spike the statement parser (discussion point 6) and the Entra External ID
