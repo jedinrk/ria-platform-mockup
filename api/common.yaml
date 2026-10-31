@@ -1,0 +1,194 @@
+# Shared components for every RIA platform service API.
+# Referenced from each service specification as ./common.yaml#/components/...
+openapi: 3.1.0
+info:
+  title: RIA platform — shared components
+  version: 1.0.0
+  description: >
+    Schemas, parameters and responses shared by every service. Not a deployable
+    API; it defines no paths. See docs/api-design.md for the conventions these
+    components implement.
+paths: {}
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: >
+        Access token from Entra External ID. Validated by API Management and
+        again by the service. The token proves identity only; firm, roles and
+        household scope resolve from the database per request.
+
+  parameters:
+    limit:
+      name: limit
+      in: query
+      description: Page size.
+      schema: { type: integer, minimum: 1, maximum: 200, default: 50 }
+    cursor:
+      name: cursor
+      in: query
+      description: Opaque cursor from a previous response's nextCursor.
+      schema: { type: string }
+    sort:
+      name: sort
+      in: query
+      description: Comma-separated fields; prefix with '-' for descending.
+      schema: { type: string }
+    asOf:
+      name: asOf
+      in: query
+      description: Business date the result should be true for. Defaults to today.
+      schema: { type: string, format: date }
+    ifMatch:
+      name: If-Match
+      in: header
+      description: ETag of the version being updated. Required on mutable resources.
+      schema: { type: string }
+    idempotencyKey:
+      name: Idempotency-Key
+      in: header
+      description: >
+        Client-generated key. A repeat with the same key returns the original
+        response rather than creating a second resource. Mandatory on approvals.
+      schema: { type: string, maxLength: 128 }
+
+  schemas:
+    Uuid:
+      type: string
+      format: uuid
+
+    Money:
+      type: string
+      description: >
+        Decimal amount in the minor-unit-aware form "1234567.89". A string, not
+        a number, because IEEE-754 cannot carry numeric(20,2) rupee amounts
+        without drift.
+      pattern: '^-?\d+\.\d{2}$'
+      examples: ["1234567.89"]
+
+    Percent:
+      type: string
+      description: >
+        Percentage points to four decimal places. "12.5000" means 12.5%.
+        Null means not specified, which is distinct from "0.0000".
+      pattern: '^-?\d+\.\d{4}$'
+      examples: ["12.5000"]
+
+    Quantity:
+      type: string
+      pattern: '^-?\d+\.\d{1,6}$'
+
+    Currency:
+      type: string
+      description: ISO 4217. INR in this phase; present so it is not designed out.
+      default: INR
+      examples: ["INR"]
+
+    SourceKind:
+      type: string
+      enum: [import, feed, adviser_entry, client_entry, computed]
+
+    Provenance:
+      type: object
+      description: Where a fact came from. Present on everything ingested.
+      properties:
+        sourceKind: { $ref: '#/components/schemas/SourceKind' }
+        importId: { $ref: '#/components/schemas/Uuid' }
+        sourceLineRef: { type: [string, 'null'] }
+        recordedAt: { type: string, format: date-time }
+        isIllustrative:
+          type: boolean
+          default: false
+          description: True where the figure is illustrative rather than sourced.
+
+    Page:
+      type: object
+      required: [items]
+      properties:
+        items: { type: array, items: {} }
+        nextCursor:
+          type: [string, 'null']
+          description: Absent or null when there are no further pages.
+
+    Problem:
+      type: object
+      description: RFC 9457 problem detail.
+      required: [type, title, status]
+      properties:
+        type: { type: string, format: uri }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string }
+        requestId:
+          type: string
+          description: >
+            Correlation identifier, the same value carried into
+            AuditEvent.request_id and the distributed trace.
+        errors:
+          type: array
+          description: Field-level detail for validation failures.
+          items:
+            type: object
+            properties:
+              field: { type: string }
+              message: { type: string }
+
+    OperationStatus:
+      type: object
+      description: Status resource for a 202-accepted long-running operation.
+      required: [id, status]
+      properties:
+        id: { $ref: '#/components/schemas/Uuid' }
+        status: { type: string, enum: [queued, running, succeeded, failed, partial] }
+        startedAt: { type: string, format: date-time }
+        finishedAt: { type: [string, 'null'], format: date-time }
+        total: { type: integer }
+        succeeded: { type: integer }
+        failed: { type: integer }
+        skipped: { type: integer }
+        message: { type: string }
+
+  responses:
+    BadRequest:
+      description: Malformed or invalid request.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unauthorized:
+      description: Missing or invalid token.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: >
+        Authenticated but not permitted by role. Note that a household outside
+        the principal's scope returns 404, not 403, so the existence of another
+        adviser's client is not disclosed.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: No such resource, or it is outside the principal's scope.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Conflict:
+      description: State conflict — for example editing an approved record.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    PreconditionFailed:
+      description: If-Match did not match the current ETag.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    UnprocessableEntity:
+      description: >
+        Domain rule violated — children not summing to their parent, approving
+        one's own request, selling from a class already below target.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }

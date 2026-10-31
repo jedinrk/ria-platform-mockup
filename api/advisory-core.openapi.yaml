@@ -1,0 +1,1579 @@
+openapi: 3.1.0
+info:
+  title: RIA platform — advisory core
+  version: 1.0.0
+  description: >
+    The transactional and approval heart: everything a human decided or edited.
+    Clients and households, holdings, the firm taxonomy and classification,
+    models, member-account targets, approvals, financial plans and
+    recommendations.
+
+    Two rules shape this API. Anything approved is immutable — a change creates
+    a new version and supersedes the old one, so there is no PUT that alters an
+    approved record. And approved artefacts are rendered from stored rows,
+    never recomputed, which is what lets the audit trail show what the adviser
+    saw at the moment they approved something.
+servers:
+  - url: https://api.example.com/v1
+security:
+  - bearerAuth: []
+tags:
+  - {name: households}
+  - {name: members}
+  - {name: member-accounts}
+  - {name: holdings}
+  - {name: onboarding}
+  - {name: taxonomy}
+  - {name: models}
+  - {name: targets}
+  - {name: approvals}
+  - {name: planning}
+  - {name: recommendations}
+  - {name: imports}
+
+paths:
+  /households:
+    get:
+      tags: [households]
+      summary: List households
+      description: >
+        Scoped to the principal. A household outside scope is absent, not
+        forbidden.
+      operationId: listHouseholds
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string, enum: [prospect, onboarding, active, dormant, offboarded] } }
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './common.yaml#/components/schemas/Page'
+                  - type: object
+                    properties:
+                      items: { type: array, items: { $ref: '#/components/schemas/Household' } }
+    post:
+      tags: [households]
+      summary: Create a household
+      description: An individual client is a household of one.
+      operationId: createHousehold
+      parameters: [{ $ref: './common.yaml#/components/parameters/idempotencyKey' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string }
+                status: { type: string, default: prospect }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Household' }
+
+  /households/{householdId}:
+    parameters: [{ name: householdId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [households]
+      summary: Get a household
+      operationId: getHousehold
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Household' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+    patch:
+      tags: [households]
+      summary: Update a household
+      operationId: patchHousehold
+      parameters: [{ $ref: './common.yaml#/components/parameters/ifMatch' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                status: { type: string }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Household' }
+        '412': { $ref: './common.yaml#/components/responses/PreconditionFailed' }
+
+  /households/{householdId}/members:
+    parameters: [{ name: householdId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [members]
+      summary: Members of a household
+      operationId: listMembers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Member' } }
+    post:
+      tags: [members]
+      summary: Add a member
+      description: >
+        PAN and date of birth are encrypted at rest and masked in every
+        response. A member appearing in two households is two members.
+      operationId: createMember
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MemberCreate' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Member' }
+        '409':
+          description: A member with this PAN already exists in the firm.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+
+  /members/{memberId}:
+    parameters: [{ name: memberId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [members]
+      summary: Get a member
+      operationId: getMember
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Member' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+    patch:
+      tags: [members]
+      summary: Update a member
+      operationId: patchMember
+      parameters: [{ $ref: './common.yaml#/components/parameters/ifMatch' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MemberCreate' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Member' }
+
+  /members/{memberId}/member-accounts:
+    parameters: [{ name: memberId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [member-accounts]
+      summary: Member accounts for a member
+      operationId: listMemberAccounts
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/MemberAccount' } }
+    post:
+      tags: [member-accounts]
+      summary: Create a member account
+      description: >
+        The advisory portfolio, and the root for model assignment, target,
+        drift and rebalancing. One is created per member at onboarding; a
+        member may have more.
+      operationId: createMemberAccount
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name]
+              properties:
+                name: { type: string }
+                riskProfile: { type: string }
+                reviewThresholdPp: { $ref: './common.yaml#/components/schemas/Percent' }
+                openedOn: { type: string, format: date }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MemberAccount' }
+
+  /member-accounts/{memberAccountId}:
+    parameters: [{ name: memberAccountId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [member-accounts]
+      summary: Get a member account
+      operationId: getMemberAccount
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MemberAccount' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+    patch:
+      tags: [member-accounts]
+      summary: Update a member account
+      description: >
+        Feature OV-05. A null reviewThresholdPp inherits the firm default;
+        that is distinct from setting it to zero.
+      operationId: patchMemberAccount
+      parameters: [{ $ref: './common.yaml#/components/parameters/ifMatch' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                riskProfile: { type: string }
+                reviewThresholdPp:
+                  anyOf: [{ $ref: './common.yaml#/components/schemas/Percent' }, { type: 'null' }]
+                status: { type: string }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MemberAccount' }
+
+  /member-accounts/{memberAccountId}/holding-entities:
+    parameters: [{ name: memberAccountId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [holdings]
+      summary: Holding entities
+      operationId: listHoldingEntities
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/HoldingEntity' } }
+    post:
+      tags: [holdings]
+      summary: Register a holding entity
+      description: >
+        A demat, folio, broker account, PMS, AIF, NPS, EPF, PPF, bank account,
+        card or loan. A joint entity belongs to the first holder's member
+        account, with co-holders recorded separately, so drift is never split
+        or double-counted.
+      operationId: createHoldingEntity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/HoldingEntityCreate' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HoldingEntity' }
+
+  /holding-entities/{holdingEntityId}/owners:
+    parameters: [{ name: holdingEntityId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    put:
+      tags: [holdings]
+      summary: Record the holders of a joint entity
+      description: >
+        Feature ON-12. For disclosure and reporting. It does not move the
+        entity between member accounts.
+      operationId: putHoldingEntityOwners
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                required: [memberId, role]
+                properties:
+                  memberId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                  role: { type: string, enum: [first_holder, joint_holder, guardian, karta, nominee] }
+                  sharePct: { $ref: './common.yaml#/components/schemas/Percent' }
+      responses:
+        '200': { description: Updated }
+        '422': { $ref: './common.yaml#/components/responses/UnprocessableEntity' }
+
+  /holding-entities/{holdingEntityId}/holdings:
+    parameters: [{ name: holdingEntityId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [holdings]
+      summary: Holdings
+      description: >
+        Current positions are rows with no validTo. Pass asOf for a historical
+        position. Imports supersede rather than update, so history falls out of
+        the same rows.
+      operationId: listHoldings
+      parameters:
+        - $ref: './common.yaml#/components/parameters/asOf'
+        - { name: includeSuperseded, in: query, schema: { type: boolean, default: false } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Holding' } }
+    post:
+      tags: [holdings]
+      summary: Enter a holding manually
+      description: Feature IN-16, for where no statement exists.
+      operationId: createHolding
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/HoldingCreate' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Holding' }
+
+  /holding-entities/{holdingEntityId}/transactions:
+    parameters: [{ name: holdingEntityId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [holdings]
+      summary: Transactions
+      operationId: listTransactions
+      parameters:
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Transaction' } }
+
+  /taxonomy-nodes:
+    get:
+      tags: [taxonomy]
+      summary: The firm classification tree
+      description: Asset class, super sector, sector, sub-sector. Retired nodes are kept.
+      operationId: listTaxonomyNodes
+      parameters:
+        - { name: includeRetired, in: query, schema: { type: boolean, default: false } }
+        - { name: assetClass, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/TaxonomyNode' } }
+    post:
+      tags: [taxonomy]
+      summary: Add a node
+      operationId: createTaxonomyNode
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [label, level]
+              properties:
+                parentId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                label: { type: string }
+                level: { type: integer, minimum: 0, maximum: 3 }
+                assetClass: { type: string }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TaxonomyNode' }
+
+  /instrument-classifications:
+    get:
+      tags: [taxonomy]
+      summary: The security master grid
+      description: >
+        Features SM-04..SM-11. One current row per instrument per firm. The
+        same public instrument may be classified differently by two firms.
+      operationId: listInstrumentClassifications
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: instrumentType, in: query, schema: { type: string } }
+        - { name: assetClass, in: query, schema: { type: string } }
+        - { name: taxonomyNodeId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - { name: needsClassification, in: query, description: Feature SM-09., schema: { type: boolean } }
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './common.yaml#/components/schemas/Page'
+                  - type: object
+                    properties:
+                      items: { type: array, items: { $ref: '#/components/schemas/InstrumentClassification' } }
+
+  /classification-change-sets:
+    get:
+      tags: [taxonomy]
+      summary: Staged classification edits
+      description: Feature SM-12. Edits are staged and reviewed, never applied directly.
+      operationId: listChangeSets
+      parameters:
+        - { name: status, in: query, schema: { type: string, enum: [staged, in_review, applied, discarded] } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/ClassificationChangeSet' } }
+    post:
+      tags: [taxonomy]
+      summary: Stage a change set
+      operationId: createChangeSet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [changes]
+              properties:
+                changes:
+                  type: array
+                  items:
+                    type: object
+                    required: [instrumentId, field, newValue]
+                    properties:
+                      instrumentId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                      field: { type: string }
+                      newValue: { type: string }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ClassificationChangeSet' }
+
+  /classification-change-sets/{changeSetId}/apply:
+    parameters: [{ name: changeSetId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    post:
+      tags: [taxonomy]
+      summary: Apply a reviewed change set
+      description: >
+        Feature SM-14. Changes analysis going forward. It never rewrites an
+        approved target or a stored drift run; it changes what the next run
+        sees.
+      operationId: applyChangeSet
+      parameters: [{ $ref: './common.yaml#/components/parameters/idempotencyKey' }]
+      responses:
+        '200':
+          description: Applied
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ClassificationChangeSet' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+
+  /equivalence-groups:
+    get:
+      tags: [taxonomy]
+      summary: Instrument equivalence groups
+      description: >
+        Feature SM-16. Instruments the firm treats as interchangeable for
+        rebalancing, so a scenario does not sell one to buy its twin.
+      operationId: listEquivalenceGroups
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/EquivalenceGroup' } }
+    post:
+      tags: [taxonomy]
+      summary: Create an equivalence group
+      operationId: createEquivalenceGroup
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/EquivalenceGroup' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EquivalenceGroup' }
+        '422':
+          description: All members must be classified under the group's node.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+
+  /models:
+    get:
+      tags: [models]
+      summary: The model library
+      operationId: listModels
+      parameters:
+        - { name: q, in: query, schema: { type: string } }
+        - { name: kind, in: query, schema: { type: string, enum: [risk_based, strategy] } }
+        - { name: status, in: query, schema: { type: string, enum: [draft, published, retired] } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Model' } }
+    post:
+      tags: [models]
+      summary: Create a model
+      operationId: createModel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, kind]
+              properties:
+                name: { type: string }
+                abbreviation: { type: string }
+                kind: { type: string, enum: [risk_based, strategy] }
+                intendedRiskProfile: { type: string }
+                description: { type: string }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Model' }
+
+  /models/{modelId}/versions:
+    parameters: [{ name: modelId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [models]
+      summary: Version history
+      description: Feature MD-15.
+      operationId: listModelVersions
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/ModelVersion' } }
+    post:
+      tags: [models]
+      summary: Start a new draft version
+      operationId: createModelVersion
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModelVersion' }
+        '409':
+          description: A draft version already exists.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+
+  /model-versions/{modelVersionId}/targets:
+    parameters: [{ name: modelVersionId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [models]
+      summary: Model targets on the classification tree
+      operationId: listModelTargets
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/ModelTarget' } }
+    put:
+      tags: [models]
+      summary: Replace the targets of a draft version
+      description: >
+        Features MD-03, MD-04. Children must sum to their parent and level-0
+        nodes to 100. Rejected with 422 naming the node that fails, not a
+        generic validation error.
+      operationId: putModelTargets
+      parameters: [{ $ref: './common.yaml#/components/parameters/ifMatch' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: array, items: { $ref: '#/components/schemas/ModelTarget' } }
+      responses:
+        '200': { description: Updated }
+        '409':
+          description: The version is published and immutable.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+        '422': { $ref: './common.yaml#/components/responses/UnprocessableEntity' }
+
+  /model-versions/{modelVersionId}/constituents:
+    parameters: [{ name: modelVersionId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    put:
+      tags: [models]
+      summary: Replace instrument-level constituents
+      description: Feature MD-05. Weights under a node sum to that node's target.
+      operationId: putModelConstituents
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: array, items: { $ref: '#/components/schemas/ModelConstituent' } }
+      responses:
+        '200': { description: Updated }
+        '422': { $ref: './common.yaml#/components/responses/UnprocessableEntity' }
+
+  /model-versions/{modelVersionId}/publish:
+    parameters: [{ name: modelVersionId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    post:
+      tags: [models]
+      summary: Publish a model version
+      description: >
+        Features MD-11..MD-14. Validates every summation rule, then rolls every
+        member account on the previous version forward under the stated
+        customisation policy. Long-running: returns 202 with a rollout
+        resource. Publishing never silently changes an approved client target —
+        the previous target is superseded, never altered.
+      operationId: publishModelVersion
+      parameters:
+        - $ref: './common.yaml#/components/parameters/idempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [customisationPolicy]
+              properties:
+                customisationPolicy:
+                  type: string
+                  enum: [preserve, reset]
+                  description: >
+                    preserve carries member-account overrides where the node
+                    still exists and auto-approves; reset drops them and leaves
+                    each new target as a draft for the adviser to see.
+                notes: { type: string }
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location: { description: The rollout resource., schema: { type: string } }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Rollout' }
+        '403':
+          description: The publisher must hold the approver flag.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+        '422': { $ref: './common.yaml#/components/responses/UnprocessableEntity' }
+
+  /rollouts/{rolloutId}:
+    parameters: [{ name: rolloutId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [models]
+      summary: Rollout progress
+      description: >
+        Feature MD-13. The rollout rows are the state machine, so progress is
+        queryable and resumable rather than held in memory.
+      operationId: getRollout
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Rollout' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /rollouts/{rolloutId}/accounts:
+    parameters: [{ name: rolloutId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [models]
+      summary: Per-account rollout detail
+      description: Records exactly how each account was moved, including overrides dropped and why.
+      operationId: listRolloutAccounts
+      parameters:
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/RolloutAccount' } }
+
+  /member-accounts/{memberAccountId}/targets:
+    parameters: [{ name: memberAccountId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [targets]
+      summary: Target history
+      description: Feature CT-09. At most one draft and one approved at a time.
+      operationId: listMemberAccountTargets
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/MemberAccountTarget' } }
+    post:
+      tags: [targets]
+      summary: Start a target draft
+      description: Feature CT-01. Pins a specific model version.
+      operationId: createMemberAccountTarget
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [modelVersionId]
+              properties:
+                modelVersionId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                notes: { type: string }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MemberAccountTarget' }
+        '409':
+          description: A draft already exists.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+
+  /member-account-targets/{targetId}:
+    parameters: [{ name: targetId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [targets]
+      summary: Get a target with its overrides and exclusions
+      operationId: getMemberAccountTarget
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MemberAccountTargetDetail' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /member-account-targets/{targetId}/overrides:
+    parameters: [{ name: targetId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    put:
+      tags: [targets]
+      summary: Replace the client adjustments on a draft
+      description: >
+        Features CT-02..CT-04, AD-08, AD-09. Stored as the resulting full set
+        after sibling rebalancing, so a reader never re-derives it. An inline
+        retune on the drift table lands here, in the draft — never in the
+        approved target.
+      operationId: putTargetOverrides
+      parameters: [{ $ref: './common.yaml#/components/parameters/ifMatch' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: array, items: { $ref: '#/components/schemas/TargetOverride' } }
+      responses:
+        '200': { description: Updated }
+        '409':
+          description: The target is approved and cannot be edited.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+        '422': { $ref: './common.yaml#/components/responses/UnprocessableEntity' }
+
+  /member-account-targets/{targetId}/exclusions:
+    parameters: [{ name: targetId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    put:
+      tags: [targets]
+      summary: Replace the scope exclusions
+      description: Feature CT-05. Every exclusion carries a reason.
+      operationId: putScopeExclusions
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                required: [instrumentId, reason]
+                properties:
+                  instrumentId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                  reason: { type: string }
+      responses:
+        '200': { description: Updated }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+
+  /member-account-targets/{targetId}/approve:
+    parameters: [{ name: targetId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    post:
+      tags: [targets, approvals]
+      summary: Approve a target draft
+      description: >
+        Features CT-07, CT-08. The approver must hold the approver flag. The
+        previous approved target is superseded, never altered. Idempotency-Key
+        is mandatory: a double-submitted approval is a compliance problem.
+      operationId: approveMemberAccountTarget
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: { type: string, maxLength: 128 }
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                comment: { type: string }
+      responses:
+        '200':
+          description: Approved
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/MemberAccountTarget' }
+        '403':
+          description: The user does not hold the approver flag.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+
+  /approvals:
+    get:
+      tags: [approvals]
+      summary: Approval records
+      description: >
+        An approval is a record with a policy column, not a boolean. Adding a
+        second approver later is a policy change, not a schema change.
+      operationId: listApprovals
+      parameters:
+        - { name: subjectType, in: query, schema: { type: string, enum: [member_account_target, model_version, recommendation, classification_change_set, financial_plan] } }
+        - { name: subjectId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - $ref: './common.yaml#/components/parameters/limit'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Approval' } }
+
+  /households/{householdId}/financial-plans:
+    parameters: [{ name: householdId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [planning]
+      summary: Financial plans
+      description: >
+        Income, needs and goals are family facts, so the plan is held once per
+        household. An account shows its household's plan.
+      operationId: listFinancialPlans
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/FinancialPlan' } }
+    post:
+      tags: [planning]
+      summary: Create a plan version
+      description: Feature CP-13. Versioned so a projection shown last quarter can be reproduced.
+      operationId: createFinancialPlan
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FinancialPlanCreate' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FinancialPlan' }
+
+  /financial-plans/{financialPlanId}/recurring-needs:
+    parameters: [{ name: financialPlanId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    put:
+      tags: [planning]
+      summary: Replace the recurring-need register
+      description: Feature CP-12. A goal is a recurring need with a start and a duration.
+      operationId: putRecurringNeeds
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: array, items: { $ref: '#/components/schemas/RecurringNeed' } }
+      responses:
+        '200': { description: Updated }
+
+  /financial-plans/{financialPlanId}/recurring-incomes:
+    parameters: [{ name: financialPlanId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    put:
+      tags: [planning]
+      summary: Replace the recurring-income register
+      operationId: putRecurringIncomes
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: array, items: { $ref: '#/components/schemas/RecurringIncome' } }
+      responses:
+        '200': { description: Updated }
+
+  /liabilities:
+    get:
+      tags: [planning]
+      summary: Liabilities
+      description: >
+        Feature CP-11. A liability hangs off a holding entity where a statement
+        exists, and belongs to the household plan for the roll-up.
+      operationId: listLiabilities
+      parameters:
+        - { name: householdId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - { name: memberId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Liability' } }
+    post:
+      tags: [planning]
+      summary: Add a liability
+      operationId: createLiability
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/Liability' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Liability' }
+
+  /member-accounts/{memberAccountId}/recommendations:
+    parameters: [{ name: memberAccountId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    get:
+      tags: [recommendations]
+      summary: Recommendations
+      operationId: listRecommendations
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Recommendation' } }
+    post:
+      tags: [recommendations]
+      summary: Create a recommendation from a scenario
+      description: >
+        Feature RC-01. Approval records a decision; it does not place a trade.
+        The pinned scenario becomes undeletable, which is what makes the
+        recommendation reproducible.
+      operationId: createRecommendation
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: { type: string, maxLength: 128 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scenarioId]
+              properties:
+                scenarioId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                summary: { type: string }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Recommendation' }
+        '422': { $ref: './common.yaml#/components/responses/UnprocessableEntity' }
+
+  /recommendations/{recommendationId}/status:
+    parameters: [{ name: recommendationId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    post:
+      tags: [recommendations]
+      summary: Advance the recommendation lifecycle
+      description: >
+        Features RC-02..RC-06. The system never executes; 'reconciled' is set
+        by the system when imported transactions match the suggested trades
+        within tolerance, not by a client call.
+      operationId: setRecommendationStatus
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [approved, communicated, client_accepted, client_declined, executed, withdrawn]
+                note: { type: string }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Recommendation' }
+        '422':
+          description: Not a legal transition from the current status.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+
+  /imports/{importId}/apply:
+    parameters: [{ name: importId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    post:
+      tags: [imports]
+      summary: Apply a reviewed import
+      description: >
+        Feature IN-09. The one write that spans services: ingestion staged it,
+        core applies it. A single transaction writing holdings, holding
+        entities, external links and the ImportEffect ledger together, because
+        a half-applied import is not reversible. Imports supersede rather than
+        update, so two statements can disagree visibly rather than silently.
+      operationId: applyImport
+      parameters:
+        - name: Idempotency-Key
+          in: header
+          required: true
+          schema: { type: string, maxLength: 128 }
+      responses:
+        '200':
+          description: Applied
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ImportResult' }
+        '409':
+          description: Already applied, or unresolved matches remain.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+
+  /imports/{importId}/rollback:
+    parameters: [{ name: importId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }]
+    post:
+      tags: [imports]
+      summary: Roll back an applied import
+      description: >
+        Feature IN-10. Deletes the import's inserts and reopens the rows it
+        superseded, in reverse order. LIFO per holding entity: an import that a
+        later import has superseded cannot be rolled back until the later one
+        is.
+      operationId: rollbackImport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [reason]
+              properties:
+                reason: { type: string }
+      responses:
+        '200':
+          description: Rolled back
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ImportResult' }
+        '409':
+          description: A later import has superseded these rows and must be rolled back first.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+
+components:
+  securitySchemes:
+    bearerAuth: { $ref: './common.yaml#/components/securitySchemes/bearerAuth' }
+  schemas:
+    Household:
+      type: object
+      required: [id, name, status]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        name: { type: string }
+        status: { type: string, enum: [prospect, onboarding, active, dormant, offboarded] }
+        memberCount: { type: integer }
+        primaryAdviserUserId: { type: [string, 'null'], format: uuid }
+
+    Member:
+      type: object
+      required: [id, householdId, kind, fullName]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        householdId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        kind: { type: string, enum: [individual, huf, minor, trust, company] }
+        fullName: { type: string }
+        panMasked:
+          type: [string, 'null']
+          description: Last four digits only. The full value is encrypted and never returned.
+        dobMasked: { type: [string, 'null'] }
+        email: { type: [string, 'null'], format: email }
+        phone: { type: [string, 'null'] }
+        residency: { type: [string, 'null'] }
+        taxResidency: { type: [string, 'null'] }
+        kycStatus: { type: string, enum: [not_started, in_progress, verified, expired] }
+        relationshipToPrimary: { type: [string, 'null'] }
+
+    MemberCreate:
+      type: object
+      required: [kind, fullName]
+      properties:
+        kind: { type: string, enum: [individual, huf, minor, trust, company] }
+        fullName: { type: string }
+        pan: { type: string, description: Encrypted at rest; only the last four digits are retained in clear. }
+        dob: { type: string, format: date }
+        email: { type: string, format: email }
+        phone: { type: string }
+        residency: { type: string }
+        relationshipToPrimary: { type: string }
+
+    MemberAccount:
+      type: object
+      required: [id, memberId, name, status]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        memberId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        householdId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        name: { type: string }
+        status: { type: string, enum: [active, closed] }
+        riskProfile: { type: [string, 'null'] }
+        reviewThresholdPp:
+          anyOf: [{ $ref: './common.yaml#/components/schemas/Percent' }, { type: 'null' }]
+          description: Null inherits the firm default.
+        effectiveThresholdPp: { $ref: './common.yaml#/components/schemas/Percent' }
+        currentTargetId: { type: [string, 'null'], format: uuid }
+        openedOn: { type: [string, 'null'], format: date }
+
+    HoldingEntity:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        memberAccountId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        category: { type: string, enum: [investment, retirement, banking, liability] }
+        kind:
+          type: string
+          enum: [demat, mf_folio, broker, pms, aif, nps, epf, ppf, savings, current,
+                 fixed_deposit, credit_card, loan, other]
+        institution: { type: [string, 'null'] }
+        accountRefMasked: { type: [string, 'null'] }
+        currency: { $ref: './common.yaml#/components/schemas/Currency' }
+        underAdvice: { type: boolean }
+        status: { type: string, enum: [active, closed] }
+
+    HoldingEntityCreate:
+      type: object
+      required: [category, kind]
+      properties:
+        category: { type: string }
+        kind: { type: string }
+        institution: { type: string }
+        accountRef: { type: string, description: Stored encrypted; only the last four digits are returned. }
+        underAdvice: { type: boolean, default: true }
+
+    Holding:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        holdingEntityId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        instrumentId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        instrumentName: { type: string }
+        asOf: { type: string, format: date }
+        quantity: { $ref: './common.yaml#/components/schemas/Quantity' }
+        unitPrice:
+          anyOf: [{ $ref: './common.yaml#/components/schemas/Money' }, { type: 'null' }]
+        marketValue: { $ref: './common.yaml#/components/schemas/Money' }
+        costBasis:
+          anyOf: [{ $ref: './common.yaml#/components/schemas/Money' }, { type: 'null' }]
+          description: Holding-level in this phase; tax lots come later.
+        currency: { $ref: './common.yaml#/components/schemas/Currency' }
+        validFrom: { type: string, format: date }
+        validTo: { type: [string, 'null'], format: date }
+        provenance: { $ref: './common.yaml#/components/schemas/Provenance' }
+
+    HoldingCreate:
+      type: object
+      required: [instrumentId, asOf, quantity]
+      properties:
+        instrumentId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        asOf: { type: string, format: date }
+        quantity: { $ref: './common.yaml#/components/schemas/Quantity' }
+        unitPrice: { $ref: './common.yaml#/components/schemas/Money' }
+        costBasis: { $ref: './common.yaml#/components/schemas/Money' }
+
+    Transaction:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        instrumentId: { type: [string, 'null'], format: uuid }
+        tradeDate: { type: string, format: date }
+        settleDate: { type: [string, 'null'], format: date }
+        kind:
+          type: string
+          enum: [buy, sell, sip, stp_in, stp_out, switch_in, switch_out, redemption,
+                 dividend, idcw, interest, coupon, maturity, bonus, split, rights,
+                 transfer_in, transfer_out, fee, tax, adjustment]
+        quantity: { $ref: './common.yaml#/components/schemas/Quantity' }
+        price: { $ref: './common.yaml#/components/schemas/Money' }
+        grossAmount: { $ref: './common.yaml#/components/schemas/Money' }
+        charges: { $ref: './common.yaml#/components/schemas/Money' }
+        stt: { $ref: './common.yaml#/components/schemas/Money' }
+        netAmount: { $ref: './common.yaml#/components/schemas/Money' }
+        provenance: { $ref: './common.yaml#/components/schemas/Provenance' }
+
+    TaxonomyNode:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        parentId: { type: [string, 'null'], format: uuid }
+        level: { type: integer }
+        label: { type: string }
+        keyPath: { type: string, examples: ["Equity|Cyclical|Financials|Private banks"] }
+        assetClass: { type: string }
+        sortOrder: { type: integer }
+        status: { type: string, enum: [active, retired] }
+
+    InstrumentClassification:
+      type: object
+      properties:
+        instrumentId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        instrumentName: { type: string }
+        instrumentTypeCode: { type: string }
+        isin: { type: [string, 'null'] }
+        taxonomyNodeId: { type: [string, 'null'], format: uuid }
+        keyPath: { type: [string, 'null'] }
+        liquidityBand: { type: [string, 'null'], enum: [liquid, semi_liquid, locked, null] }
+        settlementDays: { type: [integer, 'null'] }
+        isPhysical: { type: boolean }
+        taxClass: { type: [string, 'null'] }
+        ratingBucket: { type: [string, 'null'] }
+        durationBucket: { type: [string, 'null'] }
+        attributes:
+          type: object
+          description: Type-specific attributes, grouped by owner for display (SM-10).
+          additionalProperties: true
+
+    ClassificationChangeSet:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        status: { type: string, enum: [staged, in_review, applied, discarded] }
+        createdBy: { $ref: './common.yaml#/components/schemas/Uuid' }
+        reviewedBy: { type: [string, 'null'], format: uuid }
+        appliedAt: { type: [string, 'null'], format: date-time }
+        impactSummary:
+          type: object
+          description: Feature SM-13 — the instruments, value and portfolios affected.
+          properties:
+            instrumentCount: { type: integer }
+            affectedValue: { $ref: './common.yaml#/components/schemas/Money' }
+            affectedMemberAccounts: { type: integer }
+        changes:
+          type: array
+          items:
+            type: object
+            properties:
+              instrumentId: { $ref: './common.yaml#/components/schemas/Uuid' }
+              field: { type: string }
+              oldValue: { type: [string, 'null'] }
+              newValue: { type: [string, 'null'] }
+
+    EquivalenceGroup:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        taxonomyNodeId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        name: { type: string }
+        purpose: { type: string }
+        members:
+          type: array
+          items:
+            type: object
+            properties:
+              instrumentId: { $ref: './common.yaml#/components/schemas/Uuid' }
+              isPreferred: { type: boolean, description: The instrument a buy would use. }
+              rank: { type: integer }
+
+    Model:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        name: { type: string }
+        abbreviation: { type: [string, 'null'] }
+        kind: { type: string, enum: [risk_based, strategy] }
+        intendedRiskProfile: { type: [string, 'null'] }
+        description: { type: [string, 'null'] }
+        status: { type: string, enum: [draft, published, retired] }
+        currentVersionId: { type: [string, 'null'], format: uuid }
+        currentVersionNo: { type: [integer, 'null'] }
+        lastUpdated: { type: [string, 'null'], format: date-time }
+
+    ModelVersion:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        modelId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        versionNo: { type: integer }
+        status: { type: string, enum: [draft, publishing, published, superseded] }
+        publishedBy: { type: [string, 'null'], format: uuid }
+        publishedAt: { type: [string, 'null'], format: date-time }
+        approvalId: { type: [string, 'null'], format: uuid }
+        supersedesVersionId: { type: [string, 'null'], format: uuid }
+        customisationPolicy: { type: [string, 'null'], enum: [preserve, reset, null] }
+        notes: { type: [string, 'null'] }
+
+    ModelTarget:
+      type: object
+      required: [taxonomyNodeId, targetPct]
+      properties:
+        taxonomyNodeId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        keyPath: { type: string }
+        level: { type: integer }
+        targetPct: { $ref: './common.yaml#/components/schemas/Percent' }
+        bandPp:
+          anyOf: [{ $ref: './common.yaml#/components/schemas/Percent' }, { type: 'null' }]
+          description: Null inherits the firm default band for the level.
+
+    ModelConstituent:
+      type: object
+      required: [taxonomyNodeId, instrumentId, weightPct]
+      properties:
+        taxonomyNodeId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        instrumentId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        weightPct: { $ref: './common.yaml#/components/schemas/Percent' }
+        role: { type: [string, 'null'] }
+
+    Rollout:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        modelVersionId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        customisationPolicy: { type: string, enum: [preserve, reset] }
+        status: { type: string, enum: [queued, running, succeeded, partial, failed] }
+        total: { type: integer }
+        completed: { type: integer }
+        failed: { type: integer }
+        startedAt: { type: string, format: date-time }
+        finishedAt: { type: [string, 'null'], format: date-time }
+
+    RolloutAccount:
+      type: object
+      properties:
+        memberAccountId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        previousTargetId: { type: [string, 'null'], format: uuid }
+        newTargetId: { type: [string, 'null'], format: uuid }
+        overridesCarried: { type: integer }
+        overridesDropped: { type: integer }
+        droppedReasons: { type: array, items: { type: string } }
+        status: { type: string, enum: [pending, succeeded, failed, skipped] }
+
+    MemberAccountTarget:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        memberAccountId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        versionNo: { type: integer }
+        modelVersionId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        modelName: { type: string }
+        status: { type: string, enum: [draft, approved, superseded] }
+        reviewThresholdPp:
+          anyOf: [{ $ref: './common.yaml#/components/schemas/Percent' }, { type: 'null' }]
+        approvalId: { type: [string, 'null'], format: uuid }
+        effectiveFrom: { type: [string, 'null'], format: date }
+        supersedesId: { type: [string, 'null'], format: uuid }
+        rolloutId: { type: [string, 'null'], format: uuid }
+        createdBy: { $ref: './common.yaml#/components/schemas/Uuid' }
+        createdAt: { type: string, format: date-time }
+
+    MemberAccountTargetDetail:
+      allOf:
+        - $ref: '#/components/schemas/MemberAccountTarget'
+        - type: object
+          properties:
+            overrides: { type: array, items: { $ref: '#/components/schemas/TargetOverride' } }
+            exclusions:
+              type: array
+              items:
+                type: object
+                properties:
+                  instrumentId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                  instrumentName: { type: string }
+                  reason: { type: string }
+
+    TargetOverride:
+      type: object
+      required: [taxonomyNodeId]
+      properties:
+        taxonomyNodeId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        keyPath: { type: string }
+        targetPct:
+          anyOf: [{ $ref: './common.yaml#/components/schemas/Percent' }, { type: 'null' }]
+        bandPp:
+          anyOf: [{ $ref: './common.yaml#/components/schemas/Percent' }, { type: 'null' }]
+        reason: { type: [string, 'null'] }
+
+    Approval:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        subjectType: { type: string }
+        subjectId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        requestedBy: { $ref: './common.yaml#/components/schemas/Uuid' }
+        requestedAt: { type: string, format: date-time }
+        decidedBy: { type: [string, 'null'], format: uuid }
+        decidedAt: { type: [string, 'null'], format: date-time }
+        decision: { type: string, enum: [approved, rejected, withdrawn] }
+        policy: { type: string, enum: [single_adviser, model_publication, maker_checker] }
+        comment: { type: [string, 'null'] }
+
+    FinancialPlan:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        householdId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        versionNo: { type: integer }
+        status: { type: string, enum: [draft, approved, superseded] }
+        horizonYears: { type: integer }
+        emergencyMonths: { type: integer }
+        statedReturnPct:
+          anyOf: [{ $ref: './common.yaml#/components/schemas/Percent' }, { type: 'null' }]
+        monthlyInvestmentTarget: { $ref: './common.yaml#/components/schemas/Money' }
+
+    FinancialPlanCreate:
+      type: object
+      required: [horizonYears]
+      properties:
+        horizonYears: { type: integer }
+        emergencyMonths: { type: integer }
+        statedReturnPct: { $ref: './common.yaml#/components/schemas/Percent' }
+        monthlyInvestmentTarget: { $ref: './common.yaml#/components/schemas/Money' }
+
+    RecurringIncome:
+      type: object
+      required: [name, kind, amount, frequency]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        memberId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        holdingEntityId: { type: [string, 'null'], format: uuid }
+        name: { type: string }
+        kind: { type: string, enum: [salary, business, rent, pension, interest, dividend, other] }
+        amount: { $ref: './common.yaml#/components/schemas/Money' }
+        frequency: { type: string, enum: [monthly, quarterly, half_yearly, yearly] }
+        startsInYears: { type: integer }
+        lastsYears: { type: integer }
+        growthPct: { $ref: './common.yaml#/components/schemas/Percent' }
+        provenance: { $ref: './common.yaml#/components/schemas/Provenance' }
+
+    RecurringNeed:
+      type: object
+      required: [name, amount, frequency]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        name: { type: string }
+        category: { type: string }
+        amount: { $ref: './common.yaml#/components/schemas/Money' }
+        frequency: { type: string, enum: [monthly, quarterly, half_yearly, yearly, one_off] }
+        startsInYears: { type: integer }
+        lastsYears: { type: integer }
+        inflationPct: { $ref: './common.yaml#/components/schemas/Percent' }
+        dueMonth: { type: [integer, 'null'], minimum: 1, maximum: 12 }
+        isGoal: { type: boolean }
+        priority: { type: integer }
+
+    Liability:
+      type: object
+      required: [name, kind, outstanding]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        holdingEntityId: { type: [string, 'null'], format: uuid }
+        memberId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        name: { type: string }
+        kind:
+          type: string
+          enum: [home_loan, car_loan, personal_loan, education_loan, credit_card,
+                 loan_against_securities, other]
+        lender: { type: [string, 'null'] }
+        outstanding: { $ref: './common.yaml#/components/schemas/Money' }
+        ratePct: { $ref: './common.yaml#/components/schemas/Percent' }
+        emi: { $ref: './common.yaml#/components/schemas/Money' }
+        monthsLeft: { type: [integer, 'null'] }
+        provenance: { $ref: './common.yaml#/components/schemas/Provenance' }
+
+    Recommendation:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        memberAccountId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        scenarioId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        versionNo: { type: integer }
+        status:
+          type: string
+          enum: [draft, approved, communicated, client_accepted, client_declined,
+                 executed, reconciled, withdrawn]
+        summary: { type: [string, 'null'] }
+        approvalId: { type: [string, 'null'], format: uuid }
+        communicatedAt: { type: [string, 'null'], format: date-time }
+        clientResponse: { type: [string, 'null'] }
+        executedAt: { type: [string, 'null'], format: date-time }
+        reconciledAt: { type: [string, 'null'], format: date-time }
+        reconciliationImportId: { type: [string, 'null'], format: uuid }
+
+    ImportResult:
+      type: object
+      properties:
+        importId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        status: { type: string }
+        recordsApplied: { type: integer }
+        recordsSkipped: { type: integer }
+        affectedMemberAccountIds:
+          type: array
+          items: { $ref: './common.yaml#/components/schemas/Uuid' }
+        effects:
+          type: array
+          description: The ImportEffect ledger entries written by this operation.
+          items:
+            type: object
+            properties:
+              entityType: { type: string }
+              entityId: { $ref: './common.yaml#/components/schemas/Uuid' }
+              action: { type: string, enum: [insert, supersede] }
+              supersededEntityId: { type: [string, 'null'], format: uuid }

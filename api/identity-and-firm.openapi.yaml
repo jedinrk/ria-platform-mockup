@@ -1,0 +1,538 @@
+openapi: 3.1.0
+info:
+  title: RIA platform — identity and firm
+  version: 1.0.0
+  description: >
+    The authorization source of truth, and tenant lifecycle. The root of the
+    service dependency graph: it calls nothing and everything calls it.
+    Features FS-01..FS-14 in docs/feature-list.md.
+servers:
+  - url: https://api.example.com/v1
+security:
+  - bearerAuth: []
+tags:
+  - name: me
+  - name: firm
+  - name: users
+  - name: assignments
+  - name: tenancy
+
+paths:
+  /me:
+    get:
+      tags: [me]
+      summary: The authenticated user
+      operationId: getMe
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+
+  /me/authorization:
+    get:
+      tags: [me]
+      summary: Effective permissions for the authenticated user
+      description: >
+        The hottest call in the system. Returns the firm, role set, approver
+        flag and household scope resolved from the database — never from token
+        claims. Cacheable for a short TTL with invalidation on role or
+        assignment change.
+      operationId: getMyAuthorization
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Authorization' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+
+  /firm:
+    get:
+      tags: [firm]
+      summary: The firm this principal belongs to
+      operationId: getFirm
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Firm' }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+    patch:
+      tags: [firm]
+      summary: Update firm details
+      operationId: patchFirm
+      parameters:
+        - $ref: './common.yaml#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FirmUpdate' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Firm' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '412': { $ref: './common.yaml#/components/responses/PreconditionFailed' }
+
+  /firm/policy:
+    get:
+      tags: [firm]
+      summary: Firm policy
+      description: Features FS-08..FS-12.
+      operationId: getFirmPolicy
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FirmPolicy' }
+    put:
+      tags: [firm]
+      summary: Replace firm policy
+      description: >
+        Changing model depth re-projects every model and raises an audit event,
+        so this is an admin action with consequences beyond its own record.
+      operationId: putFirmPolicy
+      parameters:
+        - $ref: './common.yaml#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/FirmPolicy' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/FirmPolicy' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '412': { $ref: './common.yaml#/components/responses/PreconditionFailed' }
+        '422': { $ref: './common.yaml#/components/responses/UnprocessableEntity' }
+
+  /users:
+    get:
+      tags: [users]
+      summary: List users
+      operationId: listUsers
+      parameters:
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+        - name: role
+          in: query
+          schema: { $ref: '#/components/schemas/Role' }
+        - name: status
+          in: query
+          schema: { type: string, enum: [active, inactive] }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './common.yaml#/components/schemas/Page'
+                  - type: object
+                    properties:
+                      items:
+                        type: array
+                        items: { $ref: '#/components/schemas/User' }
+    post:
+      tags: [users]
+      summary: Create a user
+      operationId: createUser
+      parameters:
+        - $ref: './common.yaml#/components/parameters/idempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserCreate' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+
+  /users/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema: { $ref: './common.yaml#/components/schemas/Uuid' }
+    get:
+      tags: [users]
+      summary: Get a user
+      operationId: getUser
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+    patch:
+      tags: [users]
+      summary: Update a user, including the approver flag
+      description: Feature FS-05. canApprove is a flag, not a role.
+      operationId: patchUser
+      parameters:
+        - $ref: './common.yaml#/components/parameters/ifMatch'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                displayName: { type: string }
+                canApprove: { type: boolean }
+                status: { type: string, enum: [active, inactive] }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/User' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '412': { $ref: './common.yaml#/components/responses/PreconditionFailed' }
+
+  /users/{userId}/roles:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema: { $ref: './common.yaml#/components/schemas/Uuid' }
+    put:
+      tags: [users]
+      summary: Replace a user's roles
+      description: Feature FS-04. Roles are many-to-many.
+      operationId: putUserRoles
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [roles]
+              properties:
+                roles:
+                  type: array
+                  items: { $ref: '#/components/schemas/Role' }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  roles:
+                    type: array
+                    items: { $ref: '#/components/schemas/Role' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+
+  /adviser-portfolio-managers:
+    get:
+      tags: [assignments]
+      summary: The adviser-to-portfolio-manager reporting graph
+      description: Feature FS-06. Many-to-many, time-bounded.
+      operationId: listAdviserPortfolioManagers
+      parameters:
+        - name: adviserUserId
+          in: query
+          schema: { $ref: './common.yaml#/components/schemas/Uuid' }
+        - name: current
+          in: query
+          description: Restrict to links current today.
+          schema: { type: boolean, default: true }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/AdviserPortfolioManager' }
+    put:
+      tags: [assignments]
+      summary: Replace the reporting links for an adviser
+      operationId: putAdviserPortfolioManagers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [adviserUserId, portfolioManagerUserIds]
+              properties:
+                adviserUserId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                portfolioManagerUserIds:
+                  type: array
+                  items: { $ref: './common.yaml#/components/schemas/Uuid' }
+      responses:
+        '200': { description: Updated }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+
+  /households/{householdId}/advisers:
+    parameters:
+      - name: householdId
+        in: path
+        required: true
+        schema: { $ref: './common.yaml#/components/schemas/Uuid' }
+    get:
+      tags: [assignments]
+      summary: Advisers assigned to a household
+      description: >
+        Feature FS-07. The relationship layer of authorization: this is what
+        decides whether a given adviser may see a given household, and it is
+        why that decision cannot live in a token.
+      operationId: listHouseholdAdvisers
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/HouseholdAdviser' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+    put:
+      tags: [assignments]
+      summary: Replace the adviser assignments for a household
+      description: Exactly one primary adviser must be current.
+      operationId: putHouseholdAdvisers
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                required: [userId, role]
+                properties:
+                  userId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                  role: { type: string, enum: [primary, secondary] }
+      responses:
+        '200': { description: Updated }
+        '422': { $ref: './common.yaml#/components/responses/UnprocessableEntity' }
+
+  /risk-profile-scale:
+    get:
+      tags: [firm]
+      summary: The firm's risk profile scale
+      description: Feature FS-13. Default Conservative / Moderate / Aggressive.
+      operationId: getRiskProfileScale
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/RiskProfile' }
+    put:
+      tags: [firm]
+      summary: Replace the risk profile scale
+      operationId: putRiskProfileScale
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items: { $ref: '#/components/schemas/RiskProfile' }
+      responses:
+        '200': { description: Updated }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+
+  /tenants:
+    post:
+      tags: [tenancy]
+      summary: Provision a new firm tenant
+      description: >
+        Feature FS-02. Long-running: creates the schema, runs migrations and
+        seeds the default taxonomy, instrument types, transaction categories
+        and risk scale. Returns 202 with a status resource.
+      operationId: provisionTenant
+      parameters:
+        - $ref: './common.yaml#/components/parameters/idempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [legalName, sebiRegistrationNo]
+              properties:
+                legalName: { type: string }
+                sebiRegistrationNo: { type: string }
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location:
+              description: Status resource for the provisioning run.
+              schema: { type: string }
+          content:
+            application/json:
+              schema: { $ref: './common.yaml#/components/schemas/OperationStatus' }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+
+  /tenants/{tenantId}:
+    parameters:
+      - name: tenantId
+        in: path
+        required: true
+        schema: { $ref: './common.yaml#/components/schemas/Uuid' }
+    get:
+      tags: [tenancy]
+      summary: Provisioning status
+      operationId: getTenant
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: './common.yaml#/components/schemas/OperationStatus' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+components:
+  securitySchemes:
+    bearerAuth:
+      $ref: './common.yaml#/components/securitySchemes/bearerAuth'
+  schemas:
+    Role:
+      type: string
+      enum: [adviser, portfolio_manager, operations, admin]
+
+    User:
+      type: object
+      required: [id, email, displayName, roles, canApprove, status]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        email: { type: string, format: email }
+        displayName: { type: string }
+        roles:
+          type: array
+          items: { $ref: '#/components/schemas/Role' }
+        canApprove:
+          type: boolean
+          description: The approver flag. A user flag, not a role.
+        status: { type: string, enum: [active, inactive] }
+
+    UserCreate:
+      type: object
+      required: [email, displayName, roles]
+      properties:
+        email: { type: string, format: email }
+        displayName: { type: string }
+        roles:
+          type: array
+          items: { $ref: '#/components/schemas/Role' }
+        canApprove: { type: boolean, default: false }
+
+    Authorization:
+      type: object
+      required: [userId, firmId, roles, canApprove]
+      properties:
+        userId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        firmId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        roles:
+          type: array
+          items: { $ref: '#/components/schemas/Role' }
+        canApprove: { type: boolean }
+        householdScope:
+          type: object
+          description: >
+            Which households this principal may see. 'all' for operations and
+            admin; 'assigned' for an adviser or the portfolio manager they
+            report to, with the resolved identifiers.
+          properties:
+            kind: { type: string, enum: [all, assigned] }
+            householdIds:
+              type: array
+              items: { $ref: './common.yaml#/components/schemas/Uuid' }
+        cachedUntil: { type: string, format: date-time }
+
+    Firm:
+      type: object
+      required: [id, legalName, status]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        legalName: { type: string }
+        sebiRegistrationNo: { type: [string, 'null'] }
+        principalOfficerUserId:
+          type: [string, 'null']
+          format: uuid
+          description: A statutory pointer, not a role.
+        status: { type: string, enum: [active, suspended, closed] }
+
+    FirmUpdate:
+      type: object
+      properties:
+        legalName: { type: string }
+        sebiRegistrationNo: { type: string }
+        principalOfficerUserId: { $ref: './common.yaml#/components/schemas/Uuid' }
+
+    FirmPolicy:
+      type: object
+      properties:
+        modelDepthByAssetClass:
+          type: object
+          additionalProperties: { type: integer, minimum: 1, maximum: 4 }
+          description: >
+            How deep the classification tree is targeted, per asset class.
+            Changing it re-projects every model.
+        defaultBandByLevel:
+          type: object
+          additionalProperties: { $ref: './common.yaml#/components/schemas/Percent' }
+        defaultReviewThresholdPp: { $ref: './common.yaml#/components/schemas/Percent' }
+        sectorCapPct:
+          anyOf:
+            - $ref: './common.yaml#/components/schemas/Percent'
+            - type: 'null'
+          description: Firm equity concentration cap used by the model sector view.
+        lookThroughMethod: { type: string, enum: [none, fund_exposure] }
+        sameNodeIsEquivalent:
+          type: boolean
+          description: >
+            The implicit alternative to explicit equivalence groups. False by
+            default, because "same sub-sector" is too loose for funds.
+
+    AdviserPortfolioManager:
+      type: object
+      properties:
+        adviserUserId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        portfolioManagerUserId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        fromDate: { type: string, format: date }
+        toDate: { type: [string, 'null'], format: date }
+
+    HouseholdAdviser:
+      type: object
+      properties:
+        householdId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        userId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        role: { type: string, enum: [primary, secondary] }
+        fromDate: { type: string, format: date }
+        toDate: { type: [string, 'null'], format: date }
+
+    RiskProfile:
+      type: object
+      required: [profile, rank]
+      properties:
+        profile: { type: string }
+        rank: { type: integer }
+        description: { type: string }

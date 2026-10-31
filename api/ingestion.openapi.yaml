@@ -1,0 +1,436 @@
+openapi: 3.1.0
+info:
+  title: RIA platform — ingestion
+  version: 1.0.0
+  description: >
+    Turning documents into reviewed, structured data. The only service that
+    handles raw client PII documents. Features IN-01..IN-19.
+
+    It parses and stages; it does not write holdings. Applying a reviewed
+    import is a separate transactional call into advisory-core, which is what
+    keeps the holdings write path and its reversal in one place.
+servers:
+  - url: https://api.example.com/v1
+security:
+  - bearerAuth: []
+tags: [{name: documents}, {name: imports}, {name: bank}, {name: categories}]
+
+paths:
+  /documents:
+    post:
+      tags: [documents]
+      summary: Register a document and obtain an upload URL
+      description: >
+        Feature IN-01. Returns a short-lived user-delegation SAS URL scoped to
+        a single blob; the client uploads directly to storage. sha256 is unique
+        per firm, so the same statement uploaded twice is recognised rather
+        than imported twice.
+      operationId: createDocument
+      parameters: [{ $ref: './common.yaml#/components/parameters/idempotencyKey' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [householdId, kind, fileName, sha256, size, mime]
+              properties:
+                householdId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                memberId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                kind: { $ref: '#/components/schemas/DocumentKind' }
+                institution: { type: string }
+                periodFrom: { type: string, format: date }
+                periodTo: { type: string, format: date }
+                fileName: { type: string }
+                sha256: { type: string }
+                size: { type: integer }
+                mime: { type: string }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  document: { $ref: '#/components/schemas/Document' }
+                  uploadUrl: { type: string, format: uri }
+                  uploadExpiresAt: { type: string, format: date-time }
+        '409':
+          description: A document with this sha256 already exists for the firm.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+    get:
+      tags: [documents]
+      summary: List documents
+      operationId: listDocuments
+      parameters:
+        - { name: householdId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - { name: kind, in: query, schema: { $ref: '#/components/schemas/DocumentKind' } }
+        - { name: status, in: query, schema: { type: string, enum: [pending_upload, uploaded, scanning, ready, quarantined] } }
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Document' } }
+
+  /documents/{documentId}:
+    parameters:
+      - { name: documentId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [documents]
+      summary: Get a document, with a short-lived read URL when ready
+      operationId: getDocument
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Document' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /documents/{documentId}/imports:
+    parameters:
+      - { name: documentId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    post:
+      tags: [imports]
+      summary: Parse a document
+      description: >
+        Features IN-02..IN-06, IN-11. Long-running; returns 202. A document can
+        be re-parsed with a newer parser and every run is kept, so improving a
+        parser never requires re-uploading statements.
+
+        A statement password (NSDL and CDSL CAS are protected by a PAN and
+        date-of-birth derivation) is supplied here, used transiently at parse
+        time and never stored.
+      operationId: createImport
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                parser: { type: string }
+                password:
+                  type: string
+                  format: password
+                  description: Used transiently; never persisted.
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Import' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /imports:
+    get:
+      tags: [imports]
+      summary: List imports
+      description: >
+        Feature IN-17. The operations queue: failed and stuck imports are
+        surfaced here with the parser error attached, never silently
+        dead-lettered.
+      operationId: listImports
+      parameters:
+        - { name: status, in: query, schema: { $ref: '#/components/schemas/ImportStatus' } }
+        - { name: householdId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Import' } }
+
+  /imports/{importId}:
+    parameters:
+      - { name: importId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [imports]
+      summary: Get an import
+      operationId: getImport
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Import' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+    delete:
+      tags: [imports]
+      summary: Discard an import that has not been applied
+      operationId: discardImport
+      responses:
+        '204': { description: Discarded }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+
+  /imports/{importId}/matches:
+    parameters:
+      - { name: importId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [imports]
+      summary: What the parser found and how it was matched
+      description: >
+        Features IN-07, IN-08. The review surface. Nothing here is data until
+        an adviser confirms and the import is applied.
+      operationId: listImportMatches
+      parameters:
+        - { name: resolution, in: query, schema: { $ref: '#/components/schemas/Resolution' } }
+        - { name: recordKind, in: query, schema: { type: string } }
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/ImportMatch' } }
+
+  /imports/{importId}/matches/{matchId}:
+    parameters:
+      - { name: importId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+      - { name: matchId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    patch:
+      tags: [imports]
+      summary: Confirm, correct, create or skip a match
+      operationId: resolveImportMatch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resolution]
+              properties:
+                resolution: { $ref: '#/components/schemas/Resolution' }
+                matchedEntityType: { type: string, enum: [holding_entity, instrument, member] }
+                matchedEntityId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                note: { type: string }
+      responses:
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ImportMatch' }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+
+  /bank-transactions:
+    get:
+      tags: [bank]
+      summary: Bank and card transactions
+      description: >
+        Feature IN-05. Working data with a retention period, not part of the
+        long-lived portfolio record. Its durable outputs are cash balances,
+        liabilities, recurring incomes and recurring needs.
+      operationId: listBankTransactions
+      parameters:
+        - { name: holdingEntityId, in: query, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+        - { name: categoryId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/BankTransaction' } }
+
+  /recurring-patterns:
+    get:
+      tags: [bank]
+      summary: Detected recurring patterns
+      description: Feature IN-13.
+      operationId: listRecurringPatterns
+      parameters:
+        - { name: holdingEntityId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - { name: status, in: query, schema: { type: string, enum: [detected, confirmed, dismissed] } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/RecurringPattern' } }
+
+  /recurring-patterns/{patternId}/promote:
+    parameters:
+      - { name: patternId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    post:
+      tags: [bank]
+      summary: Promote a pattern to a liability, recurring income or recurring need
+      description: >
+        Feature IN-14. The link back to the pattern is kept, so an adviser can
+        see where a figure came from.
+      operationId: promoteRecurringPattern
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [targetType]
+              properties:
+                targetType: { type: string, enum: [liability, recurring_income, recurring_need] }
+                financialPlanId: { $ref: './common.yaml#/components/schemas/Uuid' }
+                overrides: { type: object, additionalProperties: true }
+      responses:
+        '201':
+          description: Promoted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  targetType: { type: string }
+                  targetId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        '422': { $ref: './common.yaml#/components/responses/UnprocessableEntity' }
+
+  /transaction-categories:
+    get:
+      tags: [categories]
+      summary: The firm's transaction category tree
+      description: Feature IN-15. Seeded with a default list; the firm may edit it.
+      operationId: listTransactionCategories
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/TransactionCategory' } }
+    put:
+      tags: [categories]
+      summary: Replace the category tree
+      operationId: putTransactionCategories
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: array, items: { $ref: '#/components/schemas/TransactionCategory' } }
+      responses:
+        '200': { description: Updated }
+        '403': { $ref: './common.yaml#/components/responses/Forbidden' }
+
+components:
+  securitySchemes:
+    bearerAuth: { $ref: './common.yaml#/components/securitySchemes/bearerAuth' }
+  schemas:
+    DocumentKind:
+      type: string
+      enum: [cas_nsdl, cas_cdsl, broker_holdings, broker_contract_note, mf_statement,
+             bank_statement, credit_card_statement, loan_statement, ais, form_26as, itr,
+             kyc_pan, kyc_address, risk_questionnaire, insurance_policy, property_document, other]
+
+    ImportStatus:
+      type: string
+      enum: [queued, parsing, review, applied, failed, discarded, rolled_back]
+
+    Resolution:
+      type: string
+      enum: [auto, confirmed, corrected, created_new, conflict, skipped]
+
+    Document:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        householdId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        memberId: { type: [string, 'null'], format: uuid }
+        kind: { $ref: '#/components/schemas/DocumentKind' }
+        institution: { type: [string, 'null'] }
+        periodFrom: { type: [string, 'null'], format: date }
+        periodTo: { type: [string, 'null'], format: date }
+        sha256: { type: string }
+        size: { type: integer }
+        mime: { type: string }
+        sourceChannel: { type: string, enum: [upload, email_ingest] }
+        status: { type: string, enum: [pending_upload, uploaded, scanning, ready, quarantined] }
+        uploadedAt: { type: [string, 'null'], format: date-time }
+        readUrl:
+          type: [string, 'null']
+          format: uri
+          description: Short-lived, scoped to this blob. Present only when ready.
+
+    Import:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        documentId:
+          type: [string, 'null']
+          format: uuid
+          description: >
+            Nullable: an Account Aggregator import arrives as structured data
+            under a consent artefact rather than as a document.
+        kind: { type: string }
+        parser: { type: string }
+        parserVersion: { type: string }
+        status: { $ref: '#/components/schemas/ImportStatus' }
+        startedAt: { type: [string, 'null'], format: date-time }
+        finishedAt: { type: [string, 'null'], format: date-time }
+        recordsFound: { type: integer }
+        recordsApplied: { type: integer }
+        recordsSkipped: { type: integer }
+        errors: { type: array, items: { type: string } }
+        warnings: { type: array, items: { type: string } }
+        appliedAt: { type: [string, 'null'], format: date-time }
+        rolledBackAt: { type: [string, 'null'], format: date-time }
+        rollbackReason: { type: [string, 'null'] }
+
+    ImportMatch:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        recordKind: { type: string, enum: [holding, transaction, cash_balance, liability, income, holding_entity] }
+        sourceLineRef: { type: string }
+        parsed: { type: object, additionalProperties: true }
+        matchedEntityType: { type: [string, 'null'] }
+        matchedEntityId: { type: [string, 'null'], format: uuid }
+        matchedEntityLabel: { type: [string, 'null'] }
+        confidence: { type: [number, 'null'], minimum: 0, maximum: 1 }
+        resolution: { $ref: '#/components/schemas/Resolution' }
+
+    BankTransaction:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        postedDate: { type: string, format: date }
+        valueDate: { type: [string, 'null'], format: date }
+        description: { type: string }
+        amount:
+          $ref: './common.yaml#/components/schemas/Money'
+          description: Signed. Negative is an outflow.
+        balanceAfter: { $ref: './common.yaml#/components/schemas/Money' }
+        counterparty: { type: [string, 'null'] }
+        categoryId: { type: [string, 'null'], format: uuid }
+        recurringPatternId: { type: [string, 'null'], format: uuid }
+        provenance: { $ref: './common.yaml#/components/schemas/Provenance' }
+
+    RecurringPattern:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        holdingEntityId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        categoryId: { type: [string, 'null'], format: uuid }
+        counterparty: { type: [string, 'null'] }
+        amountTypical: { $ref: './common.yaml#/components/schemas/Money' }
+        amountTolerance: { $ref: './common.yaml#/components/schemas/Money' }
+        frequency: { type: string, enum: [weekly, monthly, quarterly, half_yearly, yearly, irregular] }
+        firstSeen: { type: string, format: date }
+        lastSeen: { type: string, format: date }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        status: { type: string, enum: [detected, confirmed, dismissed] }
+        promotedToType: { type: [string, 'null'] }
+        promotedToId: { type: [string, 'null'], format: uuid }
+
+    TransactionCategory:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        name: { type: string }
+        kind: { type: string, enum: [income, expense, debt_service, investment, transfer, tax, insurance, other] }
+        parentId: { type: [string, 'null'], format: uuid }

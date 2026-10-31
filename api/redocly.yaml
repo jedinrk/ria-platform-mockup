@@ -1,0 +1,30 @@
+# Lint configuration for the RIA platform API specifications.
+#
+# The rules disabled below are deliberate choices, recorded here so that a
+# clean lint run means something. Everything else is left at recommended.
+extends:
+  - recommended
+
+rules:
+  # Server URLs are placeholders until the APIM hostnames are provisioned.
+  # See docs/infrastructure.md (not yet written).
+  no-server-example.com: off
+
+  # These are internal first-party APIs, not published products. There is no
+  # licence to state.
+  info-license: off
+
+  # 401 applies to every operation through the global `security` block rather
+  # than being restated on each one, and 403/404 are documented where they are
+  # reachable. Requiring a 4XX on every operation would mean copying the same
+  # two responses onto ~90 operations for no reader benefit.
+  operation-4xx-response: off
+
+  # Tags are named for the module they map to in docs/microservices-design.md;
+  # the descriptions live there rather than being duplicated here.
+  tag-description: off
+
+  security-defined: error
+  operation-operationId-unique: error
+  operation-operationId: error
+  no-unused-components: warn
