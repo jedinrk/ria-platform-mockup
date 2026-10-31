@@ -1,0 +1,112 @@
+openapi: 3.1.0
+info:
+  title: RIA platform — audit
+  version: 1.0.0
+  description: >
+    The append-only record and its query surface. Features AU-01..AU-08.
+
+    This API is read-only by design. Business services write AuditEvent rows
+    through a shared library, in the same database transaction as the change
+    being recorded, so the entry and the change commit together. An audit entry
+    that could be lost because a message failed would not be an audit trail.
+    This service owns the table, its partitioning and its retention; it is not
+    in the write path.
+servers:
+  - url: https://api.example.com/v1
+security:
+  - bearerAuth: []
+tags: [{name: audit}]
+
+paths:
+  /audit-events:
+    get:
+      tags: [audit]
+      summary: The audit feed
+      description: >
+        Features AU-01, AU-02. One chronological feed, filtered by object,
+        action, actor, status and date range.
+      operationId: listAuditEvents
+      parameters:
+        - { name: objectType, in: query, schema: { $ref: '#/components/schemas/ObjectType' } }
+        - { name: objectId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - { name: action, in: query, schema: { type: string } }
+        - { name: actorUserId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - { name: actorKind, in: query, schema: { type: string, enum: [user, system, import, feed] } }
+        - { name: memberAccountId, in: query, description: Convenience filter for a portfolio's history., schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - { name: modelId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - { name: from, in: query, schema: { type: string, format: date-time } }
+        - { name: to, in: query, schema: { type: string, format: date-time } }
+        - { name: requestId, in: query, description: Trace one request end to end., schema: { type: string } }
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './common.yaml#/components/schemas/Page'
+                  - type: object
+                    properties:
+                      items: { type: array, items: { $ref: '#/components/schemas/AuditEvent' } }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+
+  /audit-events/{auditEventId}:
+    parameters:
+      - { name: auditEventId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [audit]
+      summary: One entry with before and after values
+      description: Feature AU-03.
+      operationId: getAuditEvent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/AuditEventDetail' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+components:
+  securitySchemes:
+    bearerAuth: { $ref: './common.yaml#/components/securitySchemes/bearerAuth' }
+  schemas:
+    ObjectType:
+      type: string
+      enum: [model_version, member_account_target, recommendation, classification_change_set,
+             financial_plan, import, holding, member, member_account, household, user, firm_policy]
+
+    AuditEvent:
+      type: object
+      required: [id, occurredAt, actorKind, objectType, action]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        occurredAt: { type: string, format: date-time }
+        actorUserId: { type: [string, 'null'], format: uuid }
+        actorDisplayName: { type: [string, 'null'] }
+        actorKind:
+          type: string
+          enum: [user, system, import, feed]
+          description: >
+            Feature AU-05. A nightly drift run is attributed to system, not to
+            whichever adviser last logged in.
+        objectType: { $ref: '#/components/schemas/ObjectType' }
+        objectId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        objectLabel: { type: [string, 'null'] }
+        action: { type: string }
+        status: { type: [string, 'null'] }
+        requestId:
+          type: string
+          description: Correlates with the API call and the distributed trace.
+        note: { type: [string, 'null'] }
+
+    AuditEventDetail:
+      allOf:
+        - $ref: '#/components/schemas/AuditEvent'
+        - type: object
+          properties:
+            before: { type: [object, 'null'], additionalProperties: true }
+            after: { type: [object, 'null'], additionalProperties: true }
+            schemaVersion: { type: integer }
+            clientIp: { type: [string, 'null'] }

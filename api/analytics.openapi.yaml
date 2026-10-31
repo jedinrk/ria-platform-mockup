@@ -1,0 +1,492 @@
+openapi: 3.1.0
+info:
+  title: RIA platform — analytics
+  version: 1.0.0
+  description: >
+    Everything a ComputationRun produced and can rebuild: drift, exposure,
+    plan projections and rebalance scenarios. Houses the calculation engine —
+    a pure library with no I/O — and is the only service that runs it, so a
+    figure cannot differ by code path.
+
+    Nothing here is approval-bearing. The one exception to "all of this is
+    disposable" is a scenario pinned by a recommendation, which cannot be
+    deleted because it is what makes that recommendation reproducible.
+servers:
+  - url: https://api.example.com/v1
+security:
+  - bearerAuth: []
+tags: [{name: drift}, {name: overview}, {name: scenarios}, {name: planning}]
+
+paths:
+  /portfolio-overview:
+    get:
+      tags: [overview]
+      summary: The portfolio overview
+      description: >
+        Features OV-01..OV-08. Served here rather than from advisory-core
+        because four of its eight columns are computed; serving it from core
+        would mean one analytics call per row.
+      operationId: getPortfolioOverview
+      parameters:
+        - { name: view, in: query, schema: { type: string, enum: [household, account], default: account } }
+        - { name: q, in: query, schema: { type: string } }
+        - { name: modelId, in: query, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+        - { name: needsReviewOnly, in: query, schema: { type: boolean, default: false } }
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+        - $ref: './common.yaml#/components/parameters/sort'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './common.yaml#/components/schemas/Page'
+                  - type: object
+                    properties:
+                      items: { type: array, items: { $ref: '#/components/schemas/OverviewRow' } }
+        '401': { $ref: './common.yaml#/components/responses/Unauthorized' }
+
+  /member-accounts/{memberAccountId}/drift:
+    parameters:
+      - { name: memberAccountId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [drift]
+      summary: Current drift for a member account
+      description: >
+        Returns the most recent stored run, or the run for a given asOf.
+        Historical runs are rendered from stored rows and are never recomputed
+        on read — that is what lets the audit trail show what the adviser saw.
+      operationId: getMemberAccountDrift
+      parameters:
+        - $ref: './common.yaml#/components/parameters/asOf'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DriftRun' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /member-accounts/{memberAccountId}/drift/recompute:
+    parameters:
+      - { name: memberAccountId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    post:
+      tags: [drift]
+      summary: Recompute drift on demand
+      description: Feature XC-08. Idempotent on (memberAccountId, asOf).
+      operationId: recomputeDrift
+      parameters: [{ $ref: './common.yaml#/components/parameters/idempotencyKey' }]
+      responses:
+        '202':
+          description: Accepted
+          headers:
+            Location: { description: Status resource., schema: { type: string } }
+          content:
+            application/json:
+              schema: { $ref: './common.yaml#/components/schemas/OperationStatus' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '422':
+          $ref: './common.yaml#/components/responses/UnprocessableEntity'
+
+  /drift-runs/{driftRunId}:
+    parameters:
+      - { name: driftRunId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [drift]
+      summary: A stored drift run
+      operationId: getDriftRun
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/DriftRun' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /drift-runs/{driftRunId}/rows:
+    parameters:
+      - { name: driftRunId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [drift]
+      summary: Drift rows for a run
+      description: >
+        Features AD-03..AD-05, AD-10. targetPct null means "below the model's
+        depth, not specified", which is distinct from "0.0000".
+      operationId: listDriftRows
+      parameters:
+        - { name: breachesOnly, in: query, schema: { type: boolean, default: false } }
+        - { name: level, in: query, schema: { type: integer, minimum: 0, maximum: 4 } }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/DriftRow' } }
+
+  /drift-runs/{driftRunId}/exposure-flags:
+    parameters:
+      - { name: driftRunId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [drift]
+      summary: Exposure lens distributions
+      description: Feature AD-07. Read-only distributions against limits.
+      operationId: listExposureFlags
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/ExposureFlag' } }
+
+  /households/{householdId}/drift:
+    parameters:
+      - { name: householdId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [drift]
+      summary: Household drift, aggregated from stored member-account runs
+      description: >
+        Feature PD-02. Nothing is computed or approved at household level; this
+        aggregates the stored runs of the accounts beneath it, by value.
+      operationId: getHouseholdDrift
+      parameters:
+        - $ref: './common.yaml#/components/parameters/asOf'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/HouseholdDrift' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /member-accounts/{memberAccountId}/gap-summary:
+    parameters:
+      - { name: memberAccountId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [scenarios]
+      summary: Gap summary
+      description: Features GT-01, GT-12.
+      operationId: getGapSummary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/GapRow' } }
+
+  /member-accounts/{memberAccountId}/scenarios:
+    parameters:
+      - { name: memberAccountId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [scenarios]
+      summary: Scenarios for an account
+      operationId: listScenarios
+      parameters:
+        - $ref: './common.yaml#/components/parameters/limit'
+        - $ref: './common.yaml#/components/parameters/cursor'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Scenario' } }
+    post:
+      tags: [scenarios]
+      summary: Build a rebalance or cash scenario
+      description: >
+        Features GT-02..GT-10, CP-01..CP-03, CP-09. A creation, not a
+        calculator call: the result is stored and a recommendation may later
+        pin it. A rebalance is cash-neutral and never sells from a class
+        already below target. Tax is estimated and labelled illustrative.
+      operationId: createScenario
+      parameters: [{ $ref: './common.yaml#/components/parameters/idempotencyKey' }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ScenarioRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Scenario' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+        '422':
+          description: >
+            Infeasible under the given constraints. The body names the reasons
+            rather than returning an empty scenario.
+          content:
+            application/problem+json:
+              schema: { $ref: './common.yaml#/components/schemas/Problem' }
+
+  /scenarios/{scenarioId}:
+    parameters:
+      - { name: scenarioId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [scenarios]
+      summary: Get a scenario
+      operationId: getScenario
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Scenario' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+    delete:
+      tags: [scenarios]
+      summary: Discard a scenario
+      description: >
+        Refused with 409 when a recommendation pins this scenario. That is the
+        one place analytics data is not disposable.
+      operationId: deleteScenario
+      responses:
+        '204': { description: Discarded }
+        '409': { $ref: './common.yaml#/components/responses/Conflict' }
+
+  /scenarios/{scenarioId}/trades:
+    parameters:
+      - { name: scenarioId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [scenarios]
+      summary: Suggested trades
+      description: >
+        Feature GT-10. Each names the holding entity, because a trade is not
+        actionable without saying where to place it. Suggestions only — the
+        system never executes.
+      operationId: listSuggestedTrades
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/SuggestedTrade' } }
+
+  /financial-plans/{financialPlanId}/projection:
+    parameters:
+      - { name: financialPlanId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    get:
+      tags: [planning]
+      summary: Plan projection
+      description: Features CP-07, CP-08, OV-07.
+      operationId: getPlanProjection
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/PlanProjection' }
+        '404': { $ref: './common.yaml#/components/responses/NotFound' }
+
+  /financial-plans/{financialPlanId}/projection/recompute:
+    parameters:
+      - { name: financialPlanId, in: path, required: true, schema: { $ref: './common.yaml#/components/schemas/Uuid' } }
+    post:
+      tags: [planning]
+      summary: Rebuild the projection
+      operationId: recomputeProjection
+      responses:
+        '202':
+          description: Accepted
+          content:
+            application/json:
+              schema: { $ref: './common.yaml#/components/schemas/OperationStatus' }
+
+components:
+  securitySchemes:
+    bearerAuth: { $ref: './common.yaml#/components/securitySchemes/bearerAuth' }
+  schemas:
+    ComputationRef:
+      type: object
+      properties:
+        computationRunId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        engineVersion:
+          type: string
+          description: Which version of a deterministic function produced this.
+        computedAt: { type: string, format: date-time }
+
+    DriftRun:
+      type: object
+      required: [id, memberAccountId, asOf, status]
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        memberAccountId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        targetId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        modelVersionId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        asOf: { type: string, format: date }
+        aggregatedDriftPp: { $ref: './common.yaml#/components/schemas/Percent' }
+        effectiveThresholdPp: { $ref: './common.yaml#/components/schemas/Percent' }
+        status: { type: string, enum: [within_threshold, needs_review] }
+        storedReason:
+          type: [string, 'null']
+          enum: [asset_class, exposure, both, null]
+          description: Feature OV-06.
+        stalePrices:
+          type: boolean
+          description: True when computed without a current price feed.
+        totalValue: { $ref: './common.yaml#/components/schemas/Money' }
+        computation: { $ref: '#/components/schemas/ComputationRef' }
+
+    DriftRow:
+      type: object
+      properties:
+        taxonomyNodeId: { type: [string, 'null'], format: uuid }
+        instrumentId: { type: [string, 'null'], format: uuid }
+        label: { type: string }
+        keyPath: { type: [string, 'null'] }
+        level: { type: integer }
+        actualValue: { $ref: './common.yaml#/components/schemas/Money' }
+        actualPct: { $ref: './common.yaml#/components/schemas/Percent' }
+        targetPct:
+          anyOf: [{ $ref: './common.yaml#/components/schemas/Percent' }, { type: 'null' }]
+          description: Null means below the model's depth, not zero.
+        bandPp:
+          anyOf: [{ $ref: './common.yaml#/components/schemas/Percent' }, { type: 'null' }]
+        driftPp: { $ref: './common.yaml#/components/schemas/Percent' }
+        valueGap: { $ref: './common.yaml#/components/schemas/Money' }
+        isBreach: { type: boolean }
+        isMostSpecificBreach:
+          type: boolean
+          description: Only the most specific breach in a branch is flagged (AD-05).
+
+    ExposureFlag:
+      type: object
+      properties:
+        lens: { type: string }
+        bucket: { type: string }
+        actualPct: { $ref: './common.yaml#/components/schemas/Percent' }
+        limitPct:
+          anyOf: [{ $ref: './common.yaml#/components/schemas/Percent' }, { type: 'null' }]
+        kind: { type: string, enum: [within, breach, no_limit] }
+
+    HouseholdDrift:
+      type: object
+      properties:
+        householdId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        asOf: { type: string, format: date }
+        aggregatedDriftPp: { $ref: './common.yaml#/components/schemas/Percent' }
+        totalValue: { $ref: './common.yaml#/components/schemas/Money' }
+        contributingAccounts:
+          type: array
+          items:
+            type: object
+            properties:
+              memberAccountId: { $ref: './common.yaml#/components/schemas/Uuid' }
+              name: { type: string }
+              value: { $ref: './common.yaml#/components/schemas/Money' }
+              driftPp: { $ref: './common.yaml#/components/schemas/Percent' }
+              driftRunId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        rows: { type: array, items: { $ref: '#/components/schemas/DriftRow' } }
+
+    OverviewRow:
+      type: object
+      properties:
+        subjectType: { type: string, enum: [household, member_account] }
+        subjectId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        name: { type: string }
+        modelName: { type: [string, 'null'] }
+        originalAum: { $ref: './common.yaml#/components/schemas/Money' }
+        aggregatedDriftPp: { $ref: './common.yaml#/components/schemas/Percent' }
+        thresholdPp: { $ref: './common.yaml#/components/schemas/Percent' }
+        thresholdIsInherited:
+          type: boolean
+          description: True when blank and inheriting the firm default (OV-05).
+        reviewStatus: { type: string, enum: [within_threshold, needs_review] }
+        reviewReason: { type: [string, 'null'] }
+        planStatus:
+          type: object
+          description: Feature OV-07.
+          properties:
+            funded: { type: boolean }
+            gapYear: { type: [integer, 'null'] }
+            liquidityRunwayMonths: { type: [integer, 'null'] }
+        asOf: { type: string, format: date }
+
+    GapRow:
+      type: object
+      properties:
+        taxonomyNodeId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        label: { type: string }
+        valueGap: { $ref: './common.yaml#/components/schemas/Money' }
+        driftPp: { $ref: './common.yaml#/components/schemas/Percent' }
+        action: { type: string, enum: [buy, sell, hold] }
+
+    ScenarioRequest:
+      type: object
+      required: [kind]
+      properties:
+        kind: { type: string, enum: [full_rebalance, constrained, cash_raise, cash_invest] }
+        grossAmount: { $ref: './common.yaml#/components/schemas/Money' }
+        neededBy: { type: string, format: date }
+        deployment: { type: string, enum: [lump_sum, staged] }
+        constraints:
+          type: object
+          properties:
+            maxTurnoverPct: { $ref: './common.yaml#/components/schemas/Percent' }
+            doNotSellInstrumentIds: { type: array, items: { $ref: './common.yaml#/components/schemas/Uuid' } }
+            taxBudget: { $ref: './common.yaml#/components/schemas/Money' }
+            avoidShortTermGains: { type: boolean }
+            harvestLosses: { type: boolean }
+            respectLiquidityBands: { type: boolean, default: true }
+
+    Scenario:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        memberAccountId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        targetId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        driftRunId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        kind: { type: string }
+        status: { type: string, enum: [draft, feasible, infeasible, pinned] }
+        projectedDriftPp: { $ref: './common.yaml#/components/schemas/Percent' }
+        projectedAllocation: { type: array, items: { $ref: '#/components/schemas/DriftRow' } }
+        estimatedTax: { $ref: './common.yaml#/components/schemas/Money' }
+        estimatedExitLoad: { $ref: './common.yaml#/components/schemas/Money' }
+        residualCash: { $ref: './common.yaml#/components/schemas/Money' }
+        isIllustrative:
+          type: boolean
+          description: Always true for tax figures in this phase.
+        infeasibilityReasons: { type: array, items: { type: string } }
+        computation: { $ref: '#/components/schemas/ComputationRef' }
+
+    SuggestedTrade:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        holdingEntityId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        instrumentId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        instrumentName: { type: string }
+        side: { type: string, enum: [buy, sell, switch] }
+        quantity: { $ref: './common.yaml#/components/schemas/Quantity' }
+        amount: { $ref: './common.yaml#/components/schemas/Money' }
+        estPrice: { $ref: './common.yaml#/components/schemas/Money' }
+        estTax: { $ref: './common.yaml#/components/schemas/Money' }
+        estExitLoad: { $ref: './common.yaml#/components/schemas/Money' }
+        rationale: { type: string }
+        sequence: { type: integer }
+
+    PlanProjection:
+      type: object
+      properties:
+        id: { $ref: './common.yaml#/components/schemas/Uuid' }
+        financialPlanId: { $ref: './common.yaml#/components/schemas/Uuid' }
+        asOf: { type: string, format: date }
+        schemaVersion:
+          type: integer
+          description: Version of the yearlyRows and assumptions payload shape.
+        assumptions: { type: object, additionalProperties: true }
+        yearlyRows:
+          type: array
+          items:
+            type: object
+            properties:
+              year: { type: integer }
+              openingValue: { $ref: './common.yaml#/components/schemas/Money' }
+              income: { $ref: './common.yaml#/components/schemas/Money' }
+              needs: { $ref: './common.yaml#/components/schemas/Money' }
+              closingValue: { $ref: './common.yaml#/components/schemas/Money' }
+        fundingGapYear: { type: [integer, 'null'] }
+        flags: { type: array, items: { type: string } }
+        computation: { $ref: '#/components/schemas/ComputationRef' }
